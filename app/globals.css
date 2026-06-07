@@ -40,6 +40,14 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-tertiary); display: flex; align-items: center; gap: .625rem; }
 .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--brand-ui); border-radius: 50%; }
 
+/* SKIP LINK */
+.skip-link { position: fixed; top: 0; left: 1rem; z-index: 100; padding: .65rem 1rem;
+  background: var(--brand-ui); color: var(--text-on-brand);
+  font-family: var(--font-ui); font-size: .875rem; font-weight: 600;
+  border-radius: 0 0 8px 8px;
+  transform: translateY(-110%); transition: transform .2s ease; }
+.skip-link:focus { transform: translateY(0); outline: 3px solid var(--border-focus); outline-offset: 2px; }
+
 /* NAV */
 nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px);
   background: color-mix(in srgb, var(--bg-base) 85%, transparent);
@@ -125,6 +133,16 @@ footer { padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); }
 .footer-links { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; justify-content: flex-end; }
 .footer-links a { font-family: var(--font-ui); font-size: .8rem; color: var(--text-secondary); transition: color .2s ease; }
 .footer-links a:hover { color: var(--brand-text); }
+.footer-disclaimer { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: .7rem; color: var(--text-tertiary); letter-spacing: .02em; text-align: center; }
+
+/* 404 */
+.not-found { min-height: 60vh; display: flex; align-items: center; }
+.not-found-inner { text-align: center; max-width: 36rem; }
+.not-found-code { font-family: var(--font-mono); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--brand-text); margin-bottom: 1rem; }
+.not-found h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 5vw, 3rem); color: var(--text-primary); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: -.01em; }
+.not-found-body { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem; }
+.not-found-cta { display: inline-flex; align-items: center; padding: .75rem 1.8rem; border-radius: 100px; border: 1px solid var(--brand-ui); background: var(--brand-ui); color: var(--text-on-brand); font-family: var(--font-ui); font-size: .9rem; font-weight: 600; letter-spacing: .02em; transition: background .2s ease, border-color .2s ease; }
+.not-found-cta:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
 
 /* ANIMATION */
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
