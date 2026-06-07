@@ -1,4 +1,5 @@
 import { profile } from "@/content/site";
+import ArrowLink from "./ArrowLink";
 
 const resourceLinks = [
   { label: "Bluff Dale ISD", href: "https://www.bdisd.net/" },
@@ -15,9 +16,9 @@ export default function Footer() {
         </div>
         <div className="footer-links">
           {resourceLinks.map((l) => (
-            <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer">
+            <ArrowLink key={l.href} href={l.href} target="_blank" rel="noopener noreferrer">
               {l.label}
-            </a>
+            </ArrowLink>
           ))}
         </div>
       </div>

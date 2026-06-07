@@ -1,4 +1,5 @@
 import { profile, boardLinks } from "@/content/site";
+import ArrowLink from "./ArrowLink";
 
 const fbIcon = (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
@@ -12,14 +13,14 @@ export default function Contact() {
       <div className="wrap">
         <div className="contact-grid">
           <h3 style={{ gridColumn: 1, gridRow: 1 }}>Contact</h3>
-          <a
+          <ArrowLink
             className="contact-link"
             style={{ gridColumn: 1, gridRow: 2 }}
             href={`mailto:${profile.email}`}
           >
             {profile.email}
-          </a>
-          <a
+          </ArrowLink>
+          <ArrowLink
             className="contact-link"
             style={{ gridColumn: 1, gridRow: 3 }}
             href={profile.facebook}
@@ -28,7 +29,7 @@ export default function Contact() {
           >
             {fbIcon}
             Facebook
-          </a>
+          </ArrowLink>
           <a
             className="contact-link contact-address"
             style={{ gridColumn: 1, gridRow: 4 }}
@@ -45,7 +46,7 @@ export default function Contact() {
 
           <h3 style={{ gridColumn: "3 / span 2", gridRow: 1 }}>School Board</h3>
           {boardLinks.map((l, i) => (
-            <a
+            <ArrowLink
               key={l.href}
               className="contact-link"
               style={{ gridColumn: 3 + (i % 2), gridRow: 2 + Math.floor(i / 2) }}
@@ -54,7 +55,7 @@ export default function Contact() {
               rel="noopener noreferrer"
             >
               {l.label}
-            </a>
+            </ArrowLink>
           ))}
         </div>
       </div>
