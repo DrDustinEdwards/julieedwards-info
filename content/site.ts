@@ -50,7 +50,7 @@ export const why = {
 
 export const about = {
   paragraphs: [
-    "My name is Julie Edwards, and I have lived in Bluff Dale for seven years. My husband and I have two children currently attending BDISD in first and third grade. They love being Bobcats, and we love that the school has high academic standards but is small enough that the students receive individualized attention tailored to their unique needs. On the board, I work to maintain and improve this supportive and academically rigorous environment.",
+    "My name is Julie Edwards, and I have lived in Bluff Dale since 2015. My husband and I have two children currently attending BDISD in first and third grade. They love being Bobcats, and we love that the school has high academic standards but is small enough that the students receive individualized attention tailored to their unique needs. On the board, I work to maintain and improve this supportive and academically rigorous environment.",
     "I am a scientific editor, and my husband is a biology professor at Tarleton. My foundation in science serves me well on the board. I am trained to look at all sides of an issue, gather information, and make an informed decision. I apply this skill set to my responsibilities as a board member. I do my homework and make decisions that are in the best interests of the students to ensure that Bluff Dale continues to be a wonderful school for the children in our community.",
     "I serve on the Bluff Dale ISD Board of Trustees as a parent who wants our school to be the best it can be and a safe, welcoming, and supportive environment for all students.",
   ],
