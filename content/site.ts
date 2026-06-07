@@ -20,7 +20,7 @@ export const images = {
 };
 
 export const navLinks = [
-  { label: "Why I'm Running", href: "#why" },
+  { label: "Priorities", href: "#why" },
   { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
