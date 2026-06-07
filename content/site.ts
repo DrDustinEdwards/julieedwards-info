@@ -20,7 +20,7 @@ export const profile = {
 
 export const images = {
   hero: "", // classroom photo (R2 URL)
-  about: "https://content.julieedwards.info/david-tribble-texas-bobcat-scaled.jpg", // bobcat photo (R2)
+  about: "https://content.julieedwards.info/julie-edwards-bluff-dale-profile.jpg", // profile photo (R2)
   portrait: "", // candidate photo (R2 URL)
   flyer: "", // campaign flyer PDF (R2 URL)
 };
