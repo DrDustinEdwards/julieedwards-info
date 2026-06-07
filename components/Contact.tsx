@@ -9,7 +9,6 @@ export default function Contact() {
       <div className="wrap">
         <div className="contact-grid">
           <div className="contact-info reveal">
-            <div className="eyebrow">Contact</div>
             <h2>Get in touch.</h2>
             <a className="email" href={`mailto:${profile.email}`}>
               {profile.email}

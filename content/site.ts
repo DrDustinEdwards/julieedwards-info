@@ -28,6 +28,8 @@ export const images = {
 export const navLinks = [
   { label: "Priorities", href: "#why" },
   { label: "About", href: "#about" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export const boardLinks = [

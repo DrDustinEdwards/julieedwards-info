@@ -5,7 +5,6 @@ export default function Experience() {
     <section id="experience">
       <div className="wrap">
         <div className="sec-head reveal">
-          <div className="eyebrow">Experience</div>
           <h2>What I bring to the board.</h2>
         </div>
         <div className="exp-list">
