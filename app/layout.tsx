@@ -56,6 +56,25 @@ const personJsonLd = {
     "@type": "Place",
     name: "Bluff Dale, Texas",
   },
+  spouse: {
+    "@type": "Person",
+    name: "Dustin Edwards",
+    honorificPrefix: "Dr.",
+    jobTitle: "Professor and Department Head of Biological Sciences",
+    url: "https://dustinedwards.info",
+    worksFor: {
+      "@type": "CollegeOrUniversity",
+      name: "Tarleton State University",
+      url: "https://www.tarleton.edu",
+    },
+    sameAs: [
+      "https://faculty.tarleton.edu/dcedwards/",
+      "https://orcid.org/0000-0001-6409-8041",
+      "https://scholar.google.com/citations?user=lfzCCXwAAAAJ&hl=en",
+      "https://seaphages.org/faculty/318/",
+      "https://pubmed.ncbi.nlm.nih.gov/?term=Edwards+D&cauthor_id=40724203",
+    ],
+  },
 };
 
 const websiteJsonLd = {

@@ -11,6 +11,9 @@ export async function GET() {
 
 ${summary}
 
+## Family
+- Her husband is Dr. Dustin Edwards, Professor and Department Head of Biological Sciences at Tarleton State University (https://dustinedwards.info).
+
 ## Site
 - [Home](https://julieedwards.info): Bio, priorities, experience, and contact.
 
