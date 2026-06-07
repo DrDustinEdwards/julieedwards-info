@@ -9,7 +9,7 @@ export default function About() {
           {images.about ? (
             <Image
               src={images.about}
-              alt="Texas bobcat"
+              alt="Julie Edwards"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               style={{ objectFit: "cover" }}
