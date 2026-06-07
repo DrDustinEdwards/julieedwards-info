@@ -1,0 +1,29 @@
+import { profile, about } from "@/content/site";
+
+export const dynamic = "force-static";
+
+export async function GET() {
+  const summary = about.paragraphs[2];
+
+  const body = `# ${profile.name}
+
+> Trustee on the Bluff Dale ISD School Board in Bluff Dale, Texas, focused on academic excellence, fiscal integrity, and student success.
+
+${summary}
+
+## Site
+- [Home](https://julieedwards.info): Bio, priorities, experience, and contact.
+
+## Bluff Dale ISD
+- [Bluff Dale ISD](https://www.bdisd.net): Official district website.
+- [Board of Trustees](https://www.bdisd.net/136152_3): Official board page.
+- [Board Meetings and Agendas](https://www.bdisd.net/136148_3): Schedule and agendas.
+
+## Contact
+- Email: ${profile.email}
+`;
+
+  return new Response(body, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
