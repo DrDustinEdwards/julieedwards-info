@@ -10,6 +10,12 @@ export const profile = {
   // TODO: confirm the public contact email shown on the old site.
   email: "julieedwards+bdisd@gmail.com",
   facebook: "#", // TODO: paste the campaign Facebook URL
+  address: {
+    name: "Bluff Dale ISD",
+    line1: "430 FM 2481",
+    line2: "Bluff Dale, TX 76433",
+    mapsUrl: "https://www.google.com/maps/place/430+FM+2481+Bluff+Dale+TX+76433",
+  },
 };
 
 export const images = {
@@ -22,8 +28,15 @@ export const images = {
 export const navLinks = [
   { label: "Priorities", href: "#why" },
   { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+];
+
+export const boardLinks = [
+  { label: "School Board", href: "https://www.bdisd.net/223653_2" },
+  { label: "Board of Trustees", href: "https://www.bdisd.net/136152_3" },
+  { label: "Board Meeting & Agenda", href: "https://www.bdisd.net/136148_3" },
+  { label: "Board Policies", href: "https://www.bdisd.net/136150_3" },
+  { label: "Board Operating Procedures", href: "https://www.bdisd.net/136149_3" },
+  { label: "Board Meeting Minutes", href: "https://www.bdisd.net/136159_3" },
 ];
 
 export const why = {

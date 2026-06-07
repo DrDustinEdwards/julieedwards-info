@@ -32,7 +32,7 @@ export default function Nav() {
         </a>
         <div className="nav-links">
           {navLinks.map((l) => (
-            <a key={l.href} href={l.href} className={l.label === "Contact" ? "" : "hide-m"}>
+            <a key={l.href} href={l.href}>
               {l.label}
             </a>
           ))}
