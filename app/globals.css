@@ -97,8 +97,8 @@ section { padding: 5rem 0; }
 .about-img.placeholder { display: grid; place-items: center; }
 .about-img .ph { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-text); opacity: .55; }
 .about-panel { background: var(--section-brand); color: var(--section-brand-ink); padding: clamp(2.5rem, 5vw, 4.5rem); display: flex; flex-direction: column; justify-content: center; }
-.about-panel .eyebrow { color: rgba(246,250,244,.8); } .about-panel .eyebrow::before { background: rgba(246,250,244,.9); }
-.about-panel h2 { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin: .9rem 0 1.3rem; }
+.about-panel h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; color: var(--section-brand-ink); text-transform: uppercase; letter-spacing: .01em; margin-bottom: 1.3rem; }
+.about-panel h2 .rule { display: block; width: 2.5rem; height: 3px; background: var(--section-brand-ink); margin-top: .6rem; }
 .about-panel p { opacity: .92; margin-bottom: 1.1rem; font-size: 1rem; line-height: 1.7; }
 
 /* EXPERIENCE */
