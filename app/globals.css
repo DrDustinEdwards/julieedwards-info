@@ -1,9 +1,10 @@
 /* julieedwards.info - campaign design tokens (Bluff Dale forest green). */
 :root {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body:    "Source Serif 4", Georgia, serif;
-  --font-ui:      "DM Sans", system-ui, sans-serif;
-  --font-mono:    "DM Mono", ui-monospace, monospace;
+  --font-display: "Montserrat", Helvetica, Arial, sans-serif;
+  --font-body:    "Open Sans", Arial, sans-serif;
+  --font-ui:      "Montserrat", Helvetica, Arial, sans-serif;
+  --font-mono:    "Montserrat", Helvetica, Arial, sans-serif;
+  --font-script:  "Cookie", cursive;
   --maxw: 67.5rem;
 }
 [data-mode="light"] {
@@ -67,7 +68,7 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 .hero .eyebrow::before { background: rgba(246,250,244,.9); }
 .hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin: 1rem 0 .75rem; text-transform: uppercase; }
 .hero .office { font-family: var(--font-ui); font-weight: 500; font-size: clamp(1.1rem, 3.2vw, 1.9rem); letter-spacing: .02em; opacity: .95; }
-.hero .office em { font-family: var(--font-display); font-style: italic; font-weight: 400; text-transform: none; opacity: .85; padding: 0 .3rem; }
+.hero .office em { font-family: var(--font-script); font-style: normal; font-size: 1.55em; font-weight: 400; text-transform: none; opacity: .85; padding: 0 .3rem; }
 .hero-tag { margin-top: 1.5rem; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
 
 /* SECTIONS */
@@ -86,7 +87,7 @@ section { padding: 5rem 0; }
 .pillar h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; color: var(--brand-text); margin-bottom: .5rem; }
 .pillar p { color: var(--text-secondary); font-size: .98rem; }
 .flyer-cta { text-align: center; margin-top: 2.5rem; }
-.btn { font-family: var(--font-ui); font-size: .9rem; font-weight: 600; letter-spacing: .02em; padding: .85rem 1.8rem; border-radius: 100px; border: 1px solid var(--brand-ui); background: var(--brand-ui); color: var(--text-on-brand); display: inline-flex; align-items: center; gap: .5rem; transition: all .22s; cursor: pointer; }
+.btn { font-family: var(--font-script); font-size: 1.4rem; font-weight: 400; letter-spacing: .02em; padding: .85rem 1.8rem; border-radius: 100px; border: 1px solid var(--brand-ui); background: var(--brand-ui); color: var(--text-on-brand); display: inline-flex; align-items: center; gap: .5rem; transition: all .22s; cursor: pointer; }
 .btn:hover { background: var(--brand-hover); border-color: var(--brand-hover); transform: translateY(-2px); }
 [data-mode="dark"] .btn:hover { background: #86D0A2; }
 
