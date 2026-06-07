@@ -1,4 +1,4 @@
-import { why, images } from "@/content/site";
+import { why } from "@/content/site";
 
 const icons = [
   // Education
@@ -33,6 +33,7 @@ export default function WhyRunning() {
           ))}
         </div>
         {/* Campaign flyer, hidden while serving. Restore for re-election.
+            On restore, re-add `images` to the content/site import.
         <div className="flyer-cta reveal">
           <a className="btn" href={images.flyer || "#"} target={images.flyer ? "_blank" : undefined} rel="noreferrer">
             Download Flyer
