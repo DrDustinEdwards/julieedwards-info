@@ -56,7 +56,7 @@ const personJsonLd = {
     "@type": "Place",
     name: "Bluff Dale, Texas",
   },
-  sameAs: ["https://www.facebook.com/share/18hHDWn8Hr/"],
+  sameAs: ["https://www.facebook.com/julieedwardsforbdisd"],
   spouse: {
     "@type": "Person",
     name: "Dustin Edwards",
