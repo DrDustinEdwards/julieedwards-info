@@ -1,11 +1,33 @@
 import "./globals.css";
 import type { Viewport } from "next";
+import { Montserrat, Open_Sans, Cookie } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { buildMetadata } from "@/lib/metadata";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-montserrat",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-open-sans",
+});
+
+const cookie = Cookie({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-cookie",
+});
 
 export const metadata = buildMetadata();
 
@@ -45,14 +67,12 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${montserrat.variable} ${openSans.variable} ${cookie.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cookie&display=swap"
-          rel="stylesheet"
-        />
         <script dangerouslySetInnerHTML={{ __html: modeScript }} />
       </head>
       <body>

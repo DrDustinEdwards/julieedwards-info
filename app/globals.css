@@ -1,10 +1,10 @@
 /* julieedwards.info - campaign design tokens (Bluff Dale forest green). */
 :root {
-  --font-display: "Montserrat", Helvetica, Arial, sans-serif;
-  --font-body:    "Open Sans", Arial, sans-serif;
-  --font-ui:      "Montserrat", Helvetica, Arial, sans-serif;
-  --font-mono:    "Montserrat", Helvetica, Arial, sans-serif;
-  --font-script:  "Cookie", cursive;
+  --font-display: var(--font-montserrat), Helvetica, Arial, sans-serif;
+  --font-body:    var(--font-open-sans), Arial, sans-serif;
+  --font-ui:      var(--font-montserrat), Helvetica, Arial, sans-serif;
+  --font-mono:    var(--font-montserrat), Helvetica, Arial, sans-serif;
+  --font-script:  var(--font-cookie), cursive;
   --maxw: 67.5rem;
 }
 [data-mode="light"] {
