@@ -9,10 +9,7 @@ export default function Hero() {
       <div>
         <div className="eyebrow">Bluff Dale ISD</div>
         <h1>{profile.name}</h1>
-        <div className="office">
-          <em>for</em> Bluff Dale ISD School Board
-        </div>
-        <div className="hero-tag">Trustee Candidate</div>
+        <div className="office">Bluff Dale ISD School Board Trustee</div>
       </div>
     </header>
   );

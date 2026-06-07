@@ -20,7 +20,7 @@ export default function WhyRunning() {
     <section className="why" id="why">
       <div className="wrap">
         <div className="sec-head reveal">
-          <div className="eyebrow">Why I'm Running</div>
+          <div className="eyebrow">Priorities</div>
           <h2>{why.intro}</h2>
         </div>
         <div className="pillars">
@@ -32,11 +32,13 @@ export default function WhyRunning() {
             </div>
           ))}
         </div>
+        {/* Campaign flyer, hidden while serving. Restore for re-election.
         <div className="flyer-cta reveal">
           <a className="btn" href={images.flyer || "#"} target={images.flyer ? "_blank" : undefined} rel="noreferrer">
             Download Flyer
           </a>
         </div>
+        */}
       </div>
     </section>
   );
