@@ -69,8 +69,10 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 [data-mode="dark"] .moon { display: none; } [data-mode="dark"] .sun { display: block; }
 
 /* HERO */
-.hero { position: relative; overflow: hidden; min-height: clamp(30rem, 65vh, 40rem);
-  display: flex; align-items: center;
+.hero { position: relative; overflow: hidden;
+  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(100dvh - var(--nav-height));
+  display: flex; align-items: center; justify-content: center;
   background-color: var(--section-brand); color: var(--section-brand-ink); }
 .hero-inner { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 2rem; text-align: left; }
 .hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin: 0 0 .75rem; text-transform: uppercase; }
