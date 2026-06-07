@@ -11,8 +11,10 @@ export default function About() {
           {!images.about && <span className="ph">Photo</span>}
         </div>
         <div className="about-panel reveal">
-          <div className="eyebrow">About Me</div>
-          <h2>A parent invested in our school.</h2>
+          <h2>
+            About Me
+            <span className="rule" />
+          </h2>
           {about.paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
