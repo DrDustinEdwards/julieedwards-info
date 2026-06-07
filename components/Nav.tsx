@@ -15,7 +15,6 @@ export default function Nav() {
     <nav className={scrolled ? "scrolled" : ""}>
       <div className="nav-inner">
         <a href="#top" className="wordmark">
-          <span className="dot" />
           {profile.name}
         </a>
         <div className="nav-links">
