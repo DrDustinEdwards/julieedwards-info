@@ -1,4 +1,4 @@
-import { profile, images } from "@/content/site";
+import { profile, images, boardLinks } from "@/content/site";
 
 export default function Contact() {
   const portraitStyle = images.portrait
@@ -22,10 +22,32 @@ export default function Contact() {
                 Facebook
               </a>
             </div>
+            <a
+              className="contact-address"
+              href={profile.address.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>{profile.address.name}</span>
+              <span>{profile.address.line1}</span>
+              <span>{profile.address.line2}</span>
+            </a>
           </div>
           <div className="portrait reveal" style={portraitStyle}>
             {!images.portrait && <span className="ph">Photo</span>}
           </div>
+        </div>
+        <div className="contact-board reveal">
+          <h3>School Board</h3>
+          <ul>
+            {boardLinks.map((l) => (
+              <li key={l.href}>
+                <a href={l.href} target="_blank" rel="noopener noreferrer">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
