@@ -124,6 +124,13 @@ section { padding: 5rem 0; }
 .contact-divider { grid-column: 2; grid-row: 1 / -1; width: 100%; background: var(--border-subtle); pointer-events: none; }
 .contact-link { font-family: var(--font-ui); font-size: .9rem; line-height: 1.55; color: var(--text-secondary); display: inline-flex; align-items: center; gap: .5rem; transition: color .2s ease; }
 .contact-link:hover { color: var(--brand-text); }
+.arrow-link { display: inline-flex; align-items: center; gap: .35em; }
+.arrow-link svg { width: .7em; height: .7em; flex: none; opacity: 0; transform: translateX(-0.3em); transition: opacity .18s ease, transform .18s ease; }
+.arrow-link:hover svg, .arrow-link:focus-visible svg { opacity: 1; transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .arrow-link svg { transform: none; transition: opacity .18s ease; }
+  .arrow-link:hover svg, .arrow-link:focus-visible svg { transform: none; }
+}
 .contact-address { white-space: nowrap; }
 
 /* FOOTER */
