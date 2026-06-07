@@ -60,10 +60,11 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 [data-mode="dark"] .moon { display: none; } [data-mode="dark"] .sun { display: block; }
 
 /* HERO */
-.hero { position: relative; min-height: 78vh; display: flex; align-items: center; justify-content: center; text-align: center;
+.hero { position: relative; min-height: 62vh; display: flex; align-items: center; justify-content: center; text-align: center;
   padding: 6rem 2rem; background-size: cover; background-position: center;
   background-image: linear-gradient(180deg, rgba(15,40,24,.62), rgba(15,40,24,.78)), var(--hero-img, none);
-  background-color: var(--section-brand); color: #F6FAF4; }
+  background-color: var(--section-brand); color: #F6FAF4;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5rem), 0 100%); }
 .hero .eyebrow { justify-content: center; color: rgba(246,250,244,.85); }
 .hero .eyebrow::before { background: rgba(246,250,244,.9); }
 .hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin: 1rem 0 .75rem; text-transform: uppercase; }
@@ -92,9 +93,9 @@ section { padding: 5rem 0; }
 [data-mode="dark"] .btn:hover { background: #86D0A2; }
 
 /* ABOUT */
-.about { padding: 0; }
+.about { padding: 0; background: var(--section-brand); }
 .about-grid { display: grid; grid-template-columns: 1fr 1.15fr; align-items: stretch; }
-.about-img { position: relative; min-height: 30rem; background-size: cover; background-position: center; background-color: var(--brand-subtle); background-image: var(--about-img, none); }
+.about-img { position: relative; min-height: 30rem; background-size: cover; background-position: center; background-color: var(--brand-subtle); background-image: var(--about-img, none); clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%); }
 .about-img.placeholder { display: grid; place-items: center; }
 .about-img .ph { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-text); opacity: .55; }
 .about-panel { background: var(--section-brand); color: var(--section-brand-ink); padding: clamp(2.5rem, 5vw, 4.5rem); display: flex; flex-direction: column; justify-content: center; }
