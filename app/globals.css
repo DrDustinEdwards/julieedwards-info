@@ -60,20 +60,19 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 [data-mode="dark"] .moon { display: none; } [data-mode="dark"] .sun { display: block; }
 
 /* HERO */
-.hero { position: relative; min-height: 62vh; display: flex; align-items: center; justify-content: center; text-align: center;
-  padding: 6rem 2rem; background-size: cover; background-position: center;
-  background-image: linear-gradient(180deg, rgba(15,40,24,.62), rgba(15,40,24,.78)), var(--hero-img, none);
-  background-color: var(--section-brand); color: #F6FAF4; }
+.hero { position: relative; overflow: hidden; min-height: clamp(26rem, 60vh, 38rem);
+  display: flex; align-items: center;
+  background-color: var(--section-brand); color: var(--section-brand-ink); }
+.hero-inner { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 2rem; text-align: left; }
+.hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin: 0 0 .75rem; text-transform: uppercase; }
+.hero .office { font-family: var(--font-ui); font-weight: 500; font-size: clamp(1.05rem, 2.6vw, 1.55rem); letter-spacing: .02em; opacity: .92; margin-bottom: 2rem; }
+.hero-cta { display: inline-flex; align-items: center; padding: .8rem 1.9rem; border: 1px solid rgba(246, 250, 244, .55); border-radius: 100px; color: var(--section-brand-ink); font-family: var(--font-ui); font-size: .95rem; font-weight: 500; letter-spacing: .02em; transition: background .2s ease, border-color .2s ease; }
+.hero-cta:hover { background: rgba(246, 250, 244, .1); border-color: var(--section-brand-ink); }
+.hero-mark { position: absolute; right: -5rem; bottom: -5rem; width: 26rem; height: auto; color: #fff; opacity: .06; pointer-events: none; z-index: 0; }
 
 /* SLANT DIVIDER (Divi-style stacked slants) */
 .slant-divider { position: relative; width: 100%; height: clamp(2.5rem, 7vw, 6rem); pointer-events: none; overflow: hidden; }
 .slant-divider svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.hero .eyebrow { justify-content: center; color: rgba(246,250,244,.85); }
-.hero .eyebrow::before { background: rgba(246,250,244,.9); }
-.hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin: 1rem 0 .75rem; text-transform: uppercase; }
-.hero .office { font-family: var(--font-ui); font-weight: 500; font-size: clamp(1.1rem, 3.2vw, 1.9rem); letter-spacing: .02em; opacity: .95; }
-.hero .office em { font-family: var(--font-script); font-style: normal; font-size: 1.55em; font-weight: 400; text-transform: none; opacity: .85; padding: 0 .3rem; }
-.hero-tag { margin-top: 1.5rem; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
 
 /* SECTIONS */
 section { padding: 5rem 0; }
@@ -145,8 +144,8 @@ footer { padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); }
 /* ANIMATION */
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.in { opacity: 1; transform: translateY(0); }
-.hero .eyebrow, .hero h1, .hero .office, .hero-tag { opacity: 0; transform: translateY(16px); animation: rise .85s cubic-bezier(.22,1,.36,1) forwards; }
-.hero h1 { animation-delay: .1s; } .hero .office { animation-delay: .24s; } .hero-tag { animation-delay: .38s; }
+.hero h1, .hero .office, .hero-cta { opacity: 0; transform: translateY(16px); animation: rise .85s cubic-bezier(.22,1,.36,1) forwards; }
+.hero h1 { animation-delay: .1s; } .hero .office { animation-delay: .24s; } .hero-cta { animation-delay: .38s; }
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 820px) {
@@ -162,5 +161,5 @@ footer { padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
-  .hero .eyebrow, .hero h1, .hero .office, .hero-tag { opacity: 1; transform: none; }
+  .hero h1, .hero .office, .hero-cta { opacity: 1; transform: none; }
 }
