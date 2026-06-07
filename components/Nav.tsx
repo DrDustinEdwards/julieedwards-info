@@ -18,7 +18,7 @@ export default function Nav() {
           <svg
             className="wordmark-logo"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 359 444"
+            viewBox="-69 -13 385 470"
             role="img"
             aria-label="Julie Edwards"
           >
