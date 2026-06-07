@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"try{require.resolve\\('sharp'\\);console.log\\('installed'\\)}catch\\(e\\){console.log\\('missing'\\)}\")",
+      "Bash(node scripts/gen-apple-icon.mjs)"
+    ]
+  }
+}

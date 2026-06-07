@@ -5,7 +5,7 @@ export default function Experience() {
     <section id="experience">
       <div className="wrap">
         <div className="sec-head reveal">
-          <h2>What I bring to the board.</h2>
+          <h2>What I bring to the board</h2>
         </div>
         <div className="exp-list">
           {experience.map((e) => (

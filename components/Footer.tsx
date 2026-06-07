@@ -1,4 +1,4 @@
-import { profile, footerDisclaimer } from "@/content/site";
+import { profile } from "@/content/site";
 
 const resourceLinks = [
   { label: "Bluff Dale ISD", href: "https://www.bdisd.net/" },
@@ -21,7 +21,6 @@ export default function Footer() {
           ))}
         </div>
       </div>
-      <div className="wrap footer-disclaimer">{footerDisclaimer}</div>
     </footer>
   );
 }

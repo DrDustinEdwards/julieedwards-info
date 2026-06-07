@@ -68,7 +68,7 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 [data-mode="dark"] .moon { display: none; } [data-mode="dark"] .sun { display: block; }
 
 /* HERO */
-.hero { position: relative; overflow: hidden; min-height: clamp(26rem, 60vh, 38rem);
+.hero { position: relative; overflow: hidden; min-height: clamp(30rem, 65vh, 40rem);
   display: flex; align-items: center;
   background-color: var(--section-brand); color: var(--section-brand-ink); }
 .hero-inner { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 2rem; text-align: left; }
@@ -76,7 +76,7 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 .hero .office { font-family: var(--font-ui); font-weight: 500; font-size: clamp(1.05rem, 2.6vw, 1.55rem); letter-spacing: .02em; opacity: .92; margin-bottom: 2rem; }
 .hero-cta { display: inline-flex; align-items: center; padding: .8rem 1.9rem; border: 1px solid rgba(246, 250, 244, .55); border-radius: 100px; color: var(--section-brand-ink); font-family: var(--font-ui); font-size: .95rem; font-weight: 500; letter-spacing: .02em; transition: background .2s ease, border-color .2s ease; }
 .hero-cta:hover { background: rgba(246, 250, 244, .1); border-color: var(--section-brand-ink); }
-.hero-mark { position: absolute; right: -5rem; bottom: -5rem; width: 26rem; height: auto; color: #fff; opacity: .06; pointer-events: none; z-index: 0; }
+.hero-mark { position: absolute; right: -4rem; bottom: -1.5rem; width: 24rem; height: auto; color: #fff; opacity: .06; pointer-events: none; z-index: 0; }
 
 /* SECTIONS */
 section { padding: 5rem 0; }
@@ -133,7 +133,6 @@ footer { padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); }
 .footer-links { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; justify-content: flex-end; }
 .footer-links a { font-family: var(--font-ui); font-size: .8rem; color: var(--text-secondary); transition: color .2s ease; }
 .footer-links a:hover { color: var(--brand-text); }
-.footer-disclaimer { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: .7rem; color: var(--text-tertiary); letter-spacing: .02em; text-align: center; }
 
 /* 404 */
 .not-found { min-height: 60vh; display: flex; align-items: center; }
