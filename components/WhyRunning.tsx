@@ -20,8 +20,7 @@ export default function WhyRunning() {
     <section className="why" id="why">
       <div className="wrap">
         <div className="sec-head reveal">
-          <div className="eyebrow">Priorities</div>
-          <h2>{why.intro}</h2>
+          <h2>Priorities</h2>
         </div>
         <div className="pillars">
           {why.pillars.map((p, i) => (

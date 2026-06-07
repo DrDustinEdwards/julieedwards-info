@@ -27,7 +27,6 @@ export const navLinks = [
 ];
 
 export const why = {
-  intro: "As a Bluff Dale ISD Trustee, I am focused on:",
   pillars: [
     { title: "Education", body: "Support continued academic excellence." },
     { title: "Integrity", body: "Promote an environment of transparency, communication, and accountability for the school and the Board of Trustees." },
