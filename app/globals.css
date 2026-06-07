@@ -166,7 +166,7 @@ footer { padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); }
   .about-grid { grid-template-columns: 1fr; }
   .about-img { min-height: 18rem; }
   .nav-links a.hide-m { display: none; }
-  .footer-inner { flex-direction: column; gap: .75rem; text-align: center; }
+  .footer-inner { flex-direction: column-reverse; gap: .75rem; text-align: center; }
   .footer-links { justify-content: center; }
 }
 @media (max-width: 768px) {
