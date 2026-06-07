@@ -24,7 +24,7 @@ export default function Contact() {
             style={{ gridColumn: 1, gridRow: 3 }}
             href={profile.facebook}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             {fbIcon}
             Facebook

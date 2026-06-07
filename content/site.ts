@@ -31,6 +31,9 @@ export const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
+export const footerDisclaimer =
+  "This is the personal website of Julie Edwards and is not the official website of Bluff Dale ISD.";
+
 export const boardLinks = [
   { label: "School Board", href: "https://www.bdisd.net/223653_2" },
   { label: "Board of Trustees", href: "https://www.bdisd.net/136152_3" },

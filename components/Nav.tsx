@@ -12,7 +12,7 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return (
-    <nav className={scrolled ? "scrolled" : ""}>
+    <nav className={scrolled ? "scrolled" : ""} aria-label="Primary">
       <div className="nav-inner">
         <a href="#top" className="wordmark">
           <svg
