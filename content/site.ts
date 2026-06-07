@@ -9,7 +9,7 @@ export const profile = {
   office: "Bluff Dale ISD School Board Trustee",
   // TODO: confirm the public contact email shown on the old site.
   email: "julieedwards+bdisd@gmail.com",
-  facebook: "https://www.facebook.com/share/18hHDWn8Hr/",
+  facebook: "https://www.facebook.com/julieedwardsforbdisd",
   address: {
     name: "Bluff Dale ISD",
     line1: "430 FM 2481",
