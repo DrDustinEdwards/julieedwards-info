@@ -8,7 +8,7 @@
   --maxw: 67.5rem;
   --nav-height: 4.5rem;
 }
-[data-mode="light"] {
+[data-theme="light"] {
   --bg-base: #FBFCFA; --bg-surface: #FFFFFF; --bg-sunken: #EEF3EC; --bg-hover: #E4EDE4;
   --text-primary: #14241A; --text-secondary: #46544B; --text-tertiary: #6B776E;
   --text-on-brand: #F6FAF4;
@@ -18,7 +18,7 @@
   --shadow-sm: 0 1px 3px rgba(20,36,26,.08), 0 1px 2px rgba(20,36,26,.05);
   --shadow-md: 0 6px 18px rgba(20,36,26,.10), 0 2px 6px rgba(20,36,26,.07);
 }
-[data-mode="dark"] {
+[data-theme="dark"] {
   --bg-base: #0F140F; --bg-surface: #161D16; --bg-sunken: #1C261C; --bg-hover: #243024;
   --text-primary: #E9F0E8; --text-secondary: #AEBCAE; --text-tertiary: #7E8C7E;
   --text-on-brand: #E9F0E8;
@@ -74,8 +74,8 @@ nav.scrolled { border-bottom-color: var(--border-subtle); }
 .nav-menu-btn:hover { color: var(--text-primary); border-color: var(--border-interactive); }
 .nav-menu-btn svg { width: 18px; height: 18px; }
 .mobile-menu { display: none; }
-[data-mode="light"] .moon { display: block; } [data-mode="light"] .sun { display: none; }
-[data-mode="dark"] .moon { display: none; } [data-mode="dark"] .sun { display: block; }
+[data-theme="light"] .moon { display: block; } [data-theme="light"] .sun { display: none; }
+[data-theme="dark"] .moon { display: none; } [data-theme="dark"] .sun { display: block; }
 
 /* HERO */
 .hero { position: relative; overflow: hidden;
@@ -112,7 +112,7 @@ section { padding: 5rem 0; }
 .flyer-cta { text-align: center; margin-top: 2.5rem; }
 .btn { font-family: var(--font-script); font-size: 1.4rem; font-weight: 400; letter-spacing: .02em; padding: .85rem 1.8rem; border-radius: 100px; border: 1px solid var(--brand-ui); background: var(--brand-ui); color: var(--text-on-brand); display: inline-flex; align-items: center; gap: .5rem; transition: all .22s; cursor: pointer; }
 .btn:hover { background: var(--brand-hover); border-color: var(--brand-hover); transform: translateY(-2px); }
-[data-mode="dark"] .btn:hover { background: #86D0A2; }
+[data-theme="dark"] .btn:hover { background: #86D0A2; }
 
 /* ABOUT */
 .about { padding: 0; background: var(--section-brand); }
