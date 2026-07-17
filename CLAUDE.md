@@ -1,38 +1,30 @@
 # CLAUDE.md - julieedwards.info
-## Read this at the start of every session.
 
-## PROJECT
-Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board.
-Next.js App Router + TypeScript. Repo: github.com/DrDustinEdwards/julieedwards-info
-Deploy: Vercel, auto on push to main. Static site (no database, no email for now).
-Part of the personal-sites family; brand color is forest green (Bluff Dale).
+Portfolio-wide rules live in Capsid, not here. Read `capsid/conventions.md` first, then `julieedwards/core.md`. This file holds only what is true of this repo.
 
-## STRUCTURE
-  content/site.ts   - all editable copy and the images object (paste R2 URLs here)
-  components/        - section + chrome components
-  app/globals.css    - design tokens and styling (--brand-ui #15532E)
-  lib/               - dormant supabase client, metadata builder
+## What this is
 
-## IMAGES
-Hosted on Cloudflare R2. Until URLs are added to content/site.ts `images`,
-sections render green placeholder blocks. To use next/image optimization later,
-add the R2 host to next.config.mjs remotePatterns.
+Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board. Static site: no database, no email for now. Part of the personal-sites family; brand color is forest green (Bluff Dale), `--brand-ui #15532E`.
 
-## COMMANDS
-  npm run dev
-  npm run build
-  npx tsc --noEmit   (run before every push)
+Legacy stack exception: Next.js App Router on Vercel, auto-deploy on push to main. Not being migrated to the house RR8/Cloudflare stack. See `capsid/decisions.md`.
 
-## ABSOLUTE RULES
-1. No em dashes. Not one.
-2. No cheesy copy: no explore, discover, dive into, journey, compelling, must-read.
-3. No emoji in UI. Inline SVG only, no icon libraries.
-4. Theming via data-mode (light/dark), localStorage key 'mode'. Never data-theme.
-5. Design tokens only. Text sizing in rem. Keep :focus-visible rings.
-6. All copy lives in content/site.ts. Metadata via lib/metadata.ts.
-7. Fonts: Fraunces (display), Source Serif 4 (body), DM Sans (UI), DM Mono (labels).
-8. This is a real candidate's site: keep content factual and faithful to what she
-   provides. Do not invent positions, claims, or quotes.
+## Session ritual
 
-## GIT WORKFLOW
-Small focused commits, message says what it does. Run tsc --noEmit before pushing.
+Start: read `capsid/conventions.md`, then `julieedwards/core.md`.
+End: write a `session-YYYY-MM-DD.md` episodic (type `episodic`, under ~2KB) to the julieedwards namespace.
+
+## Commands
+
+- `npm run dev`
+- `npm run build`
+- `npx tsc --noEmit` before every push
+
+## Hard rules
+
+1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
+2. All copy lives in `content/site.ts`. Metadata via `lib/metadata.ts`. No hardcoded strings in metadata.
+3. Fonts, per app/layout.tsx and globals.css: Montserrat (display, UI, labels), Open Sans (body), Cookie (script accents only, e.g. the .btn flourish). Note: an earlier version of this file claimed Fraunces / Source Serif 4 / DM Sans / DM Mono; the code has never used those here. If a serif redesign is intended, that is a decision to record first, not a rule to restore.
+
+## Images
+
+Hosted on Cloudflare R2. Until URLs are added to the `images` object in `content/site.ts`, sections render green placeholder blocks. To use next/image optimization later, add the R2 host to `next.config.mjs` remotePatterns.
