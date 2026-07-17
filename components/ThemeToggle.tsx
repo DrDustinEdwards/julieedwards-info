@@ -1,39 +1,22 @@
 "use client";
 
-// Attribute-driven light/dark toggle. The no-flash script in layout.tsx sets the
-// initial data-theme before paint; this only flips it after user action. The
-// sun/moon icon swap is pure CSS ([data-theme] show/hide in globals.css), so this
-// component renders both and never needs to read the theme into React state.
 export default function ThemeToggle() {
-  function toggle() {
+  const toggle = () => {
     const root = document.documentElement;
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     try {
       localStorage.setItem("theme", next);
-    } catch {
-      /* storage unavailable, in-memory toggle still works */
-    }
-  }
-
+    } catch {}
+  };
   return (
-    <button type="button" className="theme-toggle" onClick={toggle} aria-label="Toggle color theme">
-      <svg className="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M20 14.5A8 8 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-        />
+    <button className="theme-toggle" onClick={toggle} aria-label="Toggle dark mode">
+      <svg className="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
       </svg>
-      <svg className="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.6" />
-        <path
-          d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        />
+      <svg className="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
       </svg>
     </button>
   );
