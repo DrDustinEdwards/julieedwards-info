@@ -38,7 +38,13 @@ export const viewport: Viewport = {
   ],
 };
 
-const modeScript = `(function(){try{var m=localStorage.getItem('mode');if(!m){m=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-mode',m);}catch(e){document.documentElement.setAttribute('data-mode','light');}})();`;
+// Set data-theme before paint so there is no theme flash. Stored preference wins;
+// otherwise follow the OS.
+// Migration shim: the key was 'mode' (attribute data-mode) before the portfolio
+// standardized on data-theme. Read the old key once, rewrite it to the new one, and
+// drop it, so a returning visitor keeps their choice. Safe to delete this branch
+// once the old key is gone from the wild.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){var old=localStorage.getItem('mode');if(old==='dark'||old==='light'){t=old;localStorage.setItem('theme',t);localStorage.removeItem('mode');}}if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`;
 
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -93,7 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${montserrat.variable} ${openSans.variable} ${cookie.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: modeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
