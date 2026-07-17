@@ -23,7 +23,7 @@ End: write a `session-YYYY-MM-DD.md` episodic (type `episodic`, under ~2KB) to t
 
 1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
 2. All copy lives in `content/site.ts`. Metadata via `lib/metadata.ts`. No hardcoded strings in metadata.
-3. Fonts: Fraunces (display), Source Serif 4 (body), DM Sans (UI), DM Mono (labels).
+3. Fonts, per app/layout.tsx and globals.css: Montserrat (display, UI, labels), Open Sans (body), Cookie (script accents only, e.g. the .btn flourish). Note: an earlier version of this file claimed Fraunces / Source Serif 4 / DM Sans / DM Mono; the code has never used those here. If a serif redesign is intended, that is a decision to record first, not a rule to restore.
 
 ## Images
 
