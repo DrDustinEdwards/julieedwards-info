@@ -3,13 +3,22 @@
     "allow": ["Bash(git:*)", "Bash(gh:*)", "Bash(npm:*)", "Bash(npx tsc:*)"]
   },
   "hooks": {
-    "PostToolUse": [
+    "PreToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "file=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); if [ -n \"$file\" ] && echo \"$file\" | grep -qE '\\.(tsx|ts)$'; then if grep -q ' \u2014 ' \"$file\" 2>/dev/null; then echo \"ERROR: em dash found in $file\"; exit 1; fi; fi"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-em-dash.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/scoped-git-add.sh\""
           }
         ]
       }
