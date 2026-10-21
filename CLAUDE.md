@@ -1,6 +1,6 @@
 # CLAUDE.md - julieedwards.info
 
-Portfolio-wide rules live in Capsid, not here. Read `capsid/conventions.md` first, then `julieedwards/core.md`. This file holds only what is true of this repo.
+Current state is `julieedwards/core.md` in Capsid. This file holds only what is true of this repo.
 
 ## What this is
 
@@ -8,9 +8,7 @@ Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board. Stat
 
 Legacy stack exception: Next.js App Router on Vercel, auto-deploy on push to main. Not being migrated to the house RR8/Cloudflare stack.
 
-## Session ritual
-
-End: write a `session-YYYY-MM-DD.md` episodic (type `episodic`, under ~2KB) to the julieedwards namespace.
+- Tests: keep the minimal set (a few browser tests for flows that must never break, one integration test per real behaviour, unit tests only for tricky logic, shared code tested once where it lives), and remove any test that pins design, repeats coverage or has never caught a real mistake, unless it guards a harm that cannot be undone.
 
 ## Commands
 
@@ -21,4 +19,3 @@ End: write a `session-YYYY-MM-DD.md` episodic (type `episodic`, under ~2KB) to t
 
 1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
 2. All copy lives in `content/site.ts`. Metadata via `lib/metadata.ts`. No hardcoded strings in metadata.
-3. Fonts, per app/layout.tsx and globals.css: Montserrat (display, UI, labels), Open Sans (body), Cookie (script accents only, e.g. the .btn flourish). Note: an earlier version of this file claimed Fraunces / Source Serif 4 / DM Sans / DM Mono; the code has never used those here. If a serif redesign is intended, that is a decision to record first, not a rule to restore.
