@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { profile, siteUrl as SITE_URL } from "@/content/site";
 
-const SITE_URL = "https://julieedwards.info";
-const SITE_NAME = "Julie Edwards";
-const TITLE = "Julie Edwards | Bluff Dale ISD School Board Trustee";
+const SITE_NAME = profile.name;
+const TITLE = `${profile.name} | ${profile.office}`;
 const DESCRIPTION =
   "Julie Edwards is a trustee on the Bluff Dale ISD School Board, focused on academic excellence, fiscal integrity, and student success in Bluff Dale, Texas.";
 
