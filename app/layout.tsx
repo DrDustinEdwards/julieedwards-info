@@ -7,6 +7,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { buildMetadata } from "@/lib/metadata";
+import { district, images, profile, siteUrl } from "@/content/site";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -45,20 +46,20 @@ const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Julie Edwards",
+  name: profile.name,
   jobTitle: "School Board Trustee",
-  url: "https://julieedwards.info",
-  image: "https://content.julieedwards.info/julie-edwards-bluff-dale-profile.jpg",
+  url: siteUrl,
+  image: images.about,
   worksFor: {
     "@type": "EducationalOrganization",
-    name: "Bluff Dale ISD",
-    url: "https://www.bdisd.net",
+    name: district.name,
+    url: district.url,
   },
   homeLocation: {
     "@type": "Place",
     name: "Bluff Dale, Texas",
   },
-  sameAs: ["https://www.facebook.com/julieedwardsforbdisd"],
+  sameAs: [profile.facebook],
   spouse: {
     "@type": "Person",
     name: "Dustin Edwards",
@@ -83,8 +84,8 @@ const personJsonLd = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Julie Edwards",
-  url: "https://julieedwards.info",
+  name: profile.name,
+  url: siteUrl,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

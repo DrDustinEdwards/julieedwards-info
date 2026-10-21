@@ -1,8 +1,8 @@
-import { profile } from "@/content/site";
+import { district, profile } from "@/content/site";
 import ArrowLink from "./ArrowLink";
 
 const resourceLinks = [
-  { label: "Bluff Dale ISD", href: "https://www.bdisd.net/" },
+  { label: district.name, href: `${district.url}/` },
   { label: "Erath County Elections", href: "https://www.co.erath.tx.us/186/Current-Elections" },
   { label: "Texas Association of School Boards", href: "https://www.tasb.org/home.aspx" },
 ];

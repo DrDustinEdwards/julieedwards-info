@@ -1,4 +1,4 @@
-import { profile, about } from "@/content/site";
+import { profile, about, district, siteUrl } from "@/content/site";
 
 export const dynamic = "force-static";
 
@@ -15,10 +15,10 @@ ${summary}
 - Her husband is Dr. Dustin Edwards, Professor and Department Head of Biological Sciences at Tarleton State University (https://dustinedwards.info).
 
 ## Site
-- [Home](https://julieedwards.info): Bio, priorities, experience, and contact.
+- [Home](${siteUrl}): Bio, priorities, experience, and contact.
 
 ## Bluff Dale ISD
-- [Bluff Dale ISD](https://www.bdisd.net): Official district website.
+- [${district.name}](${district.url}): Official district website.
 - [Board of Trustees](https://www.bdisd.net/136152_3): Official board page.
 - [Board Meetings and Agendas](https://www.bdisd.net/136148_3): Schedule and agendas.
 

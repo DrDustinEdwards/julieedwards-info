@@ -4,6 +4,9 @@
 // IMAGES: paste Cloudflare R2 URLs into the `images` object when the bucket is
 // live. Until then, sections render tasteful green placeholder blocks.
 
+export const siteUrl = "https://julieedwards.info";
+export const district = { name: "Bluff Dale ISD", url: "https://www.bdisd.net" };
+
 export const profile = {
   name: "Julie Edwards",
   office: "Bluff Dale ISD School Board Trustee",
@@ -11,7 +14,7 @@ export const profile = {
   email: "julieedwards+bdisd@gmail.com",
   facebook: "https://www.facebook.com/julieedwardsforbdisd",
   address: {
-    name: "Bluff Dale ISD",
+    name: district.name,
     line1: "430 FM 2481",
     line2: "Bluff Dale, TX 76433",
     mapsUrl: "https://www.google.com/maps/place/430+FM+2481+Bluff+Dale+TX+76433",
