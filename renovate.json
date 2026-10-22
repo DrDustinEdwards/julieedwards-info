@@ -3,5 +3,12 @@
   "extends": [
     "local>DrDustinEdwards/devkit"
   ],
-  "automerge": false
+  "automerge": false,
+  "packageRules": [
+    {
+      "description": "Every merge to main is a production deploy of a candidate's site, so nothing automerges. This rule comes after the preset's non-major automerge rules and wins over them (Grok audit 2026-10-21, JE-1).",
+      "matchPackageNames": ["*"],
+      "automerge": false
+    }
+  ]
 }

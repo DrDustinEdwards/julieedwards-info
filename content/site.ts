@@ -43,6 +43,32 @@ export const boardLinks = [
   { label: "Board Meeting Minutes", href: "https://www.bdisd.net/136159_3" },
 ];
 
+// Section headings and page chrome (CLAUDE.md hard rule 2: all copy lives here).
+export const headings = {
+  why: "Priorities",
+  about: "About Me",
+  experience: "What I bring to the board",
+  contact: "Contact",
+  board: "School Board",
+};
+
+export const resourceLinks = [
+  { label: district.name, href: `${district.url}/` },
+  { label: "Erath County Elections", href: "https://www.co.erath.tx.us/186/Current-Elections" },
+  { label: "Texas Association of School Boards", href: "https://www.tasb.org/home.aspx" },
+];
+
+export const analyticsNote = "This site uses Vercel Web Analytics, which sets no cookies.";
+
+export const notFound = {
+  title: "Page not found.",
+  body: "That link did not go anywhere on this site. Head back to the home page.",
+  cta: "Back to home",
+};
+
+export const llmsSummary =
+  "Trustee on the Bluff Dale ISD School Board in Bluff Dale, Texas, focused on academic excellence, fiscal integrity, and student success.";
+
 export const why = {
   pillars: [
     { title: "Education", body: "Support continued academic excellence." },

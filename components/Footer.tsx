@@ -1,11 +1,5 @@
-import { district, profile } from "@/content/site";
+import { analyticsNote, profile, resourceLinks } from "@/content/site";
 import ArrowLink from "./ArrowLink";
-
-const resourceLinks = [
-  { label: district.name, href: `${district.url}/` },
-  { label: "Erath County Elections", href: "https://www.co.erath.tx.us/186/Current-Elections" },
-  { label: "Texas Association of School Boards", href: "https://www.tasb.org/home.aspx" },
-];
 
 export default function Footer() {
   return (
@@ -13,6 +7,8 @@ export default function Footer() {
       <div className="wrap footer-inner">
         <div className="footer-note">
           &copy; {new Date().getFullYear()} {profile.name}
+          <br />
+          {analyticsNote}
         </div>
         <div className="footer-links">
           {resourceLinks.map((l) => (

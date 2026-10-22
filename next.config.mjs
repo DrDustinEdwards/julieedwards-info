@@ -1,5 +1,7 @@
-// CSP is intentionally Report-Only for now. Once the report stream is clean,
-// flip Content-Security-Policy-Report-Only to Content-Security-Policy to enforce.
+// Enforced (Grok audit 2026-10-21, JE-2): report-only had no report endpoint, so nothing was
+// ever going to be read. 'unsafe-inline' stays on script-src for Next's inline RSC payload and
+// the theme script, and on style-src for inline style props; the policy still limits where
+// scripts, images and connections may come from.
 const csp = [
   "default-src 'self'",
   "img-src 'self' data: https://content.julieedwards.info https://blog.julieedwards.info",
@@ -37,7 +39,7 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          { key: "Content-Security-Policy-Report-Only", value: csp },
+          { key: "Content-Security-Policy", value: csp },
         ],
       },
     ];
