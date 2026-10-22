@@ -8,7 +8,7 @@ export default function Hero() {
     <header className="hero" id="top">
       <div className="hero-inner">
         <h1>{profile.name}</h1>
-        <div className="office">Bluff Dale ISD School Board Trustee</div>
+        <div className="office">{profile.office}</div>
         <a className="hero-cta" href="#contact">
           Contact
           <svg

@@ -1,4 +1,4 @@
-import { why } from "@/content/site";
+import { headings, why } from "@/content/site";
 
 const icons = [
   // Education
@@ -20,7 +20,7 @@ export default function WhyRunning() {
     <section className="why" id="why">
       <div className="wrap">
         <div className="sec-head reveal">
-          <h2>Priorities</h2>
+          <h2>{headings.why}</h2>
         </div>
         <div className="pillars">
           {why.pillars.map((p, i) => (

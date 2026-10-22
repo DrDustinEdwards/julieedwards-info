@@ -1,4 +1,4 @@
-import { profile, about, district, siteUrl } from "@/content/site";
+import { profile, about, boardLinks, district, llmsSummary, siteUrl } from "@/content/site";
 
 export const dynamic = "force-static";
 
@@ -7,7 +7,7 @@ export async function GET() {
 
   const body = `# ${profile.name}
 
-> Trustee on the Bluff Dale ISD School Board in Bluff Dale, Texas, focused on academic excellence, fiscal integrity, and student success.
+> ${llmsSummary}
 
 ${summary}
 
@@ -19,8 +19,7 @@ ${summary}
 
 ## Bluff Dale ISD
 - [${district.name}](${district.url}): Official district website.
-- [Board of Trustees](https://www.bdisd.net/136152_3): Official board page.
-- [Board Meetings and Agendas](https://www.bdisd.net/136148_3): Schedule and agendas.
+${boardLinks.map((l) => `- [${l.label}](${l.href})`).join("\n")}
 
 ## Contact
 - Email: ${profile.email}

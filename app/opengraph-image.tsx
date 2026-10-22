@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
+import { profile } from "@/content/site";
 
-export const runtime = "edge";
-export const alt = "Julie Edwards, Bluff Dale ISD School Board Trustee";
+export const alt = `${profile.name}, ${profile.office}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -30,7 +30,7 @@ export default function Image() {
             textTransform: "uppercase",
           }}
         >
-          Julie Edwards
+          {profile.name}
         </div>
         <div
           style={{
@@ -40,7 +40,7 @@ export default function Image() {
             opacity: 0.9,
           }}
         >
-          Bluff Dale ISD School Board Trustee
+          {profile.office}
         </div>
       </div>
     ),

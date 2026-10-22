@@ -1,4 +1,4 @@
-import { profile, boardLinks } from "@/content/site";
+import { profile, boardLinks, headings } from "@/content/site";
 import ArrowLink from "./ArrowLink";
 
 const fbIcon = (
@@ -12,7 +12,7 @@ export default function Contact() {
     <section className="contact" id="contact">
       <div className="wrap">
         <div className="contact-grid">
-          <h3 style={{ gridColumn: 1, gridRow: 1 }}>Contact</h3>
+          <h2 style={{ gridColumn: 1, gridRow: 1 }}>{headings.contact}</h2>
           <ArrowLink
             className="contact-link"
             style={{ gridColumn: 1, gridRow: 2 }}
@@ -44,7 +44,7 @@ export default function Contact() {
 
           <div className="contact-divider" aria-hidden="true" />
 
-          <h3 style={{ gridColumn: "3 / span 2", gridRow: 1 }}>School Board</h3>
+          <h2 style={{ gridColumn: "3 / span 2", gridRow: 1 }}>{headings.board}</h2>
           {boardLinks.map((l, i) => (
             <ArrowLink
               key={l.href}

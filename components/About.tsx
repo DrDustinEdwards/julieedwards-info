@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { about, images } from "@/content/site";
+import { about, headings, images } from "@/content/site";
 
 export default function About() {
   return (
@@ -20,7 +20,7 @@ export default function About() {
         </div>
         <div className="about-panel reveal">
           <h2>
-            About Me
+            {headings.about}
             <span className="rule" />
           </h2>
           {about.paragraphs.map((p, i) => (
