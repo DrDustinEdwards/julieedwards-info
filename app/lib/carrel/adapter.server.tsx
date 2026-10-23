@@ -21,7 +21,7 @@ import {
 } from "@dustinedwards/site-api";
 import { getDb } from "~/db/index.server";
 import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
-import { About, Contact, Experience, Hero, Priorities } from "~/components/Sections";
+import { HomeSections } from "~/components/Sections";
 import { loadContent } from "~/lib/content.server";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
 import { isSectionId, parseSection, SECTION_IDS, SECTIONS, SourceError, type Content, type SectionId } from "~/lib/source";
@@ -191,11 +191,7 @@ export function createCarrelAdapter(
         const page: Content = { ...content, [target]: parsed(target, source) };
         const body = renderToStaticMarkup(
           <main>
-            <Hero profile={page.profile} cta={page.contact.heading} />
-            <Priorities section={page.priorities} />
-            <About section={page.about} photo={page.profile.images.about} name={page.profile.name} />
-            <Experience section={page.experience} />
-            <Contact section={page.contact} profile={page.profile} />
+            <HomeSections content={page} />
           </main>,
         );
         const css = options.stylesheets.map((href) => `<link rel="stylesheet" href="${escapeHtml(new URL(href, options.origin).href)}">`).join("");

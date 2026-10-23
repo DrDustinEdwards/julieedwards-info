@@ -3,6 +3,20 @@ import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
 import { Arrow } from "./Chrome";
 
+/** The whole home page, as the route and Carrel's preview both draw it. */
+export function HomeSections({ content }: { content: Content }) {
+  const { profile, priorities, about, experience, contact } = content;
+  return (
+    <>
+      <Hero profile={profile} cta={contact.heading} />
+      <Priorities section={priorities} />
+      <About section={about} photo={profile.images.about} name={profile.name} />
+      <Experience section={experience} />
+      <Contact section={contact} profile={profile} />
+    </>
+  );
+}
+
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
     <header className="hero" id="top">
