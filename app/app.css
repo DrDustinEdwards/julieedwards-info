@@ -8,6 +8,7 @@
 @import "@fontsource/open-sans/latin-400.css";
 @import "capsomer/tokens.css";
 @import "capsomer/family-forest.css" layer(cap.tokens);
+@import "capsomer/site-julieedwards.css";
 @import "capsomer/base.css";
 @import "capsomer/site-header.css";
 @import "capsomer/dialog.css";
@@ -15,10 +16,7 @@
 @import "capsomer/theme-switch.css";
 @import "capsomer/button.css";
 
-/* The faces (--ui, --font-ui) and the phone tools rule are bridges: Capsomer v0.13.1 (PR #93) carries
-   them as capsomer/site-julieedwards.css and a site-header fix, and they go when the site takes it. */
 :root {
-  --ui: "Open Sans", Arial, sans-serif; --font-ui: "Montserrat", Helvetica, Arial, sans-serif;
   --maxw: 67.5rem; --side: var(--space-7);
   /* The green band (hero, About): Bluff Dale green in light, the family's deep green in dark. */
   --band: var(--accent-11); --band-ink: var(--surface);
@@ -33,7 +31,6 @@ body { --text-size: 1.0625rem; --leading: 1.65; overflow-x: hidden; }
 
 /* HEADER: Capsomer's, lined up with the page column on a desktop; a phone keeps Capsomer's 16px sides. */
 @media (width >= 768px) { .cap-site-header { --header-side: max(var(--side), calc((100% - var(--maxw)) / 2 + var(--side))); } }
-@media (width < 768px) { .cap-site-header-tools { margin-inline-start: auto; } }
 .je-wordmark { max-inline-size: none; font-size: 1.05rem; font-weight: 600; letter-spacing: -.01em; }
 .je-wordmark-mark { color: var(--accent-text); transform-origin: 50% 100%; transition: transform var(--dur-base) var(--ease-out); }
 .je-wordmark:is(:hover, :focus-visible) .je-wordmark-mark { transform: rotate(-8deg); }
