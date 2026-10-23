@@ -1,7 +1,7 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
-import { ArrowLink } from "./Chrome";
+import { Arrow } from "./Chrome";
 
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
@@ -9,21 +9,9 @@ export function Hero({ profile, cta }: { profile: Content["profile"]; cta: strin
       <div className="hero-inner">
         <h1>{profile.name}</h1>
         <div className="office">{profile.office}</div>
-        <a className="hero-cta" href="#contact">
+        <a className="cap-btn hero-cta" data-size="lg" href="#contact">
           {cta}
-          <svg
-            className="hero-cta-chev"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
+          <Arrow />
         </a>
       </div>
       <AppleMark className="hero-mark" />
@@ -128,10 +116,11 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
       <div className="wrap">
         <div className="contact-grid">
           <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
-          <ArrowLink className="contact-link" style={{ gridColumn: 1, gridRow: 2 }} href={`mailto:${profile.email}`}>
+          <a className="contact-link" style={{ gridColumn: 1, gridRow: 2 }} href={`mailto:${profile.email}`}>
             {profile.email}
-          </ArrowLink>
-          <ArrowLink
+            <Arrow />
+          </a>
+          <a
             className="contact-link"
             style={{ gridColumn: 1, gridRow: 3 }}
             href={profile.facebook}
@@ -140,7 +129,8 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
           >
             {fbIcon}
             Facebook
-          </ArrowLink>
+            <Arrow />
+          </a>
           <a
             className="contact-link contact-address"
             style={{ gridColumn: 1, gridRow: 4 }}
@@ -157,7 +147,7 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
 
           <h2 style={{ gridColumn: "3 / span 2", gridRow: 1 }}>{section.boardHeading}</h2>
           {section.boardLinks.map((l, i) => (
-            <ArrowLink
+            <a
               key={l.href}
               className="contact-link"
               style={{ gridColumn: 3 + (i % 2), gridRow: 2 + Math.floor(i / 2) }}
@@ -166,7 +156,8 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
               rel="noopener noreferrer"
             >
               {l.label}
-            </ArrowLink>
+              <Arrow />
+            </a>
           ))}
         </div>
       </div>

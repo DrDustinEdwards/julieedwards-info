@@ -4,7 +4,7 @@ Current state is `julieedwards/core.md` in Capsid. This file holds only what is 
 
 ## What this is
 
-Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one page, React Router 8 on a Cloudflare Worker, its copy in D1 and edited through Carrel (site-api). Part of the personal-sites family; brand color is forest green (Bluff Dale), `--brand-ui #15532E`. Its own CSS, not Capsomer: Capsomer has no forest-green family.
+Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one page, React Router 8 on a Cloudflare Worker, its copy in D1 and edited through Carrel (site-api). Part of the personal-sites family; brand color is forest green (Bluff Dale), `--brand-ui #15532E`. Its look is Capsomer's `forest` family and site header (`app/app.css`).
 
 - Tests: keep the minimal set (a few browser tests for flows that must never break, one integration test per real behaviour, unit tests only for tricky logic, shared code tested once where it lives), and remove any test that pins design, repeats coverage or has never caught a real mistake, unless it guards a harm that cannot be undone.
 
