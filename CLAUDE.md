@@ -4,18 +4,17 @@ Current state is `julieedwards/core.md` in Capsid. This file holds only what is 
 
 ## What this is
 
-Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board. Static site: no database, no email for now. Part of the personal-sites family; brand color is forest green (Bluff Dale), `--brand-ui #15532E`.
-
-Legacy stack exception: Next.js App Router on Vercel, auto-deploy on push to main. Not being migrated to the house RR8/Cloudflare stack.
+Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one page, React Router 8 on a Cloudflare Worker, its copy in D1 and edited through Carrel (site-api). Part of the personal-sites family; brand color is forest green (Bluff Dale), `--brand-ui #15532E`. Its own CSS, not Capsomer: Capsomer has no forest-green family.
 
 - Tests: keep the minimal set (a few browser tests for flows that must never break, one integration test per real behaviour, unit tests only for tricky logic, shared code tested once where it lives), and remove any test that pins design, repeats coverage or has never caught a real mistake, unless it guards a harm that cannot be undone.
 
 ## Commands
 
-- `npm run dev`
-- `npm run build`
+- `npm run dev`, `npm run typecheck`, `npm test`, `npm run build`. Copy `wrangler.jsonc.example` to `wrangler.jsonc` first; it is gitignored (public repo, it holds the D1 id).
+- `npm run db:migrate` (local) and `db:migrate:prod` (remote): hand-written SQL in `drizzle/`, kept in step with `app/db/schema.ts`.
+- A merge to main deploys (CI's `deploy` job, while the repo variable `CF_DEPLOY` is `true`).
 
 ## Hard rules
 
 1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
-2. All copy lives in `content/site.ts`. Metadata via `lib/metadata.ts`. No hardcoded strings in metadata.
+2. All copy lives in D1, one source per section (`app/lib/source.ts`), seeded by `drizzle/0001_seed.sql` and edited through Carrel. No copy in components or metadata code.

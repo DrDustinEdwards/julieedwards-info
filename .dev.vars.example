@@ -1,0 +1,3 @@
+# Local secrets for `npm run dev` (copy to .dev.vars, which is never committed).
+# Carrel's key for this site, 32 characters or more. Production: wrangler secret put CARREL_SITE_KEY
+CARREL_SITE_KEY=sample-local-key-at-least-32-characters-long
