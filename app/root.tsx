@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/root";
-import { Footer, Nav } from "./components/Chrome";
+import { Footer, Header } from "./components/Chrome";
 import { getEnv } from "./lib/context.server";
 import { loadContent } from "./lib/content.server";
 import { SITE_URL } from "./lib/site";
@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
   const content = data?.content;
   return (
-    <html lang="en">
+    <html lang="en" data-family="forest" data-cap-site="julieedwards">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,10 +64,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         {content ? (
           <>
-            <a href="#main" className="skip-link">
-              Skip to content
-            </a>
-            <Nav name={content.profile.name} links={content.site.nav} />
+            <Header name={content.profile.name} links={content.site.nav} />
             <main id="main">{children}</main>
             <Footer name={content.profile.name} site={content.site} />
             {structuredData(content.profile, SITE_URL).map((json, i) => (
@@ -96,10 +93,10 @@ export function ErrorBoundary() {
       <section className="not-found">
         <meta name="robots" content="noindex" />
         <div className="wrap not-found-inner">
-          <p className="not-found-code">404</p>
+          <p className="cap-label not-found-code">404</p>
           <h1>{notFound.title}</h1>
           <p className="not-found-body">{notFound.body}</p>
-          <a href="/" className="not-found-cta">
+          <a href="/" className="cap-btn" data-variant="primary" data-size="lg">
             {notFound.cta}
           </a>
         </div>

@@ -199,8 +199,8 @@ export function createCarrelAdapter(
           </main>,
         );
         const css = options.stylesheets.map((href) => `<link rel="stylesheet" href="${escapeHtml(new URL(href, options.origin).href)}">`).join("");
-        // .reveal sections start hidden until site.js shows them; a preview runs no script, so it shows them.
-        return `<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${escapeHtml(SECTIONS[target].title)}</title>${css}<style>.reveal{opacity:1;transform:none}</style></head><body>${body}</body></html>`;
+        // .reveal sections start hidden until /site.js shows them; a preview runs no script, so it shows them.
+        return `<!doctype html><html lang="en" data-theme="light" data-family="forest" data-cap-site="julieedwards"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${escapeHtml(SECTIONS[target].title)}</title>${css}<style>.reveal{opacity:1;transform:none}</style></head><body>${body}</body></html>`;
       },
     },
   };
