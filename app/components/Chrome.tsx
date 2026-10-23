@@ -86,8 +86,12 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
       <div className="wrap footer-inner">
         <div className="footer-note">
           &copy; {new Date().getFullYear()} {name}
-          <br />
-          {site.analyticsNote}
+          {site.analyticsNote && (
+            <>
+              <br />
+              {site.analyticsNote}
+            </>
+          )}
         </div>
         <div className="footer-links">
           {site.resourceLinks.map((l) => (

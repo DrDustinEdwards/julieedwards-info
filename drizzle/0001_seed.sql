@@ -1,6 +1,6 @@
 -- The site's copy as it stood in content/site.ts (and lib/metadata.ts's description) when the site left
 -- Next.js, one source per section in app/lib/source.ts's format. Verbatim, except the analytics note in "site",
--- which names Cloudflare Web Analytics in place of Vercel's because the site no longer runs Vercel's.
+-- which is empty (Dustin, 2026-10-23: removed from the footer).
 INSERT INTO sections (id, published) VALUES ('profile', '---
 name: "Julie Edwards"
 office: "Bluff Dale ISD School Board Trustee"
@@ -65,7 +65,7 @@ boardLinks: [{"label":"School Board","href":"https://www.bdisd.net/223653_2"},{"
 INSERT INTO sections (id, published) VALUES ('site', '---
 nav: [{"label":"Priorities","href":"#why"},{"label":"About","href":"#about"},{"label":"Experience","href":"#experience"},{"label":"Contact","href":"#contact"}]
 resourceLinks: [{"label":"Bluff Dale ISD","href":"https://www.bdisd.net/"},{"label":"Erath County Elections","href":"https://www.co.erath.tx.us/186/Current-Elections"},{"label":"Texas Association of School Boards","href":"https://www.tasb.org/home.aspx"}]
-analyticsNote: "This site uses Cloudflare Web Analytics, which sets no cookies."
+analyticsNote: ""
 notFound: {"title":"Page not found.","body":"That link did not go anywhere on this site. Head back to the home page.","cta":"Back to home"}
 ---
 ');
