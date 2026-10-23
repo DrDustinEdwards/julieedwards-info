@@ -19,5 +19,5 @@ through the site API at `/api/carrel/v1`: a save is a draft nobody sees, a publi
 ## How it runs
 - `workers/app.ts`: Carrel's API, the CSP report sink, then React Router; every response gets the
   site-runtime security headers. The nightly cron runs the d1-dump backup (`/health` reports its age).
-- The page ships no React to the browser: `public/site.js` is the theme toggle, phone menu and
-  scroll reveal, and the pre-paint theme script is trusted by hash.
+- The page ships no React to the browser: `/site.js` (`app/site.ts`, bundled by
+  `vite.config.ts`) runs Capsomer's site header and theme button and the scroll reveal, and the pre-paint theme script is trusted by hash.
