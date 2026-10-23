@@ -1,26 +1,85 @@
-# Typecheck, build and audit on every pull request and push to main (Grok audit 2026-10-21, JE-1).
-# Vercel deploys main on its own; this is the check a pull request shows before it merges.
+# Typecheck, test, build and a production audit on every pull request and on main, then a deploy from main.
+# A run on main is never cancelled, so a deploy cannot stop halfway. wrangler.jsonc is not committed (public
+# repo, it carries the D1 id): the checks run on the .example, and the deploy writes the id in from a variable.
+
 name: CI
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
 jobs:
-  verify:
+  ci:
+    name: Typecheck, test, build, audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npm run build
-      - run: npm audit --omit=dev --audit-level=high
+
+      - name: Install
+        run: cp wrangler.jsonc.example wrangler.jsonc && npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  # A merge to main deploys once CI is green: migrations first, then the Worker. Dormant until the repo
+  # variable CF_DEPLOY is 'true' (with D1_DATABASE_ID set, and the secrets CLOUDFLARE_API_TOKEN and
+  # CLOUDFLARE_ACCOUNT_ID), so nothing deploys before the Cloudflare cutover.
+  deploy:
+    name: Deploy
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CF_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Stage wrangler config with the D1 id
+        run: sed -e "s|<D1_DATABASE_ID>|${{ vars.D1_DATABASE_ID }}|" wrangler.jsonc.example > wrangler.jsonc
+
+      - name: Install
+        run: npm ci
+
+      - name: Apply D1 migrations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm run db:migrate:prod
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm run deploy

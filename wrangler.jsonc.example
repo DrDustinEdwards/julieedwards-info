@@ -1,0 +1,27 @@
+// Copy to wrangler.jsonc (gitignored: this repository is public) and put the D1 database's id in place
+// of <D1_DATABASE_ID>. CI's deploy job writes it the same way from the repository variable D1_DATABASE_ID.
+// Secrets are set with `wrangler secret put`, never here: CARREL_SITE_KEY (Carrel's key for this site).
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "julieedwards",
+	"main": "./workers/app.ts",
+	"compatibility_date": "2026-10-19",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true,
+		"logs": { "enabled": true, "head_sampling_rate": 1 }
+	},
+	"upload_source_maps": true,
+	// The site's copy (app/lib/source.ts), seeded by drizzle/0001_seed.sql.
+	"d1_databases": [
+		{ "binding": "DB", "database_name": "julieedwards", "database_id": "<D1_DATABASE_ID>", "migrations_dir": "drizzle" }
+	],
+	// Nightly D1 dumps (d1-dump, app/lib/backup.server.ts). The bucket must exist before the first deploy.
+	"r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "julieedwards-backups" }],
+	// Carrel's site API (app/lib/carrel). namespace_id is this site's own: sites sharing one share counters.
+	"ratelimits": [
+		{ "name": "CARREL_RATE_LIMIT", "namespace_id": "7501", "simple": { "limit": 120, "period": 60 } }
+	],
+	// 03:37 UTC nightly: runBackup().
+	"triggers": { "crons": ["37 3 * * *"] }
+}

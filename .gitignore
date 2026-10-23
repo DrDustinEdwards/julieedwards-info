@@ -1,11 +1,16 @@
-/node_modules
-/.next/
-/out/
-/build
 .DS_Store
-*.pem
-.env*.local
 .env
-.vercel
+/node_modules/
 *.tsbuildinfo
-next-env.d.ts
+
+# React Router
+/.react-router/
+/build/
+
+# Cloudflare: wrangler.jsonc holds the D1 id; only the .example is committed (public repo).
+wrangler.jsonc
+.wrangler
+.dev.vars*
+worker-configuration.d.ts
+
+!.dev.vars.example

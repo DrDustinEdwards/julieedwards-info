@@ -27,7 +27,7 @@
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "bash -c 'set -o pipefail; cd \"$(git rev-parse --show-toplevel)\" && npx tsc --noEmit 2>&1 | tail -20'" }
+          { "type": "command", "command": "bash -c 'set -o pipefail; cd \"$(git rev-parse --show-toplevel)\" && npm run typecheck 2>&1 | tail -20'" }
         ]
       }
     ]
