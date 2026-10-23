@@ -4,6 +4,13 @@ import type { Content } from "~/lib/source";
 import { THEME_KEY } from "~/lib/theme";
 import { AppleMark } from "./AppleMark";
 
+/** Capsomer's trailing arrow: the julieedwards site setting hides it until the pointer or focus arrives. */
+export const Arrow = () => (
+  <svg className="cap-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 6l6 6-6 6" />
+  </svg>
+);
+
 export function Header({ name, links }: { name: string; links: Content["site"]["nav"] }) {
   return (
     <header className="cap-site-header" data-cap="site-header" data-links="right" data-translucent="">
@@ -97,6 +104,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
           {site.resourceLinks.map((l) => (
             <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer">
               {l.label}
+              <Arrow />
             </a>
           ))}
         </div>

@@ -1,6 +1,7 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
+import { Arrow } from "./Chrome";
 
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
@@ -10,6 +11,7 @@ export function Hero({ profile, cta }: { profile: Content["profile"]; cta: strin
         <div className="office">{profile.office}</div>
         <a className="cap-btn hero-cta" data-size="lg" href="#contact">
           {cta}
+          <Arrow />
         </a>
       </div>
       <AppleMark className="hero-mark" />
@@ -116,6 +118,7 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
           <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
           <a className="contact-link" style={{ gridColumn: 1, gridRow: 2 }} href={`mailto:${profile.email}`}>
             {profile.email}
+            <Arrow />
           </a>
           <a
             className="contact-link"
@@ -126,6 +129,7 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
           >
             {fbIcon}
             Facebook
+            <Arrow />
           </a>
           <a
             className="contact-link contact-address"
@@ -152,6 +156,7 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
               rel="noopener noreferrer"
             >
               {l.label}
+              <Arrow />
             </a>
           ))}
         </div>
