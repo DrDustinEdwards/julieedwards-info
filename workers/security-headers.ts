@@ -6,7 +6,7 @@ import { THEME_SCRIPT } from "../app/lib/theme";
 export const CSP_REPORT_PATH = "/csp-report";
 
 // What the page loads beyond itself: the profile photo's hosts, the theme script by hash (the page ships
-// no other inline script; public/site.js is 'self'), the contact grid's style attributes, and the
+// no other inline script; /site.js is 'self'), the contact grid's style attributes, and the
 // Cloudflare Web Analytics beacon the edge injects.
 async function contentSecurityPolicy(): Promise<string> {
   return buildContentSecurityPolicy({
