@@ -39,5 +39,8 @@
   "allowScripts": {
     "esbuild": true,
     "workerd": true
+  },
+  "overrides": {
+    "zod": "4.6.7"
   }
 }
