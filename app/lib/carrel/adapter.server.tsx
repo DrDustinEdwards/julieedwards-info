@@ -12,6 +12,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { desc, eq } from "drizzle-orm";
 import {
+  contentVersion,
   NotFoundError,
   RefusedError,
   VersionConflictError,
@@ -28,10 +29,7 @@ import { isSectionId, parseSection, SECTION_IDS, SECTIONS, SourceError, type Con
 
 type Snapshot = Pick<SectionRow, "published" | "draft">;
 
-async function versionOf(s: Snapshot): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify([s.published, s.draft])));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
-}
+const versionOf = (s: Snapshot): Promise<string> => contentVersion([s.published, s.draft]);
 
 const statusOf = (row: SectionRow): ContentSummary["status"] => (row.draft === null ? "published" : "draft");
 
