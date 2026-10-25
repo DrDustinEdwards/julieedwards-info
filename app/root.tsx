@@ -1,4 +1,6 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
+import { headTags } from "@drdustinedwards/site-helpers/head";
+import { jsonLd } from "@drdustinedwards/site-helpers/schema";
 import type { Route } from "./+types/root";
 import { Footer, Header } from "./components/Chrome";
 import { getEnv } from "./lib/context.server";
@@ -15,29 +17,17 @@ export async function loader({ context }: Route.LoaderArgs) {
 export const meta: Route.MetaFunction = ({ loaderData: data }) => {
   if (!data) return [{ title: "Error" }];
   const { profile } = data.content;
-  const title = `${profile.name} | ${profile.office}`;
-  const alt = `${profile.name}, ${profile.office}`;
-  const image = `${SITE_URL}/opengraph-image.png`;
   return [
-    { title },
-    { name: "description", content: profile.description },
-    { tagName: "link", rel: "canonical", href: SITE_URL },
-    { property: "og:title", content: title },
-    { property: "og:description", content: profile.description },
-    { property: "og:url", content: SITE_URL },
-    { property: "og:site_name", content: profile.name },
-    { property: "og:locale", content: "en_US" },
-    { property: "og:image", content: image },
-    { property: "og:image:type", content: "image/png" },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { property: "og:image:alt", content: alt },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: profile.description },
-    { name: "twitter:image", content: image },
-    { name: "twitter:image:alt", content: alt },
+    ...headTags({
+      origin: SITE_URL,
+      path: "/",
+      title: `${profile.name} | ${profile.office}`,
+      description: profile.description,
+      image: { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${profile.name}, ${profile.office}` },
+      siteName: profile.name,
+      locale: "en_US",
+    }),
+    ...structuredData(profile).map(jsonLd),
   ];
 };
 
@@ -67,9 +57,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Header name={content.profile.name} links={content.site.nav} />
             <main id="main">{children}</main>
             <Footer name={content.profile.name} site={content.site} />
-            {structuredData(content.profile, SITE_URL).map((json, i) => (
-              <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
-            ))}
             <script src="/site.js" defer />
           </>
         ) : (
