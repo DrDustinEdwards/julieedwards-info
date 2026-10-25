@@ -1,14 +1,14 @@
-// The page's schema.org JSON-LD, as the Next.js layout wrote it. The details of her husband are
-// structured data about him, not her copy, so they live here rather than in D1.
+// The page's schema.org JSON-LD, as the Next.js layout wrote it, built with Prelum's schema helpers. The details of
+// her husband are structured data about him, not her copy, so they live here rather than in D1.
+import { thing, website } from "@drdustinedwards/site-helpers/schema";
+import { SITE_URL } from "./site";
 import type { Content } from "./source";
 
-export function structuredData(profile: Content["profile"], siteUrl: string) {
-  const person = {
-    "@context": "https://schema.org",
-    "@type": "Person",
+export function structuredData(profile: Content["profile"]) {
+  const person = thing("Person", {
     name: profile.name,
     jobTitle: "School Board Trustee",
-    url: siteUrl,
+    url: SITE_URL,
     image: profile.images.about,
     worksFor: { "@type": "EducationalOrganization", name: profile.district.name, url: profile.district.url },
     homeLocation: { "@type": "Place", name: "Bluff Dale, Texas" },
@@ -28,8 +28,6 @@ export function structuredData(profile: Content["profile"], siteUrl: string) {
         "https://pubmed.ncbi.nlm.nih.gov/?term=Edwards+D&cauthor_id=40724203",
       ],
     },
-  };
-  const website = { "@context": "https://schema.org", "@type": "WebSite", name: profile.name, url: siteUrl };
-  // "<" escaped so no value can close the script element.
-  return [person, website].map((o) => JSON.stringify(o).replace(/</g, "\\u003c"));
+  });
+  return [person, website({ origin: SITE_URL, name: profile.name })];
 }
