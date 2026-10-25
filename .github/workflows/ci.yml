@@ -1,5 +1,5 @@
 # Typecheck, test, build and a production audit on every pull request and on main, then a deploy from main.
-# A run on main is never cancelled, so a deploy cannot stop halfway. wrangler.jsonc is not committed (public
+# A run on main is never canceled, so a deploy cannot stop halfway. wrangler.jsonc is not committed (public
 # repo, it carries the D1 id): the checks run on the .example, and the deploy writes the id in from a variable.
 
 name: CI

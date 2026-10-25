@@ -41,7 +41,7 @@ body { --text-size: 1.0625rem; --leading: 1.65; overflow-x: hidden; }
 .hero-inner { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--side); }
 .hero h1 { font-weight: 600; font-size: clamp(2.75rem, 9vw, 6rem); line-height: .98; letter-spacing: -.02em; margin-bottom: var(--space-4); text-transform: uppercase; }
 .hero .office { font-family: var(--font-ui); font-weight: 500; font-size: clamp(1.05rem, 2.6vw, 1.55rem); letter-spacing: .02em; opacity: .92; margin-bottom: var(--space-7); }
-/* Capsomer's button in the band's colours: ink fill, green label. */
+/* Capsomer's button in the band's colors: ink fill, green label. */
 .hero-cta { --cap-btn-bg: var(--band-ink); --cap-btn-fg: var(--band); --cap-btn-line: var(--band-ink);
   --cap-btn-hover: color-mix(in srgb, var(--band-ink), var(--band) 10%); --cap-btn-press: color-mix(in srgb, var(--band-ink), var(--band) 16%);
   --ring: var(--band-ink); --cap-btn-h: 44px; --cap-btn-fs: .95rem; padding-inline: var(--space-6); font-family: var(--font-ui); font-weight: 600; }
@@ -94,7 +94,7 @@ section { padding-block: calc(var(--space-8) + var(--space-7)); }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
 .footer-note { font-size: .75rem; color: var(--muted); letter-spacing: .03em; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-6); font-size: .8rem; }
-/* The old site's quiet links: grey, turning green under the pointer as the arrow slides in. */
+/* The old site's quiet links: gray, turning green under the pointer as the arrow slides in. */
 :is(.contact-link, .footer-links a) { color: var(--muted); text-decoration: none; }
 :is(.contact-link, .footer-links a):hover { color: var(--accent-text); }
 .footer-links a { display: inline-flex; align-items: center; gap: var(--space-1); }
