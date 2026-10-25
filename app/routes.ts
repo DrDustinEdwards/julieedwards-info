@@ -5,6 +5,7 @@ export default [
   route("robots.txt", "routes/robots.ts"),
   route("sitemap.xml", "routes/sitemap.ts"),
   route("llms.txt", "routes/llms.ts"),
+  route("ai.txt", "routes/ai-txt.ts"),
   route("health", "routes/health.ts"),
   // Anything else is the 404 page, in the site's own chrome (root ErrorBoundary).
   route("*", "routes/not-found.tsx"),
