@@ -24,7 +24,7 @@ export default {
     // /api/carrel/v1; nothing else is served by it. Its preview links the page's own stylesheet.
     const stylesheets = (await serverBuild()).assets.routes.root?.css ?? [];
     const carrel = carrelApi(env, url.origin, stylesheets);
-    if (carrel.matches(request)) return secure(await carrel.handle(request), url.origin);
+    if (carrel.matches(request)) return secure(await carrel.handle(request, ctx), url.origin);
 
     const context = new RouterContextProvider();
     context.set(cloudflareContext, { env, ctx });
