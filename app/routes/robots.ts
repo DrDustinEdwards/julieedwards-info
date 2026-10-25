@@ -8,7 +8,7 @@ import type { Route } from "./+types/robots";
 export function loader({ request }: Route.LoaderArgs) {
   const body = robotsDocument({
     origin: SITE_URL,
-    notes: [`LLM guide: ${SITE_URL}/llms.txt`],
+    notes: [`AI usage policy: ${SITE_URL}/ai.txt`, `LLM guide: ${SITE_URL}/llms.txt`],
     preview: new URL(request.url).origin !== SITE_URL,
   });
   return new Response(body, {
