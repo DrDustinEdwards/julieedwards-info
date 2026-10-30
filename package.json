@@ -13,13 +13,13 @@
     "db:migrate:prod": "wrangler d1 migrations apply julieedwards --remote"
   },
   "dependencies": {
-    "@drdustinedwards/site-helpers": "github:DrDustinEdwards/prelum#v0.17.0",
+    "@drdustinedwards/site-helpers": "github:DrDustinEdwards/prelum#v0.18.0",
     "@dustinedwards/d1-dump": "github:DrDustinEdwards/d1-dump#v0.6.0",
-    "@dustinedwards/site-api": "github:DrDustinEdwards/site-api#v0.13.1",
+    "@dustinedwards/site-api": "github:DrDustinEdwards/site-api#v0.14.0",
     "@dustinedwards/site-runtime": "github:DrDustinEdwards/site-runtime#v0.32.0",
     "@fontsource/montserrat": "5.3.0",
     "@fontsource/open-sans": "5.3.0",
-    "capsomer": "github:DrDustinEdwards/capsomer#v0.45.0",
+    "capsomer": "github:DrDustinEdwards/capsomer#v0.46.0",
     "drizzle-orm": "0.45.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
