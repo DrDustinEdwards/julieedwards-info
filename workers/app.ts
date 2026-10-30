@@ -9,6 +9,8 @@ import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
 import { runBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
+import { SITE_URL } from "../app/lib/site";
+import { SHARED_MEDIA_HEADERS } from "./header-set";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
@@ -59,6 +61,11 @@ export class Renderer extends WorkerEntrypoint<Env> {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // www answers with a move to the apex, never a second copy of the site.
+    if (url.hostname === `www.${new URL(SITE_URL).hostname}`) {
+      const location = new URL(`${url.pathname}${url.search}`, SITE_URL).href;
+      return secure(new Response(null, { status: 301, headers: { Location: location, "Cache-Control": "no-store" } }), SITE_URL);
+    }
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
     // or without the binding, a report is dropped (still 204).
     if (url.pathname === CSP_REPORT_PATH) {
@@ -71,7 +78,9 @@ export default {
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers
     // runtime's; the DOM lib does not declare it.
     if (url.pathname.startsWith("/media/")) {
-      return secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
+      const media = await secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
+      applyHeaderSet(media.headers, SHARED_MEDIA_HEADERS);
+      return media;
     }
 
     // Carrel's site API. Its own guard (prefix, rate limit, key, route) answers everything under
