@@ -33,7 +33,9 @@
 	"ai": { "binding": "AI" },
 	// Carrel's site API (app/lib/carrel). namespace_id is this site's own: sites sharing one share counters.
 	"ratelimits": [
-		{ "name": "CARREL_RATE_LIMIT", "namespace_id": "7501", "simple": { "limit": 120, "period": 60 } }
+		{ "name": "CARREL_RATE_LIMIT", "namespace_id": "7501", "simple": { "limit": 120, "period": 60 } },
+		// CSP violation reports (/csp-report), per address. Loose, because a page tripping ten rules sends ten.
+		{ "name": "CSP_REPORT_RATE_LIMIT", "namespace_id": "7502", "simple": { "limit": 60, "period": 60 } }
 	],
 	// 03:37 UTC nightly: runBackup().
 	"triggers": { "crons": ["37 3 * * *"] }

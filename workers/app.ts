@@ -19,7 +19,14 @@ async function secure(response: Response, origin: string): Promise<Response> {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.pathname === CSP_REPORT_PATH) return receiveCspReport(request, { headers: await securityHeaders(url.origin) });
+    // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
+    // or without the binding, a report is dropped (still 204).
+    if (url.pathname === CSP_REPORT_PATH) {
+      const allow = async (r: Request) =>
+        Boolean(env.CSP_REPORT_RATE_LIMIT) &&
+        (await env.CSP_REPORT_RATE_LIMIT.limit({ key: r.headers.get("cf-connecting-ip") || "anon" })).success;
+      return receiveCspReport(request, { allow, headers: await securityHeaders(url.origin) });
+    }
 
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers
     // runtime's; the DOM lib does not declare it.

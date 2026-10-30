@@ -4,6 +4,7 @@
 // editor uploaded is sent, and only when an editor asks; never a visitor's data.
 import { anthropicRoute } from "@dustinedwards/site-runtime/ai-gateway";
 import { editImage } from "@dustinedwards/site-runtime/image";
+import { toBase64 } from "@dustinedwards/site-runtime/encoding";
 
 /** The vision model: natively multimodal, Cloudflare-hosted, with no license prompt to accept first. */
 const SUGGEST_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
@@ -46,10 +47,7 @@ function gatewayOf(env: Pick<Env, "AI_GATEWAY_BASE_URL">): GatewayOptions | unde
 /** A smaller copy of the picture as a data: URI, for the model to look at. */
 async function viewOf(env: SuggestEnv, body: ReadableStream): Promise<string> {
   const response = await editImage(env.IMAGES, body, { maxEdge: VIEW_EDGE, format: "image/jpeg", quality: 80 });
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  let binary = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return `data:image/jpeg;base64,${btoa(binary)}`;
+  return `data:image/jpeg;base64,${toBase64(await response.arrayBuffer())}`;
 }
 
 /** The model's answer as tags and alt, from its JSON, wherever in the text it put it. */
