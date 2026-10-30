@@ -1,5 +1,5 @@
 // aislop-ignore-next-line ai-slop/hallucinated-import -- a Workers built-in, not an npm package
-import { WorkerEntrypoint, cache } from "cloudflare:workers";
+import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
 import { PAGES_CACHE_TAG, cacheKey, forReader, purgeTags, settleCacheHeaders } from "@dustinedwards/site-runtime/edge-cache";
@@ -42,6 +42,14 @@ export class Renderer extends WorkerEntrypoint<Env> {
     // Last: anything but a shared 200 (/health, the 404 page, an error) leaves private, no-store.
     return settleCacheHeaders(page);
   }
+
+  /**
+   * Drops every stored page. A purge reaches only the cache of the entrypoint that calls it, so it runs here, called
+   * over RPC from the gateway (which stores nothing); RPC methods bypass the cache.
+   */
+  async purgePages(why: string): Promise<void> {
+    await purgeTags(this.ctx.cache, [PAGES_CACHE_TAG], why);
+  }
 }
 
 /**
@@ -74,7 +82,7 @@ export default {
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       if (request.method !== "GET" && request.method !== "HEAD" && response.ok) {
-        ctx.waitUntil(purgeTags(cache, [PAGES_CACHE_TAG], `carrel ${request.method} ${url.pathname}`));
+        ctx.waitUntil(ctx.exports.Renderer.purgePages(`carrel ${request.method} ${url.pathname}`));
       }
       return secure(response, url.origin);
     }
