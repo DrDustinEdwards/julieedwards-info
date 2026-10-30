@@ -1,17 +1,11 @@
-// robots.txt from Prelum's robotsDocument, the family bot policy: search engines and AI search agents crawl free,
+// robots.txt from Prelum's robotsResponse, the family bot policy: search engines and AI search agents crawl free,
 // training crawlers are allowed so Cloudflare Pay Per Crawl can charge or block them, and the denied bots get Disallow: /.
-// A workers.dev copy is told Disallow: / for everyone.
-import { robotsDocument } from "@drdustinedwards/site-helpers/robots";
+// A request on any other origin (a workers.dev copy) is told Disallow: / for everyone. The notes are Prelum's default,
+// the ai.txt and llms.txt pointers.
+import { robotsResponse } from "@drdustinedwards/site-helpers/robots";
 import { SITE_URL } from "~/lib/site";
 import type { Route } from "./+types/robots";
 
 export function loader({ request }: Route.LoaderArgs) {
-  const body = robotsDocument({
-    origin: SITE_URL,
-    notes: [`AI usage policy: ${SITE_URL}/ai.txt`, `LLM guide: ${SITE_URL}/llms.txt`],
-    preview: new URL(request.url).origin !== SITE_URL,
-  });
-  return new Response(body, {
-    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" },
-  });
+  return robotsResponse({ origin: SITE_URL, request });
 }

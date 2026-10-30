@@ -8,6 +8,7 @@ import { loadContent } from "./lib/content.server";
 import { SITE_URL } from "./lib/site";
 import { structuredData } from "./lib/structured-data";
 import { THEME_SCRIPT } from "./lib/theme";
+import { ThemeColor } from "capsomer/react/theme-switch";
 import "./app.css";
 
 export async function loader({ context }: Route.LoaderArgs) {
@@ -37,6 +38,8 @@ export const links: Route.LinksFunction = () => [
   { rel: "apple-touch-icon", href: "/apple-icon.png", sizes: "180x180", type: "image/png" },
 ];
 
+const THEME_COLOR = { light: "#ffffff", dark: "#15532E" };
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
   const content = data?.content;
@@ -45,8 +48,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#15532E" media="(prefers-color-scheme: dark)" />
+        {/* The theme is chosen in the browser (THEME_SCRIPT), so the server writes both. */}
+        <ThemeColor ground={THEME_COLOR} />
         <Meta />
         <Links />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
