@@ -1,7 +1,7 @@
 // aislop-ignore-next-line ai-slop/hallucinated-import -- a Workers built-in, not an npm package
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
-import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
+import { applyHeaderSet, corpFor } from "@dustinedwards/site-runtime/headers";
 import { PAGES_CACHE_TAG, cacheKey, forReader, purgeTags, settleCacheHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import { preloads } from "@dustinedwards/site-runtime/preload";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
@@ -10,7 +10,6 @@ import { carrelApi } from "../app/lib/carrel/handler.server";
 import { runBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
-import { SHARED_MEDIA_HEADERS } from "./header-set";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
@@ -79,7 +78,7 @@ export default {
     // runtime's; the DOM lib does not declare it.
     if (url.pathname.startsWith("/media/")) {
       const media = await secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
-      applyHeaderSet(media.headers, SHARED_MEDIA_HEADERS);
+      media.headers.set("Cross-Origin-Resource-Policy", corpFor(media.headers.get("Content-Type")));
       return media;
     }
 
