@@ -2,14 +2,18 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
-import { PAGES_CACHE_TAG, cacheKey, forReader, purgeTags, settleCacheHeaders } from "@dustinedwards/site-runtime/edge-cache";
-import { preloads } from "@dustinedwards/site-runtime/preload";
+import { cacheKey, forReader, purgeAfterWrite, settleCacheHeaders, withPurgePages } from "@dustinedwards/site-runtime/edge-cache";
+import { SPECULATION_RULES_HEADER, SPECULATION_RULES_PATH, speculationRulesResponse } from "@dustinedwards/site-runtime/prefetch";
+import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/site-runtime/preload";
+import { timedRender } from "@dustinedwards/site-runtime/server-timing";
+import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
 import { runBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
+import { FONT_PRELOADS } from "../app/lib/preloads";
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
@@ -26,29 +30,18 @@ async function secure(response: Response, origin: string): Promise<Response> {
  * it is missing from every hit. The policy hashes its one inline script and the page sets no cookie, so a stored page
  * is the same for every reader.
  */
-export class Renderer extends WorkerEntrypoint<Env> {
+export class Renderer extends withPurgePages(WorkerEntrypoint<Env>) {
   override async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const context = new RouterContextProvider();
     context.set(cloudflareContext, { env: this.env, ctx: this.ctx });
-    const page = await secure(await requestHandler(request, context), url.origin);
+    const page = await timedRender(async () => secure(await requestHandler(request, context), url.origin));
+    if (page.headers.get("Content-Type")?.startsWith("text/html")) page.headers.set(SPECULATION_RULES_HEADER.name, SPECULATION_RULES_HEADER.value);
     // Early Hints: the zone answers a page carrying a preload Link header with a 103 first, so the browser starts the
-    // render-blocking stylesheet while the Worker still renders (site-runtime ./preload).
-    if (page.headers.get("Content-Type")?.startsWith("text/html")) {
-      const stylesheets = (await serverBuild()).assets.routes.root?.css ?? [];
-      const { header } = preloads(stylesheets.map((href) => ({ href, as: "style" as const })));
-      if (header) page.headers.append("Link", header);
-    }
+    // render-blocking stylesheet and the hero's fonts while the Worker still renders (site-runtime ./preload).
+    const hints = withPreloadHeader(page, preloads([...rootStylesheets(await serverBuild()), ...FONT_PRELOADS]).header);
     // Last: anything but a shared 200 (/health, the 404 page, an error) leaves private, no-store.
-    return settleCacheHeaders(page);
-  }
-
-  /**
-   * Drops every stored page. A purge reaches only the cache of the entrypoint that calls it, so it runs here, called
-   * over RPC from the gateway (which stores nothing); RPC methods bypass the cache.
-   */
-  async purgePages(why: string): Promise<void> {
-    await purgeTags(this.ctx.cache, [PAGES_CACHE_TAG], why);
+    return settleCacheHeaders(hints, request);
   }
 }
 
@@ -59,6 +52,11 @@ export class Renderer extends WorkerEntrypoint<Env> {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // One hop to the canonical address: https, the bare host, no trailing slash.
+    const redirect = canonicalRedirect(request, { host: "julieedwards.info" });
+    if (redirect) return redirect;
+    // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
+    if (url.pathname === SPECULATION_RULES_PATH) return secure(speculationRulesResponse(), url.origin);
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
     // or without the binding, a report is dropped (still 204).
     if (url.pathname === CSP_REPORT_PATH) {
@@ -81,14 +79,13 @@ export default {
     const carrel = carrelApi(env, url.origin, stylesheets);
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
-      if (request.method !== "GET" && request.method !== "HEAD" && response.ok) {
-        ctx.waitUntil(ctx.exports.Renderer.purgePages(`carrel ${request.method} ${url.pathname}`));
-      }
+      purgeAfterWrite(request, response, ctx, `carrel ${request.method} ${url.pathname}`);
       return secure(response, url.origin);
     }
 
-    // The key is the path and query. The Worker version stays in the key (no `cross_version_cache`), so every deploy
-    // starts cold. A request with a cookie is told no-store for the browser.
+    // The key is the path and the query without tracking parameters. The Worker version stays in the key (no
+    // `cross_version_cache`), so every deploy starts cold. A request with a cookie is told no-store for the browser; a
+    // reader who already holds the page gets a 304.
     const page = await ctx.exports.Renderer.fetch(request, { cf: { cacheKey: cacheKey(url) } });
     return forReader(page, request);
   },
