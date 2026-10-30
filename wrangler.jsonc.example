@@ -13,6 +13,16 @@
 		"logs": { "enabled": true, "head_sampling_rate": 1 }
 	},
 	"upload_source_maps": true,
+	// The page's edge cache (workers/app.ts). The default export is the GATEWAY, cache disabled, so it runs on every
+	// request (the CSP report receiver, /media and Carrel's API). It calls the Renderer through ctx.exports with the path
+	// as the cache key, and the Renderer's responses are stored. Only a response a route marks shared
+	// (app/lib/edge-cache.server.ts) is kept; the rest are sent no-store. Carrel's writes purge the tag. No
+	// `cross_version_cache`, so the Worker version stays in the key and every deploy starts cold.
+	"cache": { "enabled": true },
+	"exports": {
+		"default": { "type": "worker", "cache": { "enabled": false } },
+		"Renderer": { "type": "worker", "cache": { "enabled": true } }
+	},
 	// The site's copy (app/lib/source.ts), seeded by drizzle/0001_seed.sql.
 	"d1_databases": [
 		{ "binding": "DB", "database_name": "julieedwards", "database_id": "<D1_DATABASE_ID>", "migrations_dir": "drizzle" }
