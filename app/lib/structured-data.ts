@@ -9,7 +9,8 @@ export function structuredData(profile: Content["profile"]) {
     name: profile.name,
     jobTitle: "School Board Trustee",
     url: SITE_URL,
-    image: profile.images.about,
+    // A library photo is named by its path; the graph names it in full.
+    image: profile.images.about ? new URL(profile.images.about, SITE_URL).href : undefined,
     worksFor: { "@type": "EducationalOrganization", name: profile.district.name, url: profile.district.url },
     homeLocation: { "@type": "Place", name: "Bluff Dale, Texas" },
     sameAs: [profile.facebook],

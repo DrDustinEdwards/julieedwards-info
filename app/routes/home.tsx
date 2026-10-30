@@ -4,5 +4,5 @@ import type { loader } from "~/root";
 
 export default function Home() {
   const data = useRouteLoaderData<typeof loader>("root");
-  return data ? <HomeSections content={data.content} /> : null;
+  return data ? <HomeSections content={data.content} photos={data.photos} /> : null;
 }
