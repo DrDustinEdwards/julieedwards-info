@@ -91,7 +91,7 @@ const versionOf = (rev: number) => `r${rev}`;
 /** The rev a version names, or -1 (which no row holds) for anything this site never answered. */
 const revOf = (version: string) => (/^r(0|[1-9]\d{0,15})$/.test(version) ? Number(version.slice(1)) : -1);
 
-const tagsOf = (row: MediaRow): string[] => {
+const storedTags = (row: MediaRow): string[] => {
   try {
     const tags: unknown = JSON.parse(row.tags);
     return Array.isArray(tags) ? tags.filter((t): t is string => typeof t === "string") : [];
@@ -115,7 +115,7 @@ function itemOf(row: MediaRow, usedCount: number): MediaItem {
     uploadedAt: row.uploadedAt,
     deletable: true,
     version: versionOf(row.rev),
-    tags: tagsOf(row),
+    tags: storedTags(row),
     trashedAt: row.trashedAt,
     focus: row.focus,
     caption: row.caption,
@@ -260,7 +260,7 @@ export function carrelMediaAdapter(env: Env): MediaAdapter {
       const matching = rows.filter(
         (r) =>
           (query.trashed === "only" ? r.trashedAt !== null : r.trashedAt === null) &&
-          (!query.tag || tagsOf(r).includes(query.tag)) &&
+          (!query.tag || storedTags(r).includes(query.tag)) &&
           (!needle || [r.key, r.filename ?? "", r.alt, r.caption].some((t) => t.toLowerCase().includes(needle))) &&
           (!query.lens || lens[query.lens](r)) &&
           (!query.orientation || orientationOf(r.width, r.height) === query.orientation) &&
