@@ -1,13 +1,15 @@
-import { llmsDocument } from "@drdustinedwards/site-helpers/llms";
+import { llmsResponse } from "@drdustinedwards/site-helpers/llms";
 import type { Route } from "./+types/llms";
 import { getEnv } from "~/lib/context.server";
 import { loadContent } from "~/lib/content.server";
 import { SITE_URL } from "~/lib/site";
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const { content } = await loadContent(getEnv(context));
   const { profile, about, contact } = content;
-  const body = llmsDocument({
+  return llmsResponse({
+    origin: SITE_URL,
+    request,
     title: profile.name,
     summary: profile.summary,
     intro: [
@@ -25,8 +27,5 @@ export async function loader({ context }: Route.LoaderArgs) {
       },
       { heading: contact.heading, links: [{ title: `Email: ${profile.email}`, url: `mailto:${profile.email}` }] },
     ],
-  });
-  return new Response(body, {
-    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" },
   });
 }
