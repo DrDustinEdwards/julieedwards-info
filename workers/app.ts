@@ -1,24 +1,18 @@
 // aislop-ignore-next-line ai-slop/hallucinated-import -- a Workers built-in, not an npm package
-import { WorkerEntrypoint } from "cloudflare:workers";
+import { WorkerEntrypoint, cache } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
+import { PAGES_CACHE_TAG, cacheKey, forReader, purgeTags, settleCacheHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import { preloads } from "@dustinedwards/site-runtime/preload";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
 import { runBackup } from "../app/lib/backup.server";
-import { SHARED_CACHE_CONTROL, purgePages } from "../app/lib/edge-cache.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
-
-// Omitting Cache-Control is not opting out: the platform caches a response heuristically, so anything a route does
-// not mark shared (/health, the 404 page, an error) is stored nowhere.
-const UNCACHED = "private, no-store";
-// `Cloudflare-CDN-Cache-Control` outranks `Cache-Control` at the edge, so it goes only on a response marked shared.
-const EDGE_CACHE_HEADER = "Cloudflare-CDN-Cache-Control";
 
 async function secure(response: Response, origin: string): Promise<Response> {
   const headers = new Headers(response.headers);
@@ -45,10 +39,8 @@ export class Renderer extends WorkerEntrypoint<Env> {
       const { header } = preloads(stylesheets.map((href) => ({ href, as: "style" as const })));
       if (header) page.headers.append("Link", header);
     }
-    // Only a 200 is stored: an error page rendered under the home route's headers would otherwise be kept for a day.
-    if (!page.headers.has("Cache-Control") || page.status !== 200) page.headers.set("Cache-Control", UNCACHED);
-    if (page.headers.get("Cache-Control") !== SHARED_CACHE_CONTROL) page.headers.delete(EDGE_CACHE_HEADER);
-    return page;
+    // Last: anything but a shared 200 (/health, the 404 page, an error) leaves private, no-store.
+    return settleCacheHeaders(page);
   }
 }
 
@@ -82,21 +74,15 @@ export default {
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       if (request.method !== "GET" && request.method !== "HEAD" && response.ok) {
-        ctx.waitUntil(purgePages(`carrel ${request.method} ${url.pathname}`));
+        ctx.waitUntil(purgeTags(cache, [PAGES_CACHE_TAG], `carrel ${request.method} ${url.pathname}`));
       }
       return secure(response, url.origin);
     }
 
-    // The key is the path and query: a custom `cf.cacheKey` replaces the platform's own path and query. The Worker
-    // version stays in the key (no `cross_version_cache`), so every deploy starts cold.
-    const page = await ctx.exports.Renderer.fetch(request, { cf: { cacheKey: `${url.pathname}${url.search}` } });
-    // A browser or proxy never holds the page: max-age=0 already says so, and a request with a cookie is told no-store.
-    if (page.headers.get("Cache-Control") === SHARED_CACHE_CONTROL && request.headers.has("Cookie")) {
-      const headers = new Headers(page.headers);
-      headers.set("Cache-Control", UNCACHED);
-      return new Response(page.body, { status: page.status, statusText: page.statusText, headers });
-    }
-    return page;
+    // The key is the path and query. The Worker version stays in the key (no `cross_version_cache`), so every deploy
+    // starts cold. A request with a cookie is told no-store for the browser.
+    const page = await ctx.exports.Renderer.fetch(request, { cf: { cacheKey: cacheKey(url) } });
+    return forReader(page, request);
   },
 
   // Nightly D1 backup (wrangler.jsonc triggers.crons). Awaited and rethrown, so a failed run shows as a

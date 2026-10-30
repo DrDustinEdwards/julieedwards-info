@@ -1,10 +1,10 @@
 import { useRouteLoaderData } from "react-router";
 import { HomeSections } from "~/components/Sections";
-import { publicHtmlHeaders } from "~/lib/edge-cache.server";
+import { publicPageHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import type { loader } from "~/root";
 
-// Stored at the edge until Carrel's next write purges it (workers/app.ts, app/lib/edge-cache.server.ts).
-export const headers = () => publicHtmlHeaders();
+// Stored at the edge until Carrel's next write purges it (workers/app.ts, site-runtime ./edge-cache).
+export const headers = () => publicPageHeaders();
 
 export default function Home() {
   const data = useRouteLoaderData<typeof loader>("root");
