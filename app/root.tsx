@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
+import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { headTags } from "@drdustinedwards/site-helpers/head";
 import { jsonLd } from "@drdustinedwards/site-helpers/schema";
 import type { Route } from "./+types/root";
@@ -15,9 +16,14 @@ export async function loader({ context }: Route.LoaderArgs) {
   return loadContent(getEnv(context));
 }
 
-export const meta: Route.MetaFunction = ({ loaderData: data }) => {
+export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
   if (!data) return [{ title: "Error" }];
-  const { profile } = data.content;
+  const { profile, site } = data.content;
+  // The error path writes its own title and no home canonical or JSON-LD: a 404 is not the home page.
+  if (error) {
+    const notFound = isRouteErrorResponse(error) && error.status === 404;
+    return [{ title: notFound ? `${site.notFound.title.replace(/\.$/, "")} | ${profile.name}` : errorTitle(error, profile.name) }];
+  }
   return [
     ...headTags({
       origin: SITE_URL,
@@ -78,27 +84,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const data = useRouteLoaderData<typeof loader>("root");
   const notFound = data?.content.site.notFound;
-  if (isRouteErrorResponse(error) && error.status === 404 && notFound) {
-    return (
-      <section className="not-found">
-        <meta name="robots" content="noindex" />
-        <div className="wrap not-found-inner">
-          <p className="cap-label not-found-code">404</p>
-          <h1>{notFound.title}</h1>
-          <p className="not-found-body">{notFound.body}</p>
-          <a href="/" className="cap-btn" data-variant="primary" data-size="lg">
-            {notFound.cta}
-          </a>
-        </div>
-      </section>
-    );
-  }
-  return (
-    <section className="not-found">
-      <meta name="robots" content="noindex" />
-      <div className="wrap not-found-inner">
-        <h1>Something went wrong.</h1>
-      </div>
-    </section>
-  );
+  // A 404 says the site's own D1 copy (CLAUDE.md hard rule 2); the Layout already holds the page's main.
+  const words = isRouteErrorResponse(error) && error.status === 404 && notFound ? { title: notFound.title, text: notFound.body, homeLabel: notFound.cta } : {};
+  return <ErrorPage error={error} home="/" as="div" dev={import.meta.env.DEV} {...words} />;
 }

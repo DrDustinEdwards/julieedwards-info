@@ -15,6 +15,8 @@
 @import "capsomer/popover.css";
 @import "capsomer/theme-switch.css";
 @import "capsomer/button.css";
+@import "capsomer/empty.css";
+@import "capsomer/error-page.css";
 
 :root {
   --maxw: 67.5rem; --side: var(--space-7);
@@ -98,13 +100,6 @@ section { padding-block: calc(var(--space-8) + var(--space-7)); }
 :is(.contact-link, .footer-links a) { color: var(--muted); text-decoration: none; }
 :is(.contact-link, .footer-links a):hover { color: var(--accent-text); }
 .footer-links a { display: inline-flex; align-items: center; gap: var(--space-1); }
-
-/* 404 */
-.not-found { min-height: 60vh; display: flex; align-items: center; }
-.not-found-inner { text-align: center; max-width: 36rem; }
-.not-found h1 { font-weight: 600; font-size: clamp(2rem, 5vw, 3rem); margin-block: var(--space-5); text-transform: uppercase; letter-spacing: -.01em; }
-.not-found-code { color: var(--accent-text); }
-.not-found-body { color: var(--muted); margin-bottom: var(--space-7); }
 
 /* MOTION: the hero rises on load and each section as it scrolls into view (app/site.ts). Capsomer's
    base.css stills every transition under reduced motion; these only start where motion is allowed. */
