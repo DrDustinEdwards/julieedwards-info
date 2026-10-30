@@ -1,5 +1,6 @@
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
+import { preloads } from "@dustinedwards/site-runtime/preload";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
@@ -42,7 +43,14 @@ export default {
 
     const context = new RouterContextProvider();
     context.set(cloudflareContext, { env, ctx });
-    return secure(await requestHandler(request, context), url.origin);
+    const page = await secure(await requestHandler(request, context), url.origin);
+    // Early Hints: the zone answers a page carrying a preload Link header with a 103 first, so the browser starts the
+    // render-blocking stylesheet while the Worker still renders (site-runtime ./preload).
+    if (page.headers.get("Content-Type")?.startsWith("text/html")) {
+      const { header } = preloads(stylesheets.map((href) => ({ href, as: "style" as const })));
+      if (header) page.headers.append("Link", header);
+    }
+    return page;
   },
 
   // Nightly D1 backup (wrangler.jsonc triggers.crons). Awaited and rethrown, so a failed run shows as a
