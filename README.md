@@ -30,6 +30,6 @@ delete read the sections' published text and waiting drafts, so a file a section
 - `workers/app.ts`: Carrel's API, the CSP report sink, `/media/*` (the library's files and their sizes,
   through the Images binding, `app/lib/media/serve.server.ts`), then React Router; every response gets the
   site-runtime security headers, and `www` answers with a 301 to the apex. The build writes the same set into
-  the static files' `_headers` (`workers/header-set.ts`), since those never reach the Worker. The nightly cron runs the d1-dump backup (`/health` reports its age).
+  the static files' `public/_headers` (`scripts/headers-file.ts`), since those never reach the Worker. The nightly cron runs the d1-dump backup (`/health` reports its age).
 - The page ships no React to the browser: `/site.js` (`app/site.ts`, bundled by
   `vite.config.ts`) runs Capsomer's site header and theme button and the scroll reveal, and the pre-paint theme script is trusted by hash.

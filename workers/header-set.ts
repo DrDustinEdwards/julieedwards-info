@@ -1,5 +1,5 @@
-// The header set every response carries, Worker and static file alike, and the static files' `_headers`, which the
-// build writes from it (vite.config.ts). Package imports only, so Vite's config can load it.
+// The header set every response carries, Worker and static file alike, and the static files' `_headers`, which
+// scripts/headers-file.ts writes from it. Package imports only, so Node runs it as it is.
 import { TDM_RESERVATION_HEADERS } from "@drdustinedwards/site-helpers/robots";
 import { buildSecurityHeaders, headersFile } from "@dustinedwards/site-runtime/headers";
 
@@ -19,6 +19,6 @@ export const SHARED_MEDIA_HEADERS: Readonly<Record<string, string>> = Object.fre
 const IMMUTABLE = { "Cache-Control": "public, max-age=31536000, immutable" };
 
 export const STATIC_HEADERS_FILE = headersFile(SECURITY_HEADERS, {
-  comment: "Written by the build from workers/header-set.ts. Do not edit.",
+  comment: "Written by scripts/headers-file.ts from workers/header-set.ts (npm run build). Do not edit.",
   paths: { "/assets/*": { ...IMMUTABLE, ...SHARED_MEDIA_HEADERS }, "/opengraph-image.png": SHARED_MEDIA_HEADERS },
 });
