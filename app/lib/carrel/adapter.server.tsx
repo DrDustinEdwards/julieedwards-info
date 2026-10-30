@@ -9,6 +9,9 @@
 //
 // VERSIONS. A hash of the published and draft sources together, so any change to the section moves it
 // and a change to another section never does.
+//
+// MEDIA. The library Carrel uploads to is its own group (media-adapter.server.ts); a section uses a file by
+// naming its /media/ address, which the page draws at responsive sizes.
 import { renderToStaticMarkup } from "react-dom/server";
 import { desc, eq } from "drizzle-orm";
 import {
@@ -23,8 +26,9 @@ import {
 import { getDb } from "~/db/index.server";
 import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
 import { HomeSections } from "~/components/Sections";
-import { loadContent } from "~/lib/content.server";
+import { libraryPhotos, loadContent } from "~/lib/content.server";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
+import { carrelMediaAdapter } from "./media-adapter.server";
 import { isSectionId, parseSection, SECTION_IDS, SECTIONS, SourceError, type Content, type SectionId } from "~/lib/source";
 
 type Snapshot = Pick<SectionRow, "published" | "draft">;
@@ -172,6 +176,9 @@ export function createCarrelAdapter(
       },
     },
 
+    // The media library (media-adapter.server.ts): files a section names by address, as the About photo does.
+    media: carrelMediaAdapter(env),
+
     // The home page as it would read with this source in place of its section's published one, from the
     // site's own components and stylesheet. Without an id, the first section the source fits is used.
     preview: {
@@ -187,9 +194,11 @@ export function createCarrelAdapter(
         if (!target) throw new RefusedError("The source does not fit any section of this page.");
         const { content } = await loadContent(env);
         const page: Content = { ...content, [target]: parsed(target, source) };
+        // Library pictures by their full address on this site, since the preview is shown on Carrel's origin.
+        const photos = await libraryPhotos(env, page, options.origin);
         const body = renderToStaticMarkup(
           <main>
-            <HomeSections content={page} />
+            <HomeSections content={page} photos={photos} />
           </main>,
         );
         const css = options.stylesheets.map((href) => `<link rel="stylesheet" href="${escapeHtml(new URL(href, options.origin).href)}">`).join("");

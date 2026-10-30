@@ -1,16 +1,17 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
 import { Arrow } from "./Chrome";
 
 /** The whole home page, as the route and Carrel's preview both draw it. */
-export function HomeSections({ content }: { content: Content }) {
+export function HomeSections({ content, photos }: { content: Content; photos: Photos }) {
   const { profile, priorities, about, experience, contact } = content;
   return (
     <>
       <Hero profile={profile} cta={contact.heading} />
       <Priorities section={priorities} />
-      <About section={about} photo={profile.images.about} name={profile.name} />
+      <About section={about} photo={profile.images.about} library={photos.about} name={profile.name} />
       <Experience section={experience} />
       <Contact section={contact} profile={profile} />
     </>
@@ -74,12 +75,33 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
   );
 }
 
-export function About({ section, photo, name }: { section: Content["about"]; photo: string; name: string }) {
+/** A media library picture: AVIF and WebP at the sizes its use offers, cropped by its box around its focal point. */
+function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
+  return (
+    <picture>
+      {photo.sources.map((s) => (
+        <source key={s.type} type={s.type} srcSet={s.srcset} sizes={photo.sizes} />
+      ))}
+      <img
+        src={photo.src}
+        srcSet={photo.srcset}
+        sizes={photo.sizes}
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        decoding="async"
+        style={photo.focus ? { objectPosition: objectPosition(photo.focus) } : undefined}
+      />
+    </picture>
+  );
+}
+
+export function About({ section, photo, library, name }: { section: Content["about"]; photo: string; library?: LibraryPhoto; name: string }) {
   return (
     <section className="about" id="about">
       <div className="about-grid">
         <div className={`about-img reveal${photo ? "" : " placeholder"}`}>
-          {photo ? <img src={photo} alt={name} decoding="async" /> : <span className="ph">Photo</span>}
+          {library ? <LibraryPicture photo={library} /> : photo ? <img src={photo} alt={name} decoding="async" /> : <span className="ph">Photo</span>}
         </div>
         <div className="about-panel reveal">
           <h2>
