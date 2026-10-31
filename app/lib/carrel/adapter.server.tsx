@@ -28,6 +28,7 @@ import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
 import { HomeSections } from "~/components/Sections";
 import { libraryPhotos, loadContent } from "~/lib/content.server";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
+import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
 import { carrelMediaAdapter } from "./media-adapter.server";
 import { isSectionId, parseSection, SECTION_IDS, SECTIONS, SourceError, type Content, type SectionId } from "~/lib/source";
 
@@ -178,6 +179,9 @@ export function createCarrelAdapter(
 
     // The media library (media-adapter.server.ts): files a section names by address, as the About photo does.
     media: carrelMediaAdapter(env),
+
+    // The 404s workers/app.ts counts, for Carrel's report.
+    insight: { notFound: (options) => notFoundReport(env.DB, options) },
 
     // The home page as it would read with this source in place of its section's published one, from the
     // site's own components and stylesheet. Without an id, the first section the source fits is used.
