@@ -1,6 +1,7 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { defineHead } from "@drdustinedwards/site-helpers/head";
+import { iconLinks } from "@drdustinedwards/site-helpers/icons";
 import { jsonLd } from "@drdustinedwards/site-helpers/schema";
 import type { Route } from "./+types/root";
 import { Footer, Header } from "./components/Chrome";
@@ -36,11 +37,7 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
   ];
 };
 
-export const links: Route.LinksFunction = () => [
-  { rel: "icon", href: "/icon.png", sizes: "512x512", type: "image/png" },
-  { rel: "icon", href: "/icon.svg", sizes: "any", type: "image/svg+xml" },
-  { rel: "apple-touch-icon", href: "/apple-icon.png", sizes: "180x180", type: "image/png" },
-];
+export const links: Route.LinksFunction = () => iconLinks();
 
 const THEME_COLOR = { light: "#ffffff", dark: "#15532E" };
 
