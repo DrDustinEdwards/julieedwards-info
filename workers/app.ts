@@ -9,17 +9,18 @@ import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { runJobs } from "@dustinedwards/site-runtime/cron";
-import { countNotFound, pruneNotFound } from "@dustinedwards/site-runtime/not-found";
+import { logEvent, withRequestLog } from "@dustinedwards/site-runtime/log";
+import { countNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
-import { carrelApi, runCarrelSchedules } from "../app/lib/carrel/handler.server";
-import { runBackup, runMediaBackup } from "../app/lib/backup.server";
+import { carrelApi } from "../app/lib/carrel/handler.server";
+import { cronJobs } from "../app/lib/cron.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
 
-// The per-minute cron (wrangler.jsonc triggers.crons): Carrel's schedules. Any other cron is the nightly one.
-const SCHEDULES_CRON = "* * * * *";
+// A preview link's token (Carrel's /preview/<token>), cut from a logged path.
+const PREVIEW_TOKEN = /\/(preview)\/[^/?#\s'"]+/g;
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
@@ -55,7 +56,7 @@ export class Renderer extends withPurgePages(WorkerEntrypoint<Env>) {
  * THE GATEWAY. Cache disabled, so it runs on every request: the CSP report receiver, the media library and Carrel's
  * site API answer here and are never stored; everything else is the Renderer's, through the Workers cache.
  */
-export default {
+const site = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     // One hop to the canonical address: https, the bare host (www answers with a move, never a second copy of the
@@ -108,18 +109,27 @@ export default {
     return forReader(page, request);
   },
 
-  // The jobs (wrangler.jsonc triggers.crons), each isolated and recorded in cron_runs by site-runtime ./cron, which
-  // /health reads. A failed job fails the invocation after the others have run. Every minute: the sections Carrel
-  // scheduled go live (handler.server.ts). Nightly: the backups and the 404 prune.
+  // The jobs (wrangler.jsonc triggers.crons), one list per cron (app/lib/cron.server.ts), each isolated, timed out and
+  // recorded in cron_runs by site-runtime ./cron, which /health reads. A failed job fails the invocation after the
+  // others have run. A cron with no list (a trigger added in the dashboard or a misspelt key) runs nothing and says so,
+  // and the jobs it was meant for warn "never ran" on /health.
   async scheduled(controller, env) {
-    if (controller.cron === SCHEDULES_CRON) {
-      await runJobs(env.DB, [{ name: "carrel-schedules", everyMinutes: 1, run: () => runCarrelSchedules(env, new Date(controller.scheduledTime)) }]);
+    const jobs = cronJobs(env, new Date(controller.scheduledTime))[controller.cron];
+    if (!jobs) {
+      logEvent("cron_unknown", { cron: controller.cron }, { level: "warn" });
       return;
     }
-    await runJobs(env.DB, [
-      { name: "backup", everyMinutes: 1440, run: () => runBackup(env) },
-      { name: "media-backup", everyMinutes: 1440, run: () => runMediaBackup(env) },
-      { name: "prune-404", everyMinutes: 1440, run: () => pruneNotFound(env.DB) },
-    ]);
+    await runJobs(env.DB, jobs);
   },
+} satisfies ExportedHandler<Env>;
+
+// Every request writes one `request` line (site-runtime ./log: path, status, ms and the deployed commit), a preview
+// link's token cut from its path.
+type IncomingRequest = Parameters<typeof site.fetch>[0];
+export default {
+  ...site,
+  fetch: withRequestLog((request: Request, env: Env, ctx: ExecutionContext) => site.fetch(request as IncomingRequest, env, ctx), {
+    sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
+    tokenPath: PREVIEW_TOKEN,
+  }),
 } satisfies ExportedHandler<Env>;
