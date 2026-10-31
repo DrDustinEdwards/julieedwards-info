@@ -16,6 +16,9 @@ async function contentSecurityPolicy(): Promise<string> {
     styleHashes: [await scriptHash(PREVIEW_STYLE)],
     styleAttributesInline: true,
     cloudflareWebAnalytics: true,
+    // Nothing unlisted (media, frames, workers); the manifest is named.
+    denyUnlisted: true,
+    extraDirectives: ["manifest-src 'self'"],
     reportUri: CSP_REPORT_PATH,
     reportTo: CSP_ENDPOINT,
   }).value;

@@ -5,8 +5,9 @@ import { buildSecurityHeaders, corpFor, headersFile } from "@dustinedwards/site-
 import { julieedwardsInfo } from "@dustinedwards/site-runtime/sites";
 
 // The site's registry entry (site-runtime ./sites) plus Prelum's TDMRep header, which reserves training rights as /ai.txt says.
+// COEP credentialless: the page embeds no frame, and its photos and the beacon load without cookies.
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
-  ...buildSecurityHeaders({ site: julieedwardsInfo }),
+  ...buildSecurityHeaders({ site: julieedwardsInfo, coep: { value: "credentialless" } }),
   ...TDM_RESERVATION_HEADERS,
 });
 
