@@ -1,5 +1,6 @@
 // Kept in step with the hand-written migrations in drizzle/ (0000_sections.sql, 0002_media.sql,
-// 0004_media_placeholder.sql). 0003_ops.sql holds site-runtime's own tables, which only it reads and writes.
+// 0004_media_placeholder.sql, 0005_section_schedules.sql). 0003_ops.sql holds site-runtime's own tables and
+// 0006_site_api_store.sql site-api's, which only each package reads and writes.
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const sections = sqliteTable("sections", {
@@ -8,6 +9,10 @@ export const sections = sqliteTable("sections", {
   draft: text("draft"),
   publishedAt: text("published_at").notNull(),
   updatedAt: text("updated_at").notNull(),
+  // A time on the draft, set from Carrel, and the change that set it (0005_section_schedules.sql); NULL while none waits.
+  publishAt: text("publish_at"),
+  scheduleChangeId: text("schedule_change_id"),
+  scheduledAt: text("scheduled_at"),
 });
 
 export const sectionRevisions = sqliteTable("section_revisions", {

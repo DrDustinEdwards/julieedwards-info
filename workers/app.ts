@@ -11,12 +11,15 @@ import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { runJobs } from "@dustinedwards/site-runtime/cron";
 import { countNotFound, pruneNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
-import { carrelApi } from "../app/lib/carrel/handler.server";
+import { carrelApi, runCarrelSchedules } from "../app/lib/carrel/handler.server";
 import { runBackup, runMediaBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
+
+// The per-minute cron (wrangler.jsonc triggers.crons): Carrel's schedules. Any other cron is the nightly one.
+const SCHEDULES_CRON = "* * * * *";
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
@@ -83,6 +86,13 @@ export default {
     // accepts (a section, a picture's alt text or crop) can change the page, so the stored page is purged after it.
     const stylesheets = (await serverBuild()).assets.routes.root?.css ?? [];
     const carrel = carrelApi(env, url.origin, stylesheets);
+    // A preview link Carrel made (/preview/<token>, no key): the section's current source drawn as the page. The token
+    // is the address, so it is never sent on as a referrer, whatever the site's own policy says.
+    if (carrel.matchesPreviewLink(request)) {
+      const preview = await secure(await carrel.servePreviewLink(request), url.origin);
+      preview.headers.set("Referrer-Policy", "no-referrer");
+      return preview;
+    }
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       purgeAfterWrite(request, response, ctx, `carrel ${request.method} ${url.pathname}`);
@@ -98,9 +108,14 @@ export default {
     return forReader(page, request);
   },
 
-  // The nightly jobs (wrangler.jsonc triggers.crons), each isolated and recorded in cron_runs by site-runtime ./cron,
-  // which /health reads. A failed job fails the invocation after the others have run.
-  async scheduled(_controller, env) {
+  // The jobs (wrangler.jsonc triggers.crons), each isolated and recorded in cron_runs by site-runtime ./cron, which
+  // /health reads. A failed job fails the invocation after the others have run. Every minute: the sections Carrel
+  // scheduled go live (handler.server.ts). Nightly: the backups and the 404 prune.
+  async scheduled(controller, env) {
+    if (controller.cron === SCHEDULES_CRON) {
+      await runJobs(env.DB, [{ name: "carrel-schedules", everyMinutes: 1, run: () => runCarrelSchedules(env, new Date(controller.scheduledTime)) }]);
+      return;
+    }
     await runJobs(env.DB, [
       { name: "backup", everyMinutes: 1440, run: () => runBackup(env) },
       { name: "media-backup", everyMinutes: 1440, run: () => runMediaBackup(env) },

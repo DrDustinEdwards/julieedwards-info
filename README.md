@@ -15,7 +15,11 @@ binding, Workers AI, is absent there: a media suggestion is refused locally and 
 
 ## Edit content
 The copy is six sections in D1 (`app/lib/source.ts` lists them and their fields). Carrel edits them
-through the site API at `/api/carrel/v1`: a save is a draft nobody sees, a publish puts it on the page.
+through the site API at `/api/carrel/v1` (`app/lib/carrel/sections.server.ts`): a save is a draft nobody sees, a
+publish puts it on the page, and a draft given a time goes on the page at that time from the per-minute cron. A
+retried write answers what it answered the first time, and a preview link Carrel makes (`/preview/<token>`) shows a
+section's current draft to anyone holding it until it expires (site-api's store, `drizzle/0006_site_api_store.sql`).
+A section is never added, taken down, renamed, trashed or deleted.
 `drizzle/0001_seed.sql` is the copy the site started with. A new image host also goes in the policy's
 `img` sources in `workers/security-headers.ts`.
 
@@ -31,8 +35,9 @@ delete read the sections' published text and waiting drafts, so a file a section
   through the Images binding, `app/lib/media/serve.server.ts`), then React Router; every response gets the
   site-runtime security headers, and `www` answers with a 301 to the apex. The build writes the same set into
   the static files' `public/_headers` (`scripts/headers-file.ts`), since those never reach the Worker. 404s are
-  counted per path and referring host (site-runtime `./not-found`). The nightly cron runs the d1-dump backup, the
-  media files backup and the 404 prune through site-runtime `runJobs`; `/health` reports the backups' age, the
-  MEDIA bucket and the jobs. `.github/workflows/restore-drill.yml` restores the newest dump weekly.
+  counted per path and referring host (site-runtime `./not-found`). Every minute a cron publishes the sections whose
+  time has come (site-api's `runSchedules`, with the IndexNow, page purge and webmention hooks a Carrel publish runs);
+  the nightly cron runs the d1-dump backup, the media files backup and the 404 prune. Both go through site-runtime
+  `runJobs`; `/health` reports the backups' age, the MEDIA bucket and the jobs. `.github/workflows/restore-drill.yml` restores the newest dump weekly.
 - The page ships no React to the browser: `/site.js` (`app/site.ts`, bundled by
   `vite.config.ts`) runs Capsomer's site header and theme button and the scroll reveal, and the pre-paint theme script is trusted by hash.

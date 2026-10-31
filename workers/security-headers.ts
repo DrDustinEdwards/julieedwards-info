@@ -1,18 +1,19 @@
 // Every security header the site sends, in one place; workers/app.ts applies them to every response.
 import { buildContentSecurityPolicy, reportingEndpoints, scriptHash } from "@dustinedwards/site-runtime/csp";
-import { THEME_SCRIPT } from "../app/lib/theme";
+import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
 
 export const CSP_REPORT_PATH = "/csp-report";
 const CSP_ENDPOINT = "csp-endpoint";
 
 // What the page loads beyond itself: the profile photo's hosts, the theme script by hash (the page ships
-// no other inline script; /site.js is 'self'), the contact grid's style attributes, and the
-// Cloudflare Web Analytics beacon the edge injects.
+// no other inline script; /site.js is 'self'), the contact grid's style attributes, Carrel's preview style by hash
+// (a preview link is served here), and the Cloudflare Web Analytics beacon the edge injects.
 async function contentSecurityPolicy(): Promise<string> {
   return buildContentSecurityPolicy({
     sources: { img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"] },
     scriptHashes: [await scriptHash(THEME_SCRIPT)],
+    styleHashes: [await scriptHash(PREVIEW_STYLE)],
     styleAttributesInline: true,
     cloudflareWebAnalytics: true,
     reportUri: CSP_REPORT_PATH,
