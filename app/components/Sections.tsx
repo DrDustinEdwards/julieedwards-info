@@ -87,7 +87,8 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
       {sources.map((s) => (
         <source key={`${s.type}${s.media ?? ""}`} {...s} />
       ))}
-      <img {...img} style={photo.focus ? { objectPosition: objectPosition(photo.focus) } : undefined} />
+      {/* The placeholder background (img.style) stays under the crop's position. */}
+      <img {...img} style={photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style} />
     </picture>
   );
 }

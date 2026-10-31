@@ -42,19 +42,32 @@ export type LibraryPhoto = ImageAttributes & { alt: string; focus: string | null
 export type Photos = { about?: LibraryPhoto };
 
 /**
- * The page's attributes for one stored file. The address carries a short hash of the bytes (`v`), so a size cached
- * forever is never stale after a replace, a turn or a revert; `origin` makes every address absolute, for Carrel's
- * preview, which is shown on Carrel's own origin. From 820px the box is about as tall as it is wide, so a wider
- * picture fills it by its height and `sizes` asks for that much more width, or it would be drawn soft.
+ * The page's attributes for one stored file. The address carries a short hash of the bytes (`v`, site-runtime's
+ * `version`), so a size cached forever is never stale after a replace, a turn or a revert; `origin` makes every address
+ * absolute, for Carrel's preview, which is shown on Carrel's own origin. The stored placeholder and main color are the
+ * background while it loads. From 820px the box is about as tall as it is wide, so a wider picture fills it by its
+ * height and `sizes` asks for that much more width, or it would be drawn soft.
  */
 export function libraryPhoto(
-  file: { key: string; width: number | null; height: number | null; sha256: string; focus: string | null; alt: string },
+  file: {
+    key: string;
+    width: number | null;
+    height: number | null;
+    sha256: string;
+    focus: string | null;
+    alt: string;
+    placeholder?: string | null;
+    color?: string | null;
+  },
   use: ImageUse,
   origin = "",
 ): LibraryPhoto {
-  const src = `${origin}${mediaUrl(file.key)}?v=${file.sha256.slice(0, 12)}`;
+  const src = `${origin}${mediaUrl(file.key)}`;
   const wide = file.width && file.height ? Math.max(1, file.width / file.height) : 1;
-  const attributes = images.attributes({ src, width: file.width, height: file.height, focus: file.focus }, use);
+  const attributes = images.attributes(
+    { src, width: file.width, height: file.height, focus: file.focus, version: file.sha256, placeholder: file.placeholder, color: file.color },
+    use,
+  );
   return { ...attributes, sizes: `(width < 820px) 100vw, ${Math.round(47 * wide)}vw`, alt: file.alt, focus: file.focus };
 }
 
