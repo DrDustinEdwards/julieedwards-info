@@ -1,0 +1,28 @@
+name: restore-drill
+
+# The weekly restore drill (devkit's restore-drill.yml, pinned by full sha): d1-dump downloads the newest complete nightly
+# dump from julieedwards-backups through the R2 REST API, restores it into a scratch SQLite file and checks the copy. It
+# changes nothing in the account. devkit-ops-audit reads this workflow's newest run, which must pass and be under eight
+# days old. Move the devkit sha and d1-dump-ref with the d1-dump pin in package.json.
+
+on:
+  schedule:
+    - cron: "23 4 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: restore-drill
+  cancel-in-progress: false
+
+jobs:
+  drill:
+    uses: DrDustinEdwards/devkit/.github/workflows/restore-drill.yml@e99e4651b943f83b6591309b2151e7332786e64a # v0.20.2
+    with:
+      bucket: julieedwards-backups
+      d1-dump-ref: v0.7.0
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
