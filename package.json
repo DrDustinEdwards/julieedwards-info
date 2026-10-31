@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
+    "build": "node scripts/headers-file.ts && react-router build",
+    "dev": "node scripts/headers-file.ts && react-router dev",
     "preview": "npm run build && vite preview",
     "typecheck": "wrangler types && react-router typegen && tsc -b",
     "test": "node --test \"test/*.test.ts\"",

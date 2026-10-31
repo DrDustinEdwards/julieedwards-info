@@ -1,7 +1,7 @@
 // aislop-ignore-next-line ai-slop/hallucinated-import -- a Workers built-in, not an npm package
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
-import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
+import { applyHeaderSet, corpFor } from "@dustinedwards/site-runtime/headers";
 import { cacheKey, forReader, forRenderer, purgeAfterWrite, settleCacheHeaders, withPurgePages } from "@dustinedwards/site-runtime/edge-cache";
 import { SPECULATION_RULES_HEADER, SPECULATION_RULES_PATH, speculationRulesResponse } from "@dustinedwards/site-runtime/prefetch";
 import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/site-runtime/preload";
@@ -14,6 +14,7 @@ import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
 import { runBackup, runMediaBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
+import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
 
@@ -54,9 +55,10 @@ export class Renderer extends withPurgePages(WorkerEntrypoint<Env>) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    // One hop to the canonical address: https, the bare host, no trailing slash.
-    const redirect = canonicalRedirect(request, { host: "julieedwards.info" });
-    if (redirect) return redirect;
+    // One hop to the canonical address: https, the bare host (www answers with a move, never a second copy of the
+    // site), no trailing slash. The move carries the security set like every other response.
+    const redirect = canonicalRedirect(request, { host: new URL(SITE_URL).hostname });
+    if (redirect) return secure(redirect, SITE_URL);
     // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
     if (url.pathname === SPECULATION_RULES_PATH) return secure(speculationRulesResponse(undefined, request), url.origin);
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
@@ -71,7 +73,9 @@ export default {
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers
     // runtime's; the DOM lib does not declare it.
     if (url.pathname.startsWith("/media/")) {
-      return secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
+      const media = await secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
+      media.headers.set("Cross-Origin-Resource-Policy", corpFor(media.headers.get("Content-Type")));
+      return media;
     }
 
     // Carrel's site API. Its own guard (prefix, rate limit, key, route) answers everything under
