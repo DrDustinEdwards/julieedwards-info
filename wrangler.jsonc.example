@@ -14,6 +14,9 @@
 		"logs": { "enabled": true, "head_sampling_rate": 1 }
 	},
 	"upload_source_maps": true,
+	// A pull request's preview version answers at pr-<number>-julieedwards.<subdomain>.workers.dev (devkit
+	// worker-deploy, preview). The deployed site stays on its custom domain.
+	"preview_urls": true,
 	// The deployed version's id and time: /health's cron check holds a job's "never ran" warning until its first window
 	// since the deploy has passed.
 	"version_metadata": { "binding": "CF_VERSION_METADATA" },

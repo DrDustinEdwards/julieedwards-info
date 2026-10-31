@@ -18,6 +18,7 @@ import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
+import { routeNamer } from "./route-name";
 
 // A preview link's token (Carrel's /preview/<token>), cut from a logged path.
 const PREVIEW_TOKEN = /\/(preview)\/[^/?#\s'"]+/g;
@@ -123,13 +124,31 @@ const site = {
   },
 } satisfies ExportedHandler<Env>;
 
-// Every request writes one `request` line (site-runtime ./log: path, status, ms and the deployed commit), a preview
-// link's token cut from its path.
+// The paths the gateway answers itself, named for the request log; every other path by its React Router route.
+const routes = routeNamer(serverBuild);
+function gatewayRoute(path: string): string | undefined {
+  if (path === CSP_REPORT_PATH || path === SPECULATION_RULES_PATH) return path;
+  if (path.startsWith("/media/")) return "/media/*";
+  if (path.startsWith("/preview/")) return "/preview/:token";
+  if (path.startsWith("/api/carrel/")) return "/api/carrel/*";
+  return undefined;
+}
+
+// Every request writes one `request` line (site-runtime ./log: its route, path, status, ms and the deployed commit), a
+// preview link's token cut from its path.
 type IncomingRequest = Parameters<typeof site.fetch>[0];
 export default {
   ...site,
-  fetch: withRequestLog((request: Request, env: Env, ctx: ExecutionContext) => site.fetch(request as IncomingRequest, env, ctx), {
-    sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
-    tokenPath: PREVIEW_TOKEN,
-  }),
+  fetch: withRequestLog(
+    async (request: Request, env: Env, ctx: ExecutionContext) =>
+      (await Promise.all([site.fetch(request as IncomingRequest, env, ctx), routes.ready()]))[0],
+    {
+      sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
+      tokenPath: PREVIEW_TOKEN,
+      route: (request) => {
+        const path = new URL(request.url).pathname;
+        return gatewayRoute(path) ?? routes.name(request);
+      },
+    },
+  ),
 } satisfies ExportedHandler<Env>;
