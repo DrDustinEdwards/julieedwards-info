@@ -9,6 +9,7 @@
 @import "capsomer/tokens.css";
 @import "capsomer/family-forest.css" layer(cap.tokens);
 @import "capsomer/site-julieedwards.css";
+@import "capsomer/fallback-fonts.css";
 @import "capsomer/base.css";
 @import "capsomer/site-header.css";
 @import "capsomer/dialog.css";
