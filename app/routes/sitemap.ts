@@ -9,7 +9,9 @@ export async function loader({ context }: Route.LoaderArgs) {
   const { content, updatedAt } = await loadContent(getEnv(context));
   const photo = content.profile.images.about;
   const images = photo ? [new URL(photo, SITE_URL).href] : undefined;
-  const xml = sitemapDocument([{ loc: SITE_URL, lastmod: updatedAt, changefreq: "monthly", priority: 1, images }], {
+  // The profile's noindex search field leaves the one page out.
+  const pages = content.profile.noindex ? [] : [{ loc: SITE_URL, lastmod: updatedAt, changefreq: "monthly" as const, priority: 1, images }];
+  const xml = sitemapDocument(pages, {
     layout: "expanded",
     lastmodFormat: "datetime",
   });

@@ -26,7 +26,7 @@ export type Content = {
     address: { name: string; line1: string; line2: string; mapsUrl: string };
     district: { name: string; url: string };
     images: { about: string; portrait: string; flyer: string };
-  };
+  } & Search;
   priorities: { heading: string; items: Item[] };
   about: { heading: string; paragraphs: string[] };
   experience: { heading: string; items: Item[] };
@@ -36,8 +36,21 @@ export type Content = {
 
 export type SectionId = keyof Content;
 
+/**
+ * site-api's search fields beside `description`, each optional: the page's own <title>, share card, canonical and
+ * noindex. They live in the profile section, the one that already holds the page's description.
+ */
+export type Search = { searchTitle?: string; image?: string; imageAlt?: string; canonical?: string; noindex?: boolean };
+const SEARCH: Record<keyof Search, "string" | "flag"> = { searchTitle: "string", image: "string", imageAlt: "string", canonical: "string", noindex: "flag" };
+
 type Shape = "string" | "links" | readonly string[];
-type Section = { title: string; anchor: string; fields: Record<string, Shape>; body: "none" | "paragraphs" | "items" };
+type Section = {
+  title: string;
+  anchor: string;
+  fields: Record<string, Shape>;
+  optional?: Record<string, "string" | "flag">;
+  body: "none" | "paragraphs" | "items";
+};
 
 /** Every section, in page order. Carrel edits these and creates no others. */
 export const SECTIONS: Record<SectionId, Section> = {
@@ -55,6 +68,7 @@ export const SECTIONS: Record<SectionId, Section> = {
       district: ["name", "url"],
       images: ["about", "portrait", "flyer"],
     },
+    optional: SEARCH,
     body: "none",
   },
   priorities: { title: "Priorities", anchor: "/#why", fields: { heading: "string" }, body: "items" },
@@ -128,12 +142,18 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
     if (!line.trim()) continue;
     const colon = line.indexOf(":");
     const key = colon === -1 ? line.trim() : line.slice(0, colon).trim();
-    if (!Object.hasOwn(section.fields, key)) throw new SourceError(`"${key}" is not a field of this section.`);
+    const optional = section.optional?.[key];
+    if (!Object.hasOwn(section.fields, key) && !optional) throw new SourceError(`"${key}" is not a field of this section.`);
     try {
       out[key] = JSON.parse(line.slice(colon + 1));
     } catch {
       throw new SourceError(`"${key}" is not valid JSON.`);
     }
+    if (optional && typeof out[key] !== (optional === "flag" ? "boolean" : "string")) {
+      throw new SourceError(`"${key}" must be ${optional === "flag" ? "true or false" : "text"}.`);
+    }
+    // A blank optional field is the site's default, so it is not kept.
+    if (optional && (out[key] === "" || out[key] === false)) delete out[key];
   }
   for (const [key, shape] of Object.entries(section.fields)) {
     if (!(key in out)) throw new SourceError(`"${key}" is missing.`);
@@ -150,7 +170,9 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
 export function renderSection<K extends SectionId>(id: K, value: Content[K]): string {
   const section = SECTIONS[id];
   const record = value as Record<string, unknown>;
-  const lines = Object.keys(section.fields).map((k) => `${k}: ${JSON.stringify(record[k])}`);
+  const lines = [...Object.keys(section.fields), ...Object.keys(section.optional ?? {}).filter((k) => record[k])].map(
+    (k) => `${k}: ${JSON.stringify(record[k])}`,
+  );
   let body = "";
   if (section.body === "paragraphs") body = (record.paragraphs as string[]).join("\n\n");
   if (section.body === "items") body = (record.items as Item[]).map((i) => `## ${i.title}\n\n${i.body}`).join("\n\n");
