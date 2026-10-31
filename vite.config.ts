@@ -8,5 +8,7 @@ import { defineConfig } from "vite";
 // runs remotely, is then refused locally, which only the media suggestions use.
 export default defineConfig({
   plugins: [siteScript(), cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: false }), reactRouter()],
+  // The Worker bundle; Vite leaves SSR output unminified by default.
+  environments: { ssr: { build: { minify: true } } },
   resolve: { tsconfigPaths: true },
 });
