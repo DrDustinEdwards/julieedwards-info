@@ -6,16 +6,19 @@
 // no rename, trash or delete, so the package answers those routes 501 and meta.capabilities leaves them out.
 //
 // DRAFTS. A save lands in `draft` and changes nothing a reader sees; publish moves it to `published`.
-// A section with a draft waiting reads as "draft", so Carrel offers the publish. Every write first copies
-// the row as it was into section_revisions with Carrel's changeId, which is also the revision list.
+// Every section is live (the seed publishes them all), so each reads as "published" whether or not a draft waits:
+// a draft is a change waiting on a live section, as site-api's contract has no "live with a draft" status. The list's
+// status filter shows a section with a draft waiting under both `published` and `draft`, and one with a schedule under
+// `published` and `scheduled`. Every write first copies the row as it was into section_revisions with Carrel's
+// changeId, which is also the revision list. Nothing prunes it: a revision is two copies of a few hundred words, so
+// the table stays small, and README's "never prunes" holds.
 //
-// SCHEDULES. A section's draft can carry a time (publish_at, with the change id that set it), and then reads as
-// "scheduled" with that publishAt. The per-minute cron (workers/app.ts) runs the package's runSchedules, which
-// publishes it at that time through `schedules.apply`, recording publish_at as its publishedAt and the schedule's
-// change id on the revision, and fires the hooks a Carrel publish fires. A save keeps the time with the new text; a
-// publish, or a save back to the live text, drops it; a cancel drops it and leaves the text a draft. A section with no
-// draft is live with nothing waiting, so the package sends its schedule to `schedules.update`, which lands the same
-// way: the scheduled source becomes the section's draft.
+// SCHEDULES. A section's draft can carry a time (publish_at, with the change id that set it), and then reports it as
+// its scheduledUpdate, the contract's update waiting on a live item. Since every section is live, the package sends
+// every schedule to `schedules.update`. The per-minute cron (workers/app.ts) runs the package's runSchedules, which
+// applies it at that time through `schedules.apply`, recording publish_at as its publishedAt and the schedule's
+// change id on the revision, and fires the hooks a scheduled update fires. A save keeps the time with the new text; a
+// publish, or a save back to the live text, drops it; a cancel drops it and leaves the text a draft.
 //
 // VERSIONS. A hash of the published and draft sources together, and the schedule's time and change id while one
 // waits, so any change to the section moves it and a change to another section never does. A section with nothing
@@ -48,8 +51,13 @@ const UNSCHEDULED = { publishAt: null, scheduleChangeId: null, scheduledAt: null
 const versionOf = (s: Snapshot): Promise<string> =>
   contentVersion(s.publishAt ? [s.published, s.draft, s.publishAt, s.scheduleChangeId] : [s.published, s.draft]);
 
-const statusOf = (row: SectionRow): ContentSummary["status"] =>
-  row.draft === null ? "published" : row.publishAt ? "scheduled" : "draft";
+/** Every section is live; the list's status filter also finds the change waiting on it (see DRAFTS above). */
+const STATUS = "published" as const;
+const matchesStatus = (row: SectionRow, status: ContentSummary["status"]): boolean =>
+  status === "published" || (row.draft !== null && (status === "scheduled") === (row.publishAt !== null));
+
+const scheduledUpdateOf = (row: Pick<SectionRow, "publishAt" | "scheduleChangeId">): ContentSummary["scheduledUpdate"] =>
+  row.publishAt ? { publishAt: row.publishAt, changeId: row.scheduleChangeId! } : null;
 
 async function summaryOf(row: SectionRow): Promise<ContentSummary> {
   const section = SECTIONS[row.id as SectionId];
@@ -57,9 +65,10 @@ async function summaryOf(row: SectionRow): Promise<ContentSummary> {
     id: row.id,
     kind: KIND,
     title: section.title,
-    status: statusOf(row),
+    status: STATUS,
     path: section.anchor,
-    publishAt: row.publishAt,
+    publishAt: null,
+    scheduledUpdate: scheduledUpdateOf(row),
     publishedAt: row.publishedAt,
     updatedAt: row.updatedAt,
     version: await versionOf(row),
@@ -111,7 +120,7 @@ export function carrelSections(
     const after = { ...row, ...fields };
     const version = await versionOf(after);
     log({ event: `carrel.${event}`, id, version, changeId });
-    return { id, version, status: statusOf(after), changeId };
+    return { id, version, status: STATUS, changeId, scheduledUpdate: scheduledUpdateOf(after) };
   }
 
   // The section's draft, or the source sent, goes live at publishAt. Scheduling the live text again is nothing to do.
@@ -135,7 +144,7 @@ export function carrelSections(
       const rows = (await db.select().from(sections)).filter(
         (r) =>
           isSectionId(r.id) &&
-          (!query.status || statusOf(r) === query.status) &&
+          (!query.status || matchesStatus(r, query.status)) &&
           (!query.kind || query.kind === KIND) &&
           (!query.publishedAfter || r.publishedAt >= utc(query.publishedAfter)) &&
           (!query.publishedBefore || r.publishedAt <= utc(query.publishedBefore)) &&
@@ -184,13 +193,13 @@ export function carrelSections(
         .select()
         .from(sectionRevisions)
         .where(eq(sectionRevisions.sectionId, id))
-        .orderBy(desc(sectionRevisions.id))
-        .limit(50);
+        .orderBy(desc(sectionRevisions.id));
       return Promise.all(
         rows.map(async (r) => ({
           version: await versionOf(r),
           at: r.createdAt,
-          author: "julieedwards",
+          // The person behind Carrel's writes, until site-api names the actor of each change.
+          author: "Dustin Edwards",
           message: `Kept before change ${r.changeId}`,
         })),
       );
@@ -229,13 +238,13 @@ export function carrelSections(
         .where(and(isNotNull(sections.publishAt), lte(sections.publishAt, utc(now))))
         .orderBy(asc(sections.publishAt), asc(sections.id))
         .limit(limit);
-      return rows.map((r) => ({ id: r.id, kind: "publish" as const, publishAt: r.publishAt!, changeId: r.scheduleChangeId! }));
+      return rows.map((r) => ({ id: r.id, kind: "update" as const, publishAt: r.publishAt!, changeId: r.scheduleChangeId! }));
     },
 
     // Only the schedule that was listed, once its time has come: a cancel, a reschedule or a publish in between wins.
     async apply(id, due) {
       const row = await find(id);
-      if (due.kind !== "publish" || !row || row.draft === null || row.publishAt !== due.publishAt || row.scheduleChangeId !== due.changeId) return null;
+      if (due.kind !== "update" || !row || row.draft === null || row.publishAt !== due.publishAt || row.scheduleChangeId !== due.changeId) return null;
       if (Date.parse(due.publishAt) > due.now.getTime()) return null;
       const source = row.draft;
       return write("schedule.publish", id, due.changeId, await versionOf(row), () => ({ published: source, draft: null, ...UNSCHEDULED, publishedAt: due.publishAt }));

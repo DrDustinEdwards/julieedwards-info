@@ -11,6 +11,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
 import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
+import { Footer, Header } from "~/components/Chrome";
 import { HomeSections } from "~/components/Sections";
 import { libraryPhotos, loadContent } from "~/lib/content.server";
 import { PREVIEW_STYLE } from "~/lib/theme";
@@ -41,8 +42,8 @@ export function createCarrelAdapter(
     insight: { notFound: (options) => notFoundReport(env.DB, options) },
 
     // The home page as it would read with this source in place of its section's published one, from the
-    // site's own components and stylesheet. Without an id, the first section the source fits is used, and a
-    // source that fits none is shown as written.
+    // site's own components and stylesheet, inside the page's own header and footer as root.tsx draws them. Without
+    // an id, the first section the source fits is used, and a source that fits none is shown as written.
     preview: {
       async render({ id, source }) {
         const target = id && isSectionId(id) ? id : SECTION_IDS.find((s) => {
@@ -61,7 +62,16 @@ export function createCarrelAdapter(
         const next: Content = { ...content, [target]: parsed(target, source) };
         // Library pictures by their full address on this site, since the preview is shown on Carrel's origin.
         const photos = await libraryPhotos(env, next, options.origin);
-        return page(SECTIONS[target].title, renderToStaticMarkup(<main><HomeSections content={next} photos={photos} /></main>));
+        const body = renderToStaticMarkup(
+          <>
+            <Header name={next.profile.name} links={next.site.nav} />
+            <main id="main">
+              <HomeSections content={next} photos={photos} />
+            </main>
+            <Footer name={next.profile.name} site={next.site} />
+          </>,
+        );
+        return page(SECTIONS[target].title, body);
       },
     },
   };
