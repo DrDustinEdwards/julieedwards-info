@@ -29,3 +29,15 @@ test("a source that does not fit its section is refused", () => {
   ] as const;
   for (const [id, source] of bad) assert.throws(() => parseSection(id, source), SourceError, source);
 });
+
+test("the profile keeps site-api's search fields when set, drops a blank one, and only the profile takes them", () => {
+  const profile = sources.get("profile")!;
+  const withSearch = profile.replace("\n---\n", '\nsearchTitle: "Julie Edwards for school board"\nimageAlt: ""\nnoindex: true\n---\n');
+  const parsed = parseSection("profile", withSearch);
+  assert.equal(parsed.searchTitle, "Julie Edwards for school board");
+  assert.equal(parsed.noindex, true);
+  assert.equal("imageAlt" in parsed, false);
+  assert.deepEqual(parseSection("profile", renderSection("profile", parsed)), parsed);
+  assert.throws(() => parseSection("profile", profile.replace("\n---\n", "\nnoindex: \"yes\"\n---\n")), SourceError);
+  assert.throws(() => parseSection("about", '---\nheading: "x"\nsearchTitle: "y"\n---\nText'), SourceError);
+});

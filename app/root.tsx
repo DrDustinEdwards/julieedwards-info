@@ -26,12 +26,23 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
   }
   return [
     // The one page, so its WebPage has no trail.
+    // The profile's search fields, where set: the <title> (the share card keeps the name and office), card, canonical, noindex.
     ...defineHead({
       origin: SITE_URL,
       siteName: profile.name,
       image: { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${profile.name}, ${profile.office}` },
       locale: "en_US",
-    })({ path: "/", title: `${profile.name} | ${profile.office}`, fullTitle: true, description: profile.description, breadcrumbs: false }),
+    })({
+      path: "/",
+      title: profile.searchTitle || `${profile.name} | ${profile.office}`,
+      socialTitle: `${profile.name} | ${profile.office}`,
+      fullTitle: true,
+      description: profile.description,
+      image: data.shareImage,
+      canonical: profile.canonical || undefined,
+      noindex: profile.noindex,
+      breadcrumbs: false,
+    }),
     ...structuredData(profile).map(jsonLd),
   ];
 };

@@ -5,11 +5,12 @@
 // naming its /media/ address, which the page draws at responsive sizes.
 //
 // NOT HERE. No renderVersion: the page is drawn from the sections by the site's own components, not from HTML a
-// Prelum render stored, so there is no render for Carrel to find behind. No search or post fields: a section has
-// no excerpt, authors or series.
+// Prelum render stored, so there is no render for Carrel to find behind. No post fields: a section has no excerpt,
+// authors or series.
 import { renderToStaticMarkup } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
+import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
 import { HomeSections } from "~/components/Sections";
 import { libraryPhotos, loadContent } from "~/lib/content.server";
 import { PREVIEW_STYLE } from "~/lib/theme";
@@ -35,6 +36,9 @@ export function createCarrelAdapter(
 
     // The media library (media-adapter.server.ts): files a section names by address, as the About photo does.
     media: carrelMediaAdapter(env),
+
+    // The 404s workers/app.ts counts, for Carrel's report.
+    insight: { notFound: (options) => notFoundReport(env.DB, options) },
 
     // The home page as it would read with this source in place of its section's published one, from the
     // site's own components and stylesheet. Without an id, the first section the source fits is used, and a

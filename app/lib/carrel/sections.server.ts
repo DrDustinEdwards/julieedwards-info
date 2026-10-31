@@ -31,6 +31,7 @@ import {
   type SchedulesAdapter,
   type WriteResult,
 } from "@dustinedwards/site-api";
+import { SEARCH_FIELDS } from "@dustinedwards/site-api/frontmatter";
 import { utc } from "@dustinedwards/site-api/schedules";
 import { getDb } from "~/db/index.server";
 import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
@@ -126,6 +127,8 @@ export function carrelSections(
     // kind is always "section"; published compares publishedAt. A section has no tags and no authors.
     filters: ["kind", "published"],
     publishedAtSettable: true,
+    // Kept in the profile section (~/lib/source, Search), whose description is the page's.
+    searchFields: SEARCH_FIELDS,
 
     async list(query) {
       const needle = query.q?.toLowerCase();
