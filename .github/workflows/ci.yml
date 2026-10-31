@@ -60,7 +60,8 @@ jobs:
   # variable CF_DEPLOY is 'true' (with D1_DATABASE_ID set, and the secrets CLOUDFLARE_API_TOKEN and
   # CLOUDFLARE_ACCOUNT_ID), so nothing deploys before the Cloudflare cutover.
   # devkit's shared deploy (worker-deploy.yml): it reads the D1 Time Travel bookmark (`d1-database`), so a bad migration is
-  # one restore to undo, then writes the D1 id into the config, applies the migrations and builds,
+  # one restore to undo, then writes the D1 id into the config, applies the pending migrations that only add
+  # (devkit-migrations --apply; a drop, rename or row delete waits for a hand run) and builds,
   # deploys with DEPLOY_SHA set to this commit, waits for /health to report it, checks the home page answers, and rolls
   # the deploy back if it does not. A rollback never undoes a migration.
   deploy:
@@ -80,7 +81,7 @@ jobs:
         if [ "$code" = 200 ]; then exit 0; elif [ "$code" = 000 ]; then exit 3; else exit 1; fi
       pre-deploy: >-
         sed -e "s|<D1_DATABASE_ID>|${{ vars.D1_DATABASE_ID }}|" wrangler.jsonc.example > wrangler.jsonc &&
-        npm run db:migrate:prod &&
+        npx devkit-migrations drizzle --apply julieedwards &&
         npm run build
       sha-var: DEPLOY_SHA
     secrets:
