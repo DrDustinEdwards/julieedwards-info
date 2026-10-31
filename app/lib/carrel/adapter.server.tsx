@@ -12,6 +12,7 @@
 //
 // MEDIA. The library Carrel uploads to is its own group (media-adapter.server.ts); a section uses a file by
 // naming its /media/ address, which the page draws at responsive sizes.
+import { SEARCH_FIELDS } from "@dustinedwards/site-api/frontmatter";
 import { renderToStaticMarkup } from "react-dom/server";
 import { desc, eq } from "drizzle-orm";
 import {
@@ -104,6 +105,9 @@ export function createCarrelAdapter(
     site: { id: "julieedwards", name: "Julie Edwards", origin: options.origin },
 
     content: {
+      // Kept in the profile section (~/lib/source, Search), whose description is the page's.
+      searchFields: SEARCH_FIELDS,
+
       async list({ status, q }) {
         const rows = await db.select().from(sections);
         const order = new Map(SECTION_IDS.map((id, i) => [id, i]));

@@ -17,7 +17,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       "## Family\n- Her husband is Dr. Dustin Edwards, Professor and Department Head of Biological Sciences at Tarleton State University (https://dustinedwards.info).",
     ],
     sections: [
-      { heading: "Site", links: [{ title: "Home", url: SITE_URL, description: "Bio, priorities, experience, and contact." }] },
+      // The profile's noindex search field leaves the page's own link out.
+      ...(profile.noindex ? [] : [{ heading: "Site", links: [{ title: "Home", url: SITE_URL, description: "Bio, priorities, experience, and contact." }] }]),
       {
         heading: profile.district.name,
         links: [
