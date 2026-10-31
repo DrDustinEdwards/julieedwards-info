@@ -27,9 +27,10 @@
 	"d1_databases": [
 		{ "binding": "DB", "database_name": "julieedwards", "database_id": "<D1_DATABASE_ID>", "migrations_dir": "drizzle" }
 	],
-	// BACKUPS: nightly D1 dumps (d1-dump, app/lib/backup.server.ts). MEDIA: the media library Carrel uploads to
-	// (app/lib/media), each file under uploads/ and served at /media/<key>, with the earlier bytes of a replaced or
-	// turned file under history/, which is never served. Both buckets must exist before the deploy that names them.
+	// BACKUPS: nightly D1 dumps, and copies of the media files under files/media/ (d1-dump, app/lib/backup.server.ts).
+	// MEDIA: the media library Carrel uploads to (app/lib/media), each file under uploads/ and served at /media/<key>, with
+	// the earlier bytes of a replaced or turned file under history/, which is never served. Both buckets must exist before
+	// the deploy that names them.
 	"r2_buckets": [
 		{ "binding": "BACKUPS", "bucket_name": "julieedwards-backups" },
 		{ "binding": "MEDIA", "bucket_name": "julieedwards-media" }
@@ -47,6 +48,6 @@
 		// CSP violation reports (/csp-report), per address. Loose, because a page tripping ten rules sends ten.
 		{ "name": "CSP_REPORT_RATE_LIMIT", "namespace_id": "7502", "simple": { "limit": 60, "period": 60 } }
 	],
-	// 03:37 UTC nightly: runBackup().
+	// 03:37 UTC nightly: the D1 dump, the media files backup and the 404 prune (workers/app.ts scheduled).
 	"triggers": { "crons": ["37 3 * * *"] }
 }

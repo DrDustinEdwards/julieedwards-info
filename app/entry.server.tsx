@@ -3,6 +3,7 @@
 import type { EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import { renderToReadableStream } from "react-dom/server";
+import { logEvent, requestFields } from "@dustinedwards/site-runtime/log";
 
 export default async function handleRequest(
   request: Request,
@@ -13,7 +14,7 @@ export default async function handleRequest(
   const body = await renderToReadableStream(<ServerRouter context={routerContext} url={request.url} />, {
     onError(error: unknown) {
       responseStatusCode = 500;
-      console.error(error);
+      logEvent("render_failed", { ...requestFields(request), error }, { level: "error" });
     },
   });
   await body.allReady;

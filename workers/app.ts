@@ -8,9 +8,11 @@ import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/sit
 import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
+import { runJobs } from "@dustinedwards/site-runtime/cron";
+import { countNotFound, pruneNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
-import { runBackup } from "../app/lib/backup.server";
+import { runBackup, runMediaBackup } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
@@ -91,17 +93,18 @@ export default {
     // `cross_version_cache`), so every deploy starts cold. A request with a cookie is told no-store for the browser; a
     // reader who already holds the page gets a 304.
     const page = await ctx.exports.Renderer.fetch(forRenderer(request), { cf: { cacheKey: cacheKey(url) } });
+    // A 404 is never stored, so each one reaches here: counted per path and referring host (site-runtime ./not-found).
+    countNotFound(env.DB, request, page, ctx);
     return forReader(page, request);
   },
 
-  // Nightly D1 backup (wrangler.jsonc triggers.crons). Awaited and rethrown, so a failed run shows as a
-  // failed invocation and ages /health's backup reading.
+  // The nightly jobs (wrangler.jsonc triggers.crons), each isolated and recorded in cron_runs by site-runtime ./cron,
+  // which /health reads. A failed job fails the invocation after the others have run.
   async scheduled(_controller, env) {
-    try {
-      await runBackup(env);
-    } catch (err) {
-      console.error("Nightly backup failed:", err);
-      throw err;
-    }
+    await runJobs(env.DB, [
+      { name: "backup", everyMinutes: 1440, run: () => runBackup(env) },
+      { name: "media-backup", everyMinutes: 1440, run: () => runMediaBackup(env) },
+      { name: "prune-404", everyMinutes: 1440, run: () => pruneNotFound(env.DB) },
+    ]);
   },
 } satisfies ExportedHandler<Env>;

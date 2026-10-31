@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
-import { headTags } from "@drdustinedwards/site-helpers/head";
+import { defineHead } from "@drdustinedwards/site-helpers/head";
 import { jsonLd } from "@drdustinedwards/site-helpers/schema";
 import type { Route } from "./+types/root";
 import { Footer, Header } from "./components/Chrome";
@@ -25,15 +25,13 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
     return [{ title: notFound ? `${site.notFound.title.replace(/\.$/, "")} | ${profile.name}` : errorTitle(error, profile.name) }];
   }
   return [
-    ...headTags({
+    // The one page, so its WebPage has no trail.
+    ...defineHead({
       origin: SITE_URL,
-      path: "/",
-      title: `${profile.name} | ${profile.office}`,
-      description: profile.description,
-      image: { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${profile.name}, ${profile.office}` },
       siteName: profile.name,
+      image: { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${profile.name}, ${profile.office}` },
       locale: "en_US",
-    }),
+    })({ path: "/", title: `${profile.name} | ${profile.office}`, fullTitle: true, description: profile.description, breadcrumbs: false }),
     ...structuredData(profile).map(jsonLd),
   ];
 };
