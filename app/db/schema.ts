@@ -1,4 +1,5 @@
-// Kept in step with the hand-written migrations in drizzle/ (0000_sections.sql, 0002_media.sql).
+// Kept in step with the hand-written migrations in drizzle/ (0000_sections.sql, 0002_media.sql). 0003_ops.sql holds
+// site-runtime's own tables, which only it reads and writes.
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const sections = sqliteTable("sections", {

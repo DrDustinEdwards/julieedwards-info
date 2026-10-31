@@ -50,7 +50,8 @@ jobs:
   # A merge to main deploys once CI is green: migrations first, then the Worker. Dormant until the repo
   # variable CF_DEPLOY is 'true' (with D1_DATABASE_ID set, and the secrets CLOUDFLARE_API_TOKEN and
   # CLOUDFLARE_ACCOUNT_ID), so nothing deploys before the Cloudflare cutover.
-  # devkit's shared deploy (worker-deploy.yml): it writes the D1 id into the config, applies the migrations and builds,
+  # devkit's shared deploy (worker-deploy.yml): it reads the D1 Time Travel bookmark (`d1-database`), so a bad migration is
+  # one restore to undo, then writes the D1 id into the config, applies the migrations and builds,
   # deploys with DEPLOY_SHA set to this commit, waits for /health to report it, checks the home page answers, and rolls
   # the deploy back if it does not. A rollback never undoes a migration.
   deploy:
@@ -62,6 +63,7 @@ jobs:
     uses: DrDustinEdwards/devkit/.github/workflows/worker-deploy.yml@f55d2caadaa7a18a73397fb8defffb2e3123967b # v0.20.3
     with:
       worker-name: julieedwards
+      d1-database: julieedwards
       health-url: https://julieedwards.info/health
       verify-command: >-
         code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://julieedwards.info/ || true);
