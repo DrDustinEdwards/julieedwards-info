@@ -1,21 +1,13 @@
 // Carrel's site API, mounted by workers/app.ts at /api/carrel/v1, with its preview links at /preview/<token>. One key
 // (CARREL_SITE_KEY, a Worker secret) reaches only that prefix and nothing else on the site.
 import { submitIndexNow } from "@drdustinedwards/site-helpers/indexnow";
-import { createSiteApi, indexNowHook, webmentionHook, type PublishHook } from "@dustinedwards/site-api";
+import { createSiteApi, indexNowHook, webmentionHook } from "@dustinedwards/site-api";
 import { d1SiteApiStore } from "@dustinedwards/site-api/store";
 import { schedulePurgeHook } from "@dustinedwards/site-runtime/edge-cache";
 import { OWASP_EVENTS, logEvent } from "@dustinedwards/site-runtime/log";
 import { INDEXNOW_KEY, SITE_URL } from "~/lib/site";
 import { createCarrelAdapter } from "./adapter.server";
-
-/**
- * Webmentions for the one page every section belongs to. A section's address is the page with a fragment, so the
- * page is sent as itself, and only a publish changes what it links to: no section is ever taken down, renamed or
- * deleted, and a save to a live section reads as a draft, which the hook would take for a page gone.
- */
-function pageWebmentions(hook: PublishHook): PublishHook {
-  return { name: hook.name, on: ["publish"], run: (event) => hook.run({ ...event, url: new URL("/", event.url).href }) };
-}
+import { pageWebmentions } from "./page-webmentions.server";
 
 /**
  * site-api's log lines through site-runtime's logger (scrubbed). A refused request is named in the OWASP vocabulary:
