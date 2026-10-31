@@ -48,6 +48,7 @@
 		// CSP violation reports (/csp-report), per address. Loose, because a page tripping ten rules sends ten.
 		{ "name": "CSP_REPORT_RATE_LIMIT", "namespace_id": "7502", "simple": { "limit": 60, "period": 60 } }
 	],
-	// 03:37 UTC nightly: the D1 dump, the media files backup and the 404 prune (workers/app.ts scheduled).
-	"triggers": { "crons": ["37 3 * * *"] }
+	// Every minute: the sections Carrel scheduled go live. 03:37 UTC nightly: the D1 dump, the media files backup and the
+	// 404 prune (workers/app.ts scheduled).
+	"triggers": { "crons": ["* * * * *", "37 3 * * *"] }
 }

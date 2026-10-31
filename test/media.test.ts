@@ -4,71 +4,17 @@
 // and a stale write is refused while a replaced file's old bytes can be put back.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { registerHooks } from "node:module";
-import { DatabaseSync } from "node:sqlite";
+import { fakeD1, migratedDb, site } from "./site.ts";
 
-// The app's `~/` alias and its extensionless imports, as Vite resolves them.
-const app = new URL("../app/", import.meta.url);
-registerHooks({
-  resolve(specifier, context, next) {
-    const target = specifier.startsWith("~/") ? new URL(specifier.slice(2), app).href : specifier.startsWith(".") && context.parentURL?.startsWith(app.href) ? new URL(specifier, context.parentURL).href : null;
-    if (target && !/\.[cm]?[jt]sx?$/.test(target)) {
-      for (const ext of [".ts", ".mjs", ".js"]) if (existsSync(new URL(target + ext))) return next(target + ext, context);
-    }
-    return next(target ?? specifier, context);
-  },
-});
-
-const { SiteApiError, localClient } = await import("@dustinedwards/site-api/client");
+const { SiteApiError, createSiteClient, localClient } = await import("@dustinedwards/site-api/client");
 const { runConformance } = await import("@dustinedwards/site-api/conformance");
 const { createSiteApi } = await import("@dustinedwards/site-api");
+const { d1SiteApiStore } = await import("@dustinedwards/site-api/store");
 const { memoryAdapter } = await import("@dustinedwards/site-api/testing");
-// The site's modules are typed by the Worker's project (tsconfig.cloudflare.json); here they are loaded by address.
-const site = (path: string) => import(new URL(`../app/${path}`, import.meta.url).href);
 const { carrelMediaAdapter } = await site("lib/carrel/media-adapter.server.ts");
+const { carrelSections } = await site("lib/carrel/sections.server.ts");
 const { libraryPhotos, loadContent } = await site("lib/content.server.ts");
 const { serveMedia } = await site("lib/media/serve.server.ts");
-
-/** D1's binding over node:sqlite, as much of it as Drizzle calls. */
-function fakeD1(db: DatabaseSync) {
-  const statement = (sql: string, params: unknown[] = []) => {
-    const run = () => db.prepare(sql) as ReturnType<DatabaseSync["prepare"]>;
-    const args = params as never[];
-    return {
-      bind: (...next: unknown[]) => statement(sql, next),
-      all: async () => ({ results: run().all(...args), success: true, meta: {} }),
-      raw: async () => {
-        const s = run();
-        s.setReturnArrays(true);
-        return s.all(...args);
-      },
-      first: async (column?: string) => {
-        const row = run().get(...args) as Record<string, unknown> | undefined;
-        return column ? (row?.[column] ?? null) : (row ?? null);
-      },
-      run: async () => {
-        const info = run().run(...args);
-        return { results: [], success: true, meta: { changes: info.changes, last_row_id: Number(info.lastInsertRowid) } };
-      },
-    };
-  };
-  return {
-    prepare: (sql: string) => statement(sql),
-    batch: async (statements: Array<ReturnType<typeof statement>>) => {
-      db.exec("BEGIN");
-      try {
-        const results = [];
-        for (const s of statements) results.push(await s.all());
-        db.exec("COMMIT");
-        return results;
-      } catch (error) {
-        db.exec("ROLLBACK");
-        throw error;
-      }
-    },
-  };
-}
 
 type Stored = { bytes: Uint8Array; etag: string; httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> };
 
@@ -134,13 +80,13 @@ const fakeImages = {
 };
 
 function sample() {
-  const db = new DatabaseSync(":memory:");
-  for (const file of ["0000_sections.sql", "0001_seed.sql", "0002_media.sql", "0004_media_placeholder.sql"]) db.exec(readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8"));
+  const db = migratedDb();
   const MEDIA = fakeR2();
   const env = { DB: fakeD1(db), MEDIA, IMAGES: fakeImages };
-  // Carrel's content routes from the reference adapter; the media group is the site's own.
+  // The site's own sections and media group; the preview is the reference adapter's, since the site's draws the page
+  // with its components, which this test does not load.
   const memory = memoryAdapter();
-  const adapter = { ...memory, site: { id: "sample", name: "Sample", origin: "https://sample.example.com" }, media: carrelMediaAdapter(env) };
+  const adapter = { site: { id: "sample", name: "Sample", origin: "https://sample.example.com" }, preview: memory.preview, ...carrelSections(env, () => {}), media: carrelMediaAdapter(env) };
   /** Puts a source line into the profile's published text, as a Carrel publish would. */
   const publishProfile = (from: string, to: string) => db.prepare("UPDATE sections SET published = replace(published, ?, ?) WHERE id = 'profile'").run(from, to);
   return { env, adapter, client: localClient(adapter), publishProfile, bucket: MEDIA };
@@ -157,21 +103,21 @@ const refusal = async (promise: Promise<unknown>) => {
   }
 };
 
-test("the media group passes Carrel's conformance suite, a real upload included", async () => {
-  const { adapter } = sample();
+test("the sections and the media group pass Carrel's conformance suite, a real upload included", async () => {
+  const { adapter, env } = sample();
   const key = "sample-conformance-key-at-least-32-characters";
-  const api = createSiteApi({ adapter, key, limiter: { limit: async () => ({ success: true }) } });
-  const report = await runConformance({
-    baseUrl: adapter.site.origin,
-    key,
-    fetch: (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => api.handle(new Request(input, init))) as typeof fetch,
-    probeMediaUpload: true,
-  });
+  const api = createSiteApi({ adapter, key, limiter: { limit: async () => ({ success: true }) }, store: d1SiteApiStore(env.DB) });
+  const handle = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => api.handle(new Request(input, init))) as typeof fetch;
+  const report = await runConformance({ baseUrl: adapter.site.origin, key, fetch: handle, probeMediaUpload: true });
   assert.deepEqual(report.checks.filter((c) => !c.ok), []);
-  const meta = await localClient(adapter).meta();
-  for (const capability of ["mediaAlt", "mediaTags", "mediaTrash", "mediaFocus", "mediaCaption", "mediaReplace", "mediaDuplicates", "mediaUsage", "mediaFilters", "mediaImport", "mediaCredit", "mediaTransform", "mediaHistory", "mediaChanges", "mediaResizePass", "mediaEmbedded", "mediaSuggestions"]) {
-    assert.equal((meta.capabilities as Record<string, unknown>)[capability], true, capability);
+  const meta = await createSiteClient({ baseUrl: adapter.site.origin, key, fetch: handle }).meta();
+  const capabilities = meta.capabilities as Record<string, unknown>;
+  for (const capability of ["replay", "previewLinks", "scheduledUpdates", "contentPublishedAt", "mediaAlt", "mediaTags", "mediaTrash", "mediaFocus", "mediaCaption", "mediaReplace", "mediaDuplicates", "mediaUsage", "mediaFilters", "mediaImport", "mediaCredit", "mediaTransform", "mediaHistory", "mediaChanges", "mediaResizePass", "mediaEmbedded", "mediaSuggestions"]) {
+    assert.equal(capabilities[capability], true, capability);
   }
+  // A fixed set of sections: none is added, deleted, renamed or trashed, and Carrel is told so before it asks.
+  assert.deepEqual(capabilities.contentFilters, ["kind", "published"]);
+  for (const capability of ["contentDelete", "contentRename", "contentTrash"]) assert.equal(capabilities[capability], undefined, capability);
 });
 
 test("a file the profile names is drawn at its sizes, counted as used, and refused a delete", async () => {
