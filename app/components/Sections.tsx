@@ -80,7 +80,7 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
   return (
     <picture>
       {photo.sources.map((s) => (
-        <source key={s.type} type={s.type} srcSet={s.srcset} sizes={photo.sizes} />
+        <source key={`${s.type} ${s.media ?? ""}`} type={s.type} srcSet={s.srcset} sizes={photo.sizes} media={s.media} />
       ))}
       <img
         src={photo.src}
