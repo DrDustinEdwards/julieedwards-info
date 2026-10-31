@@ -1,5 +1,5 @@
 // Every security header the site sends, in one place; workers/app.ts applies them to every response.
-import { buildContentSecurityPolicy, reportingEndpoints, scriptHash } from "@dustinedwards/site-runtime/csp";
+import { buildContentSecurityPolicy, buildStagedPolicy, reportingEndpoints, scriptHash } from "@dustinedwards/site-runtime/csp";
 import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
 
@@ -9,8 +9,8 @@ const CSP_ENDPOINT = "csp-endpoint";
 // What the page loads beyond itself: the profile photo's hosts, the theme script by hash (the page ships
 // no other inline script; /site.js is 'self'), the contact grid's style attributes, Carrel's preview style by hash
 // (a preview link is served here), and the Cloudflare Web Analytics beacon the edge injects.
-async function contentSecurityPolicy(): Promise<string> {
-  return buildContentSecurityPolicy({
+async function sitePolicy() {
+  return {
     sources: { img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"] },
     scriptHashes: [await scriptHash(THEME_SCRIPT)],
     styleHashes: [await scriptHash(PREVIEW_STYLE)],
@@ -21,13 +21,21 @@ async function contentSecurityPolicy(): Promise<string> {
     extraDirectives: ["manifest-src 'self'"],
     reportUri: CSP_REPORT_PATH,
     reportTo: CSP_ENDPOINT,
-  }).value;
+  };
+}
+
+// The enforced policy, and beside it the same policy with Trusted Types as Report-Only (the registry stages it), so the
+// reports name any sink a script hands a string to before it is enforced.
+async function policyHeaders(): Promise<Record<string, string>> {
+  const policy = await sitePolicy();
+  const staged = buildStagedPolicy(policy, { trustedTypes: true });
+  return { "Content-Security-Policy": buildContentSecurityPolicy(policy).value, [staged.name]: staged.value };
 }
 
 let headers: Promise<Record<string, string>> | undefined;
 
 /** The whole set, built once per isolate (the policy hashes a constant), with the report group at `origin`. */
 export async function securityHeaders(origin: string): Promise<Record<string, string>> {
-  headers ??= contentSecurityPolicy().then((csp) => ({ ...SECURITY_HEADERS, "Content-Security-Policy": csp }));
+  headers ??= policyHeaders().then((policies) => ({ ...SECURITY_HEADERS, ...policies }));
   return { ...(await headers), "Reporting-Endpoints": reportingEndpoints(CSP_ENDPOINT, new URL(CSP_REPORT_PATH, origin)) };
 }
