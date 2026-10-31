@@ -1,4 +1,5 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
@@ -75,23 +76,18 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
   );
 }
 
-/** A media library picture: AVIF and WebP at the sizes its use offers, cropped by its box around its focal point. */
+/**
+ * A media library picture: AVIF and WebP at the sizes its use offers, cropped by its box around its focal point. It is
+ * below the hero, so it loads lazily and is never the page's priority image.
+ */
 function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
+  const { sources, img } = pictureProps(photo, { alt: photo.alt });
   return (
     <picture>
-      {photo.sources.map((s) => (
-        <source key={`${s.type} ${s.media ?? ""}`} type={s.type} srcSet={s.srcset} sizes={photo.sizes} media={s.media} />
+      {sources.map((s) => (
+        <source key={`${s.type}${s.media ?? ""}`} {...s} />
       ))}
-      <img
-        src={photo.src}
-        srcSet={photo.srcset}
-        sizes={photo.sizes}
-        width={photo.width}
-        height={photo.height}
-        alt={photo.alt}
-        decoding="async"
-        style={photo.focus ? { objectPosition: objectPosition(photo.focus) } : undefined}
-      />
+      <img {...img} style={photo.focus ? { objectPosition: objectPosition(photo.focus) } : undefined} />
     </picture>
   );
 }
@@ -101,7 +97,7 @@ export function About({ section, photo, library, name }: { section: Content["abo
     <section className="about" id="about">
       <div className="about-grid">
         <div className={`about-img reveal${photo ? "" : " placeholder"}`}>
-          {library ? <LibraryPicture photo={library} /> : photo ? <img src={photo} alt={name} decoding="async" /> : <span className="ph">Photo</span>}
+          {library ? <LibraryPicture photo={library} /> : photo ? <img src={photo} alt={name} loading="lazy" decoding="async" /> : <span className="ph">Photo</span>}
         </div>
         <div className="about-panel reveal">
           <h2>

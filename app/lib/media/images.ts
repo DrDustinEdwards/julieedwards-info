@@ -24,11 +24,12 @@ export function libraryKeyOf(address: string): string | null {
 
 /**
  * The ways the page shows a library picture. `about` is the photo beside About Me: it fills half the screen
- * from 820px (app.css) and all of it below, cropped to its box around the file's focal point.
+ * from 820px (app.css) and all of it below, cropped to its box around the file's focal point. Its `sizes` is the
+ * file's own (libraryPhoto).
  */
 export const images = defineImages({
   uses: {
-    about: { layout: "full-width", sizes: "(width < 820px) 100vw, 47vw" },
+    about: { layout: "full-width" },
   },
 });
 
@@ -43,7 +44,8 @@ export type Photos = { about?: LibraryPhoto };
 /**
  * The page's attributes for one stored file. The address carries a short hash of the bytes (`v`), so a size cached
  * forever is never stale after a replace, a turn or a revert; `origin` makes every address absolute, for Carrel's
- * preview, which is shown on Carrel's own origin.
+ * preview, which is shown on Carrel's own origin. From 820px the box is about as tall as it is wide, so a wider
+ * picture fills it by its height and `sizes` asks for that much more width, or it would be drawn soft.
  */
 export function libraryPhoto(
   file: { key: string; width: number | null; height: number | null; sha256: string; focus: string | null; alt: string },
@@ -51,7 +53,9 @@ export function libraryPhoto(
   origin = "",
 ): LibraryPhoto {
   const src = `${origin}${mediaUrl(file.key)}?v=${file.sha256.slice(0, 12)}`;
-  return { ...images.attributes({ src, width: file.width, height: file.height, focus: file.focus }, use), alt: file.alt, focus: file.focus };
+  const wide = file.width && file.height ? Math.max(1, file.width / file.height) : 1;
+  const attributes = images.attributes({ src, width: file.width, height: file.height, focus: file.focus }, use);
+  return { ...attributes, sizes: `(width < 820px) 100vw, ${Math.round(47 * wide)}vw`, alt: file.alt, focus: file.focus };
 }
 
 /** CSS object-position for a focal point, so a picture cropped by its box keeps its subject. */
