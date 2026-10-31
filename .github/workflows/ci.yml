@@ -64,13 +64,18 @@ jobs:
   # (devkit-migrations --apply; a drop, rename or row delete waits for a hand run) and builds,
   # deploys with DEPLOY_SHA set to this commit, waits for /health to report it, checks the home page answers, and rolls
   # the deploy back if it does not. A rollback never undoes a migration.
+  # On main: a gradual rollout (D4), the new version on 10% of traffic for 10 minutes before the live gate judges it and
+  # it takes all traffic. On a pull request from this repository: a preview version only (pr-<number>, D6), its URL in
+  # the run summary, nothing deployed and no migration run.
   deploy:
     needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CF_DEPLOY == 'true'
+    if: >-
+      vars.CF_DEPLOY == 'true' &&
+      ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request')
     concurrency:
-      group: deploy
+      group: ${{ github.event_name == 'pull_request' && format('preview-{0}', github.ref) || 'deploy' }}
       cancel-in-progress: false
-    uses: DrDustinEdwards/devkit/.github/workflows/worker-deploy.yml@65782d2c45431055672a315f0d126b62d0dd3aff # v0.20.14
+    uses: DrDustinEdwards/devkit/.github/workflows/worker-deploy.yml@017fccd9e3f316a9dfb9b8e1495592dffc677278 # v0.20.21
     with:
       worker-name: julieedwards
       d1-database: julieedwards
@@ -84,6 +89,12 @@ jobs:
         npx devkit-migrations drizzle --apply julieedwards &&
         npm run build
       sha-var: DEPLOY_SHA
+      gradual-percent: 10
+      gradual-minutes: 10
+      preview: true
+      preview-build: >-
+        sed -e "s|<D1_DATABASE_ID>|${{ vars.D1_DATABASE_ID }}|" wrangler.jsonc.example > wrangler.jsonc &&
+        npm run build
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
