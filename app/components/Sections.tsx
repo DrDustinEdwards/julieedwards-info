@@ -156,8 +156,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
             className="contact-link"
             style={{ gridColumn: 1, gridRow: 3 }}
             href={profile.facebook}
-            target="_blank"
-            rel="noopener noreferrer"
           >
             {fbIcon}
             Facebook
@@ -167,8 +165,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
             className="contact-link contact-address"
             style={{ gridColumn: 1, gridRow: 4 }}
             href={profile.address.mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
           >
             <span>{profile.address.name}</span>
             <span>{profile.address.line1}</span>
@@ -184,8 +180,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
               className="contact-link"
               style={{ gridColumn: 3 + (i % 2), gridRow: 2 + Math.floor(i / 2) }}
               href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
             >
               {l.label}
               <Arrow />
