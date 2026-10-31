@@ -4,10 +4,12 @@ import { getEnv } from "~/lib/context.server";
 import { loadContent } from "~/lib/content.server";
 import { SITE_URL } from "~/lib/site";
 
-// One page. Its lastmod is the newest publish of any section, not the time of the request.
+// One page, with the photo it shows. Its lastmod is the newest publish of any section, not the time of the request.
 export async function loader({ context }: Route.LoaderArgs) {
-  const { updatedAt } = await loadContent(getEnv(context));
-  const xml = sitemapDocument([{ loc: SITE_URL, lastmod: updatedAt, changefreq: "monthly", priority: 1 }], {
+  const { content, updatedAt } = await loadContent(getEnv(context));
+  const photo = content.profile.images.about;
+  const images = photo ? [new URL(photo, SITE_URL).href] : undefined;
+  const xml = sitemapDocument([{ loc: SITE_URL, lastmod: updatedAt, changefreq: "monthly", priority: 1, images }], {
     layout: "expanded",
     lastmodFormat: "datetime",
   });

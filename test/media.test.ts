@@ -135,7 +135,7 @@ const fakeImages = {
 
 function sample() {
   const db = new DatabaseSync(":memory:");
-  for (const file of ["0000_sections.sql", "0001_seed.sql", "0002_media.sql"]) db.exec(readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8"));
+  for (const file of ["0000_sections.sql", "0001_seed.sql", "0002_media.sql", "0004_media_placeholder.sql"]) db.exec(readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8"));
   const MEDIA = fakeR2();
   const env = { DB: fakeD1(db), MEDIA, IMAGES: fakeImages };
   // Carrel's content routes from the reference adapter; the media group is the site's own.
