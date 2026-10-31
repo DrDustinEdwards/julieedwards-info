@@ -7,6 +7,7 @@ export default [
   route("sitemap.xml", "routes/sitemap.ts"),
   route("llms.txt", "routes/llms.ts"),
   route("ai.txt", "routes/ai-txt.ts"),
+  route("site.webmanifest", "routes/manifest.ts"),
   route("health", "routes/health.ts"),
   route(".well-known/security.txt", "routes/security-txt.ts"),
   route(`${INDEXNOW_KEY}.txt`, "routes/indexnow-key.ts"),
