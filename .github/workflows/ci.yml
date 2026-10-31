@@ -75,7 +75,7 @@ jobs:
     concurrency:
       group: ${{ github.event_name == 'pull_request' && format('preview-{0}', github.ref) || 'deploy' }}
       cancel-in-progress: false
-    uses: DrDustinEdwards/devkit/.github/workflows/worker-deploy.yml@db347b70932b52b427b120ee1419d4614d5e4c29 # v0.20.20
+    uses: DrDustinEdwards/devkit/.github/workflows/worker-deploy.yml@017fccd9e3f316a9dfb9b8e1495592dffc677278 # v0.20.21
     with:
       worker-name: julieedwards
       d1-database: julieedwards
