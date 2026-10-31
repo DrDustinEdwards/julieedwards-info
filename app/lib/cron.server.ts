@@ -10,8 +10,8 @@ import { pruneNotFound } from "@dustinedwards/site-runtime/not-found";
 import { runBackup, runMediaBackup } from "~/lib/backup.server";
 import { runCarrelSchedules } from "~/lib/carrel/handler.server";
 
-export const SCHEDULES_CRON = "* * * * *";
-export const NIGHTLY_CRON = "37 3 * * *";
+const SCHEDULES_CRON = "* * * * *";
+const NIGHTLY_CRON = "37 3 * * *";
 
 const MINUTE = 60_000;
 const DAY = 1440;
