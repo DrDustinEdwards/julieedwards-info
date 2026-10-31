@@ -1,0 +1,13 @@
+{
+  "note": "sha256 of each migration. devkit-migrations compares against this. Adding a migration means adding its hash in the same commit.",
+  "expand_only_after": "0006_site_api_store.sql",
+  "sha256": {
+    "0000_sections.sql": "4445b6f27a4d550e792863b79b2ed3eb23be3707eefdeace6d8236fe88f02dc6",
+    "0001_seed.sql": "de330fec44358a61b043759d3271abf7740c5549b6b72abdb8f4a1d45c6ac095",
+    "0002_media.sql": "3cfa7a95e813bef27b599fe4c4009aa34c499cffbdab0dc0fd44dc02c298ab66",
+    "0003_ops.sql": "d23c0644b411ee4460d7f8658e39740401d91a61a31b9f714bafea4142e0c54e",
+    "0004_media_placeholder.sql": "10a238f2ae3a931572157dc970d19a83a2edb2f878ee456706aef6ef67c95595",
+    "0005_section_schedules.sql": "1edf44bec5edf44bd934d6fc4c462bd7f68872df1710bc560fde290c0a18bb40",
+    "0006_site_api_store.sql": "4adecbe7c9cdd5fcd09fe4e61fa1fc7e47ec84e78834ea87e744817613ae1eb0"
+  }
+}

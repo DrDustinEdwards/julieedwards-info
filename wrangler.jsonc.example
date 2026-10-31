@@ -10,9 +10,13 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"observability": {
 		"enabled": true,
+		// Every invocation's logs are kept: the site's traffic is far under Workers Logs' daily cap.
 		"logs": { "enabled": true, "head_sampling_rate": 1 }
 	},
 	"upload_source_maps": true,
+	// The deployed version's id and time: /health's cron check holds a job's "never ran" warning until its first window
+	// since the deploy has passed.
+	"version_metadata": { "binding": "CF_VERSION_METADATA" },
 	// The page's edge cache (workers/app.ts). The default export is the GATEWAY, cache disabled, so it runs on every
 	// request (the CSP report receiver, /media and Carrel's API). It calls the Renderer through ctx.exports with the path
 	// as the cache key, and the Renderer's responses are stored. Only a response a route marks shared
