@@ -2,7 +2,7 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet } from "@dustinedwards/site-runtime/headers";
-import { cacheKey, forReader, purgeAfterWrite, settleCacheHeaders, withPurgePages } from "@dustinedwards/site-runtime/edge-cache";
+import { cacheKey, forReader, forRenderer, purgeAfterWrite, settleCacheHeaders, withPurgePages } from "@dustinedwards/site-runtime/edge-cache";
 import { SPECULATION_RULES_HEADER, SPECULATION_RULES_PATH, speculationRulesResponse } from "@dustinedwards/site-runtime/prefetch";
 import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/site-runtime/preload";
 import { timedRender } from "@dustinedwards/site-runtime/server-timing";
@@ -56,7 +56,7 @@ export default {
     const redirect = canonicalRedirect(request, { host: "julieedwards.info" });
     if (redirect) return redirect;
     // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
-    if (url.pathname === SPECULATION_RULES_PATH) return secure(speculationRulesResponse(), url.origin);
+    if (url.pathname === SPECULATION_RULES_PATH) return secure(speculationRulesResponse(undefined, request), url.origin);
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
     // or without the binding, a report is dropped (still 204).
     if (url.pathname === CSP_REPORT_PATH) {
@@ -86,7 +86,7 @@ export default {
     // The key is the path and the query without tracking parameters. The Worker version stays in the key (no
     // `cross_version_cache`), so every deploy starts cold. A request with a cookie is told no-store for the browser; a
     // reader who already holds the page gets a 304.
-    const page = await ctx.exports.Renderer.fetch(request, { cf: { cacheKey: cacheKey(url) } });
+    const page = await ctx.exports.Renderer.fetch(forRenderer(request), { cf: { cacheKey: cacheKey(url) } });
     return forReader(page, request);
   },
 
