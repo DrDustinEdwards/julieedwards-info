@@ -11,6 +11,7 @@
 @import "capsomer/site-julieedwards.css";
 @import "capsomer/fallback-fonts.css";
 @import "capsomer/base.css";
+@import "capsomer/link.css";
 @import "capsomer/site-header.css";
 @import "capsomer/dialog.css";
 @import "capsomer/popover.css";
@@ -89,7 +90,7 @@ section { padding-block: calc(var(--space-8) + var(--space-7)); }
 .contact-grid { display: grid; grid-template-columns: minmax(max-content, 1fr) 1px max-content max-content; column-gap: var(--space-8); row-gap: var(--space-5); align-items: start; }
 .contact-grid h2 { font-weight: 600; font-size: 1rem; color: var(--accent-text); text-transform: uppercase; letter-spacing: .08em; }
 .contact-divider { grid-column: 2; grid-row: 1 / -1; width: 100%; background: var(--line); }
-.contact-link { font-family: var(--font-ui); font-size: .9rem; line-height: 1.55; display: inline-flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+.contact-link { font-family: var(--font-ui); font-size: .9rem; line-height: 1.55; display: inline-flex; align-items: center; gap: var(--space-3); }
 .contact-address { white-space: nowrap; }
 
 /* FOOTER */
@@ -97,9 +98,6 @@ section { padding-block: calc(var(--space-8) + var(--space-7)); }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
 .footer-note { font-size: .75rem; color: var(--muted); letter-spacing: .03em; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-6); font-size: .8rem; }
-/* The old site's quiet links: gray, turning green under the pointer as the arrow slides in. */
-:is(.contact-link, .footer-links a) { color: var(--muted); text-decoration: none; }
-:is(.contact-link, .footer-links a):hover { color: var(--accent-text); }
 .footer-links a { display: inline-flex; align-items: center; gap: var(--space-1); }
 
 /* MOTION: the hero rises on load and each section as it scrolls into view (app/site.ts). Capsomer's
