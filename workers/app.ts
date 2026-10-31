@@ -88,12 +88,8 @@ const site = {
     const stylesheets = (await serverBuild()).assets.routes.root?.css ?? [];
     const carrel = carrelApi(env, url.origin, stylesheets);
     // A preview link Carrel made (/preview/<token>, no key): the section's current source drawn as the page. The token
-    // is the address, so it is never sent on as a referrer, whatever the site's own policy says.
-    if (carrel.matchesPreviewLink(request)) {
-      const preview = await secure(await carrel.servePreviewLink(request), url.origin);
-      preview.headers.set("Referrer-Policy", "no-referrer");
-      return preview;
-    }
+    // is the address; the set's Referrer-Policy (no-referrer, the standard) keeps it from being sent on.
+    if (carrel.matchesPreviewLink(request)) return secure(await carrel.servePreviewLink(request), url.origin);
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       purgeAfterWrite(request, response, ctx, `carrel ${request.method} ${url.pathname}`);
