@@ -104,7 +104,6 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
           {site.resourceLinks.map((l) => (
             <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer">
               {l.label}
-              <Arrow />
             </a>
           ))}
         </div>

@@ -150,7 +150,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
           <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
           <a className="contact-link" style={{ gridColumn: 1, gridRow: 2 }} href={`mailto:${profile.email}`}>
             {profile.email}
-            <Arrow />
           </a>
           <a
             className="contact-link"
@@ -161,7 +160,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
           >
             {fbIcon}
             Facebook
-            <Arrow />
           </a>
           <a
             className="contact-link contact-address"
@@ -188,7 +186,6 @@ export function Contact({ section, profile }: { section: Content["contact"]; pro
               rel="noopener noreferrer"
             >
               {l.label}
-              <Arrow />
             </a>
           ))}
         </div>
