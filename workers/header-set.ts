@@ -2,10 +2,11 @@
 // scripts/headers-file.ts writes from it. Package imports only, so Node runs it as it is.
 import { TDM_RESERVATION_HEADERS } from "@drdustinedwards/site-helpers/robots";
 import { buildSecurityHeaders, headersFile } from "@dustinedwards/site-runtime/headers";
+import { julieedwardsInfo } from "@dustinedwards/site-runtime/sites";
 
 // The site's registry entry (site-runtime ./sites) plus Prelum's TDMRep header, which reserves training rights as /ai.txt says.
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
-  ...buildSecurityHeaders({ site: "julieedwards-info" }),
+  ...buildSecurityHeaders({ site: julieedwardsInfo }),
   ...TDM_RESERVATION_HEADERS,
 });
 
