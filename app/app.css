@@ -93,6 +93,8 @@ section { padding-block: calc(var(--space-8) + var(--space-7)); }
 .contact-address { white-space: nowrap; }
 
 /* FOOTER */
+.accessibility-statement { max-width: 65ch; }
+.accessibility-statement :is(h2, ul) { margin-block-start: var(--space-6); }
 .je-footer { padding-block: 2.5rem; border-top: 1px solid var(--line); font-family: var(--font-ui); }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
 .footer-note { font-size: .75rem; color: var(--muted); letter-spacing: .03em; }

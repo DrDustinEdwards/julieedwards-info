@@ -1,4 +1,4 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, useRouteError, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, useLocation, useRouteError, useRouteLoaderData } from "react-router";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { defineHead } from "@drdustinedwards/site-helpers/head";
 import { iconLinks } from "@drdustinedwards/site-helpers/icons";
@@ -17,7 +17,7 @@ export async function loader({ context }: Route.LoaderArgs) {
   return loadContent(getEnv(context));
 }
 
-export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
+export const meta: Route.MetaFunction = ({ loaderData: data, error, location }) => {
   if (!data) return [{ title: "Error" }];
   const { profile, site } = data.content;
   // The error path writes its own title and no home canonical or JSON-LD: a 404 is not the home page.
@@ -25,6 +25,8 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error }) => {
     const notFound = isRouteErrorResponse(error) && error.status === 404;
     return [{ title: notFound ? `${site.notFound.title.replace(/\.$/, "")} | ${profile.name}` : errorTitle(error, profile.name) }];
   }
+  // The home page's head is below; another page (the accessibility statement) writes its own.
+  if (location.pathname !== "/") return [];
   return [
     // The one page, so its WebPage has no trail.
     // The profile's search fields, where set: the <title> (the share card keeps the name and office), card, canonical, noindex.
@@ -55,6 +57,8 @@ const THEME_COLOR = { light: "#ffffff", dark: "#15532E" };
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
   const content = data?.content;
+  // The header's links are anchors on the home page; on another page they point back to it.
+  const base = useLocation().pathname === "/" ? "" : "/";
   return (
     <html lang="en" data-family="forest" data-cap-site="julieedwards">
       <head>
@@ -69,7 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         {content ? (
           <>
-            <Header name={content.profile.name} links={content.site.nav} />
+            <Header name={content.profile.name} links={content.site.nav} base={base} />
             <main id="main">{children}</main>
             <Footer name={content.profile.name} site={content.site} />
             <script src="/site.js" defer />
