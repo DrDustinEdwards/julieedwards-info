@@ -16,7 +16,7 @@
     "db:migrate:prod": "wrangler d1 migrations apply julieedwards --remote"
   },
   "dependencies": {
-    "@drdustinedwards/site-helpers": "github:DrDustinEdwards/prelum#v0.30.0",
+    "@drdustinedwards/site-helpers": "github:DrDustinEdwards/prelum#v0.30.1",
     "@dustinedwards/d1-dump": "github:DrDustinEdwards/d1-dump#v0.8.0",
     "@dustinedwards/site-api": "github:DrDustinEdwards/site-api#v0.18.0",
     "@dustinedwards/site-runtime": "github:DrDustinEdwards/site-runtime#v0.65.0",
