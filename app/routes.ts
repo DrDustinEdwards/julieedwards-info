@@ -3,6 +3,7 @@ import { INDEXNOW_KEY } from "./lib/site";
 
 export default [
   index("routes/home.tsx"),
+  route("accessibility", "routes/accessibility.tsx"),
   route("robots.txt", "routes/robots.ts"),
   route("sitemap.xml", "routes/sitemap.ts"),
   route("llms.txt", "routes/llms.ts"),

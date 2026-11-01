@@ -11,13 +11,15 @@ export const Arrow = () => (
   </svg>
 );
 
-export function Header({ name, links }: { name: string; links: Content["site"]["nav"] }) {
+export function Header({ name, links: nav, base = "" }: { name: string; links: Content["site"]["nav"]; base?: string }) {
+  // `base` is "/" off the home page, so the section anchors and the wordmark lead back to it.
+  const links = nav.map((l) => (l.href.startsWith("#") ? { ...l, href: base + l.href } : l));
   return (
     <header className="cap-site-header" data-cap="site-header" data-links="right" data-translucent="">
       <a className="cap-site-header-skip" href="#main">
         Skip to content
       </a>
-      <a className="cap-site-header-logo je-wordmark" href="#top">
+      <a className="cap-site-header-logo je-wordmark" href={`${base}#top`}>
         <AppleMark className="je-wordmark-mark" />
         {name}
       </a>
@@ -107,6 +109,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
               <Arrow />
             </a>
           ))}
+          <a href="/accessibility">Accessibility</a>
         </div>
       </div>
     </footer>
