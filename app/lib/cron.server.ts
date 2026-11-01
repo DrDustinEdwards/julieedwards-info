@@ -8,7 +8,12 @@
 import type { CronJob } from "@dustinedwards/site-runtime/cron";
 import { pruneNotFound } from "@dustinedwards/site-runtime/not-found";
 import { runBackup, runMediaBackup } from "~/lib/backup.server";
+import { sha256Hex } from "@dustinedwards/site-api";
+import { eq } from "drizzle-orm";
+import { getDb } from "~/db/index.server";
+import { media } from "~/db/schema";
 import { runCarrelSchedules } from "~/lib/carrel/handler.server";
+import { carrelMediaAdapter } from "~/lib/carrel/media-adapter.server";
 
 const SCHEDULES_CRON = "* * * * *";
 const NIGHTLY_CRON = "37 3 * * *";
@@ -20,6 +25,7 @@ export function cronJobs(env: Env, scheduledTime: Date): Record<string, CronJob[
   return {
     [SCHEDULES_CRON]: [
       { name: "carrel-schedules", everyMinutes: 1, timeoutMs: 50_000, run: () => runCarrelSchedules(env, scheduledTime) },
+      { name: "import-about-photo", everyMinutes: 1, timeoutMs: 50_000, run: () => importAboutPhoto(env) },
     ],
     [NIGHTLY_CRON]: [
       { name: "backup", everyMinutes: DAY, timeoutMs: 5 * MINUTE, run: () => runBackup(env) },
@@ -27,6 +33,33 @@ export function cronJobs(env: Env, scheduledTime: Date): Record<string, CronJob[
       { name: "prune-404", everyMinutes: DAY, timeoutMs: MINUTE, run: () => pruneNotFound(env.DB, { days: 90 }) },
     ],
   };
+}
+
+/**
+ * One-time (Dustin, 1 Nov 2026): the About photo still loads as the 2 MB original from content.julieedwards.info, and
+ * the media library holds no copy. This imports it once through the library's own upload path (the import a person
+ * makes in Carrel), so it gets its sizes, placeholder and history. The profile then names the library file, through
+ * Carrel, and this job is removed.
+ */
+const ABOUT_PHOTO = "https://content.julieedwards.info/julie-edwards-bluff-dale-profile.jpg";
+
+async function importAboutPhoto(env: Env): Promise<void> {
+  const [done] = await getDb(env).select({ key: media.key }).from(media).where(eq(media.sourceUrl, ABOUT_PHOTO)).limit(1);
+  if (done) return;
+  const response = await fetch(ABOUT_PHOTO);
+  if (!response.ok) throw new Error(`${ABOUT_PHOTO} answered ${response.status}`);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  const sha256 = await sha256Hex(bytes);
+  await carrelMediaAdapter(env).upload({
+    bytes,
+    contentType: "image/jpeg",
+    filename: "julie-edwards-bluff-dale-profile.jpg",
+    alt: "",
+    changeId: "import-about-photo",
+    sha256,
+    resize: true,
+    sourceUrl: ABOUT_PHOTO,
+  });
 }
 
 /** Every job of every cron, for /health's cronCheck (it reads names and intervals; `run` is never called). */
