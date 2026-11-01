@@ -122,11 +122,11 @@ test("the sections and the media group pass Carrel's conformance suite, a real u
 
 test("a file the profile names is drawn at its sizes, counted as used, and refused a delete", async () => {
   const { env, client, publishProfile, bucket } = sample();
-  const uploaded = await client.media.upload({ bytes: png(3000, 2000), contentType: "image/png", filename: "Julie at the board.png", changeId: "c1" });
+  const uploaded = await client.media.upload({ bytes: png(3000, 2000), contentType: "image/png", filename: "Julie at the board.png", changeId: "c1", decorative: true });
   assert.match(uploaded.id, /^uploads\/\d{4}\/\d{2}\/julie-at-the-board-[0-9a-f]{8}\.png$/);
   assert.equal(uploaded.width, 3000);
   // Bytes it already holds are that file, not a second one.
-  assert.equal((await client.media.upload({ bytes: png(3000, 2000), contentType: "image/png", filename: "again.png", changeId: "c2" })).id, uploaded.id);
+  assert.equal((await client.media.upload({ bytes: png(3000, 2000), contentType: "image/png", filename: "again.png", changeId: "c2", decorative: true })).id, uploaded.id);
 
   // Nothing on the page changes until a section names the file.
   assert.deepEqual((await loadContent(env)).photos, {});
@@ -152,7 +152,7 @@ test("a file the profile names is drawn at its sizes, counted as used, and refus
 
 test("a stale write is refused, and a replaced file's old bytes come back by revert", async () => {
   const { env, client } = sample();
-  const first = await client.media.upload({ bytes: png(800, 600), contentType: "image/png", filename: "photo.png", changeId: "c1" });
+  const first = await client.media.upload({ bytes: png(800, 600), contentType: "image/png", filename: "photo.png", changeId: "c1", decorative: true });
   const { changeCursor } = await client.media.list();
   const alt = await client.media.setAlt(first.id, { alt: "Julie Edwards", expectedVersion: first.version!, changeId: "c2" });
   assert.equal((await refusal(client.media.setAlt(first.id, { alt: "Lost", expectedVersion: first.version!, changeId: "c3" }))).status, 409);
