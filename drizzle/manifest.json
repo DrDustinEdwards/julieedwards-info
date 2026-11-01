@@ -8,6 +8,7 @@
     "0003_ops.sql": "d23c0644b411ee4460d7f8658e39740401d91a61a31b9f714bafea4142e0c54e",
     "0004_media_placeholder.sql": "10a238f2ae3a931572157dc970d19a83a2edb2f878ee456706aef6ef67c95595",
     "0005_section_schedules.sql": "1edf44bec5edf44bd934d6fc4c462bd7f68872df1710bc560fde290c0a18bb40",
-    "0006_site_api_store.sql": "4adecbe7c9cdd5fcd09fe4e61fa1fc7e47ec84e78834ea87e744817613ae1eb0"
+    "0006_site_api_store.sql": "4adecbe7c9cdd5fcd09fe4e61fa1fc7e47ec84e78834ea87e744817613ae1eb0",
+    "0007_site_api_media_uploads.sql": "71837aaddecc277d799d8a2443b6f781d6833f206c5baaa7062e6b36aad31367"
   }
 }
