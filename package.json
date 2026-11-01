@@ -13,7 +13,8 @@
     "check:migrations": "devkit-migrations drizzle",
     "deploy": "npm run build && wrangler deploy",
     "db:migrate": "wrangler d1 migrations apply julieedwards --local",
-    "db:migrate:prod": "wrangler d1 migrations apply julieedwards --remote"
+    "db:migrate:prod": "wrangler d1 migrations apply julieedwards --remote",
+    "bloat": "devkit-no-bloat"
   },
   "dependencies": {
     "@drdustinedwards/site-helpers": "github:DrDustinEdwards/prelum#v0.30.1",
