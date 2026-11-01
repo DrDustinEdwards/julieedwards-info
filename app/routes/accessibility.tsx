@@ -6,8 +6,10 @@ import type { Route } from "./+types/accessibility";
 import type { loader as rootLoader } from "~/root";
 import { SITE_URL } from "~/lib/site";
 
-// The statement is the network's shared text (Prelum); only the name, the contact and the date are this site's. It is
-// not her campaign copy, so it is not in D1 (CLAUDE.md hard rule 2 is about what she says).
+// The statement is the network's shared text (Prelum); the name, the contact, the date and the two facts about the build
+// are this site's: its look is Capsomer's forest family, and its links in running text are underlined (Capsomer v0.53.0
+// draws them in the link color at the text's weight). It is not her campaign copy, so it is not in D1 (CLAUDE.md hard
+// rule 2 is about what she says).
 const REVIEWED = "2026-11-01";
 
 export const headers = () => publicPageHeaders();
@@ -17,6 +19,8 @@ function statementFor(profile: { name: string; email: string }) {
     siteName: `${profile.name}'s campaign site`,
     contact: { href: `mailto:${profile.email}`, label: profile.email },
     date: REVIEWED,
+    capsomer: true,
+    links: "underline",
   });
 }
 
