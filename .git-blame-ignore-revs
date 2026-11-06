@@ -1,3 +1,4 @@
 # Formatting-only commits, skipped by git blame (git config blame.ignoreRevsFile .git-blame-ignore-revs).
-# The shared Oxfmt config, first run.
+# The shared Oxfmt config: its first run, and the second pass one chained call needed.
 f9099f81bf4c605886286a3d0a45bd320069413c
+148742634e390f72c8acfbfbe84fb33508d4127c
