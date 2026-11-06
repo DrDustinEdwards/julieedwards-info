@@ -13,7 +13,7 @@ const { carrelSections } = await site("lib/carrel/sections.server.ts");
 test("a scheduled section goes live from the cron at its time, and the publish hooks hear it", async () => {
   const db = migratedDb();
   const env = { DB: fakeD1(db) };
-  const heard: Array<{ action: string; trigger: string; url: string }> = [];
+  const heard: Array<{ action: string; trigger: string; url: string | null }> = [];
   const origin = "https://sample.example.com";
   const key = "sample-schedule-key-at-least-32-characters";
   const adapter = { site: { id: "sample", name: "Sample", origin }, preview: { render: async () => "" }, ...carrelSections(env, () => {}) };

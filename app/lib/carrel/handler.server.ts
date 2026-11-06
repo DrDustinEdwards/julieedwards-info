@@ -14,7 +14,7 @@ import { createCarrelAdapter } from "./adapter.server";
  * deleted, and a save to a live section reads as a draft, which the hook would take for a page gone.
  */
 function pageWebmentions(hook: PublishHook): PublishHook {
-  return { name: hook.name, on: ["publish"], run: (event) => hook.run({ ...event, url: new URL("/", event.url).href }) };
+  return { name: hook.name, on: ["publish"], run: (event) => (event.url === null ? undefined : hook.run({ ...event, url: new URL("/", event.url).href })) };
 }
 
 /**
