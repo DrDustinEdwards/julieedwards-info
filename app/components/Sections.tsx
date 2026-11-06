@@ -88,6 +88,7 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
         <source key={`${s.type}${s.media ?? ""}`} {...s} />
       ))}
       {/* The placeholder background (img.style) stays under the crop's position. */}
+      {/* oxlint-disable-next-line jsx-a11y/alt-text -- pictureProps sets img.alt from photo.alt. */}
       <img {...img} style={photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style} />
     </picture>
   );
