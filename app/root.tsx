@@ -1,4 +1,12 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, useLocation, useRouteError, useRouteLoaderData } from "react-router";
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  useLocation,
+  useRouteError,
+  useRouteLoaderData,
+} from "react-router";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { defineHead } from "@drdustinedwards/site-helpers/head";
 import { iconLinks } from "@drdustinedwards/site-helpers/icons";
@@ -23,7 +31,13 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error, location }) 
   // The error path writes its own title and no home canonical or JSON-LD: a 404 is not the home page.
   if (error) {
     const notFound = isRouteErrorResponse(error) && error.status === 404;
-    return [{ title: notFound ? `${site.notFound.title.replace(/\.$/, "")} | ${profile.name}` : errorTitle(error, profile.name) }];
+    return [
+      {
+        title: notFound
+          ? `${site.notFound.title.replace(/\.$/, "")} | ${profile.name}`
+          : errorTitle(error, profile.name),
+      },
+    ];
   }
   // The home page's head is below; another page (the accessibility statement) writes its own.
   if (location.pathname !== "/") return [];
@@ -33,7 +47,12 @@ export const meta: Route.MetaFunction = ({ loaderData: data, error, location }) 
     ...defineHead({
       origin: SITE_URL,
       siteName: profile.name,
-      image: { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${profile.name}, ${profile.office}` },
+      image: {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: `${profile.name}, ${profile.office}`,
+      },
       locale: "en_US",
     })({
       path: "/",
@@ -95,6 +114,9 @@ export function ErrorBoundary() {
   const data = useRouteLoaderData<typeof loader>("root");
   const notFound = data?.content.site.notFound;
   // A 404 says the site's own D1 copy (CLAUDE.md hard rule 2); the Layout already holds the page's main.
-  const words = isRouteErrorResponse(error) && error.status === 404 && notFound ? { title: notFound.title, text: notFound.body, homeLabel: notFound.cta } : {};
+  const words =
+    isRouteErrorResponse(error) && error.status === 404 && notFound
+      ? { title: notFound.title, text: notFound.body, homeLabel: notFound.cta }
+      : {};
   return <ErrorPage error={error} home="/" as="div" dev={import.meta.env.DEV} {...words} />;
 }

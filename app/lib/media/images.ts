@@ -65,10 +65,23 @@ export function libraryPhoto(
   const src = `${origin}${mediaUrl(file.key)}`;
   const wide = file.width && file.height ? Math.max(1, file.width / file.height) : 1;
   const attributes = images.attributes(
-    { src, width: file.width, height: file.height, focus: file.focus, version: file.sha256, placeholder: file.placeholder, color: file.color },
+    {
+      src,
+      width: file.width,
+      height: file.height,
+      focus: file.focus,
+      version: file.sha256,
+      placeholder: file.placeholder,
+      color: file.color,
+    },
     use,
   );
-  return { ...attributes, sizes: `(width < 820px) 100vw, ${Math.round(47 * wide)}vw`, alt: file.alt, focus: file.focus };
+  return {
+    ...attributes,
+    sizes: `(width < 820px) 100vw, ${Math.round(47 * wide)}vw`,
+    alt: file.alt,
+    focus: file.focus,
+  };
 }
 
 /** CSS object-position for a focal point, so a picture cropped by its box keeps its subject. */

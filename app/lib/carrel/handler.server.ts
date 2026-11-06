@@ -1,7 +1,12 @@
 // Carrel's site API, mounted by workers/app.ts at /api/carrel/v1, with its preview links at /preview/<token>. One key
 // (CARREL_SITE_KEY, a Worker secret) reaches only that prefix and nothing else on the site.
 import { submitIndexNow } from "@drdustinedwards/site-helpers/indexnow";
-import { createSiteApi, indexNowHook, webmentionHook, type PublishHook } from "@dustinedwards/site-api";
+import {
+  createSiteApi,
+  indexNowHook,
+  webmentionHook,
+  type PublishHook,
+} from "@dustinedwards/site-api";
 import { d1SiteApiStore } from "@dustinedwards/site-api/store";
 import { schedulePurgeHook } from "@dustinedwards/site-runtime/edge-cache";
 import { OWASP_EVENTS, logEvent } from "@dustinedwards/site-runtime/log";
@@ -14,7 +19,12 @@ import { createCarrelAdapter } from "./adapter.server";
  * deleted, and a save to a live section reads as a draft, which the hook would take for a page gone.
  */
 function pageWebmentions(hook: PublishHook): PublishHook {
-  return { name: hook.name, on: ["publish"], run: (event) => (event.url === null ? undefined : hook.run({ ...event, url: new URL("/", event.url).href })) };
+  return {
+    name: hook.name,
+    on: ["publish"],
+    run: (event) =>
+      event.url === null ? undefined : hook.run({ ...event, url: new URL("/", event.url).href }),
+  };
 }
 
 /**
@@ -25,7 +35,11 @@ function siteApiLog(entry: Record<string, unknown>): void {
   if (entry.siteApi === "refused") {
     const limited = entry.reason === "rate-limited";
     const denied = entry.reason === "wrong-key" || entry.reason === "no-key";
-    const event = limited ? OWASP_EVENTS.rateLimitExceeded : denied ? OWASP_EVENTS.authorizationFailure : "site_api_refused";
+    const event = limited
+      ? OWASP_EVENTS.rateLimitExceeded
+      : denied
+        ? OWASP_EVENTS.authorizationFailure
+        : "site_api_refused";
     logEvent(event, entry, { level: "warn" });
     return;
   }
@@ -44,7 +58,11 @@ export function carrelApi(env: Env, origin: string, stylesheets: string[]) {
     store,
     // A published change tells IndexNow at once; a request from a preview origin sends nothing. A schedule the cron
     // publishes purges the stored page, as the gateway does after a Carrel write.
-    hooks: [indexNowHook({ submit: submitIndexNow, origin: SITE_URL, key: INDEXNOW_KEY }), schedulePurgeHook(), pageWebmentions(webmentionHook({ store }))],
+    hooks: [
+      indexNowHook({ submit: submitIndexNow, origin: SITE_URL, key: INDEXNOW_KEY }),
+      schedulePurgeHook(),
+      pageWebmentions(webmentionHook({ store })),
+    ],
   });
 }
 

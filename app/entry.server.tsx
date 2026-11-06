@@ -11,12 +11,15 @@ export default async function handleRequest(
   responseHeaders: Headers,
   routerContext: EntryContext,
 ) {
-  const body = await renderToReadableStream(<ServerRouter context={routerContext} url={request.url} />, {
-    onError(error: unknown) {
-      responseStatusCode = 500;
-      logEvent("render_failed", { ...requestFields(request), error }, { level: "error" });
+  const body = await renderToReadableStream(
+    <ServerRouter context={routerContext} url={request.url} />,
+    {
+      onError(error: unknown) {
+        responseStatusCode = 500;
+        logEvent("render_failed", { ...requestFields(request), error }, { level: "error" });
+      },
     },
-  });
+  );
   await body.allReady;
   responseHeaders.set("Content-Type", "text/html; charset=utf-8");
   return new Response(body, { headers: responseHeaders, status: responseStatusCode });

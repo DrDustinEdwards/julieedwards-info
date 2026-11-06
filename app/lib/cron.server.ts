@@ -19,12 +19,27 @@ const DAY = 1440;
 export function cronJobs(env: Env, scheduledTime: Date): Record<string, CronJob[]> {
   return {
     [SCHEDULES_CRON]: [
-      { name: "carrel-schedules", everyMinutes: 1, timeoutMs: 50_000, run: () => runCarrelSchedules(env, scheduledTime) },
+      {
+        name: "carrel-schedules",
+        everyMinutes: 1,
+        timeoutMs: 50_000,
+        run: () => runCarrelSchedules(env, scheduledTime),
+      },
     ],
     [NIGHTLY_CRON]: [
       { name: "backup", everyMinutes: DAY, timeoutMs: 5 * MINUTE, run: () => runBackup(env) },
-      { name: "media-backup", everyMinutes: DAY, timeoutMs: 4 * MINUTE, run: () => runMediaBackup(env) },
-      { name: "prune-404", everyMinutes: DAY, timeoutMs: MINUTE, run: () => pruneNotFound(env.DB, { days: 90 }) },
+      {
+        name: "media-backup",
+        everyMinutes: DAY,
+        timeoutMs: 4 * MINUTE,
+        run: () => runMediaBackup(env),
+      },
+      {
+        name: "prune-404",
+        everyMinutes: DAY,
+        timeoutMs: MINUTE,
+        run: () => pruneNotFound(env.DB, { days: 90 }),
+      },
     ],
   };
 }

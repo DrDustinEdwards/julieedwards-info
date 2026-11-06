@@ -18,15 +18,35 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     ],
     sections: [
       // The profile's noindex search field leaves the page's own link out.
-      ...(profile.noindex ? [] : [{ heading: "Site", links: [{ title: "Home", url: SITE_URL, description: "Bio, priorities, experience, and contact." }] }]),
+      ...(profile.noindex
+        ? []
+        : [
+            {
+              heading: "Site",
+              links: [
+                {
+                  title: "Home",
+                  url: SITE_URL,
+                  description: "Bio, priorities, experience, and contact.",
+                },
+              ],
+            },
+          ]),
       {
         heading: profile.district.name,
         links: [
-          { title: profile.district.name, url: profile.district.url, description: "Official district website." },
+          {
+            title: profile.district.name,
+            url: profile.district.url,
+            description: "Official district website.",
+          },
           ...contact.boardLinks.map((l) => ({ title: l.label, url: l.href })),
         ],
       },
-      { heading: contact.heading, links: [{ title: `Email: ${profile.email}`, url: `mailto:${profile.email}` }] },
+      {
+        heading: contact.heading,
+        links: [{ title: `Email: ${profile.email}`, url: `mailto:${profile.email}` }],
+      },
     ],
   });
 }

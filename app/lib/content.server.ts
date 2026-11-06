@@ -16,7 +16,15 @@ import { parseSection, SECTION_IDS, type Content } from "./source";
 export async function libraryPhotos(env: Env, content: Content, origin = ""): Promise<Photos> {
   const key = libraryKeyOf(content.profile.images.about);
   const row = key ? await mediaRow(env, key) : null;
-  return row ? { about: libraryPhoto({ ...row, alt: row.alt.trim() || content.profile.name }, "about", origin) } : {};
+  return row
+    ? {
+        about: libraryPhoto(
+          { ...row, alt: row.alt.trim() || content.profile.name },
+          "about",
+          origin,
+        ),
+      }
+    : {};
 }
 
 /**
@@ -28,10 +36,17 @@ async function shareImage(env: Env, profile: Content["profile"]): Promise<HeadIm
   const row = key ? await mediaRow(env, key) : null;
   if (!row) return null;
   const alt = profile.imageAlt?.trim() || row.alt.trim() || profile.name;
-  return { url: `${SITE_URL}${mediaUrl(row.key)}?v=${row.sha256.slice(0, 12)}`, width: row.width ?? undefined, height: row.height ?? undefined, alt };
+  return {
+    url: `${SITE_URL}${mediaUrl(row.key)}?v=${row.sha256.slice(0, 12)}`,
+    width: row.width ?? undefined,
+    height: row.height ?? undefined,
+    alt,
+  };
 }
 
-export async function loadContent(env: Env): Promise<{ content: Content; updatedAt: string; photos: Photos; shareImage: HeadImage | null }> {
+export async function loadContent(
+  env: Env,
+): Promise<{ content: Content; updatedAt: string; photos: Photos; shareImage: HeadImage | null }> {
   const rows = await getDb(env).select().from(sections);
   const byId = new Map(rows.map((r) => [r.id, r]));
   const content = {} as Record<string, unknown>;
@@ -41,6 +56,9 @@ export async function loadContent(env: Env): Promise<{ content: Content; updated
     content[id] = parseSection(id, row.published);
   }
   const updatedAt = rows.reduce((max, r) => (r.publishedAt > max ? r.publishedAt : max), "");
-  const [photos, share] = await Promise.all([libraryPhotos(env, content as Content), shareImage(env, (content as Content).profile)]);
+  const [photos, share] = await Promise.all([
+    libraryPhotos(env, content as Content),
+    shareImage(env, (content as Content).profile),
+  ]);
   return { content: content as Content, updatedAt, photos, shareImage: share };
 }

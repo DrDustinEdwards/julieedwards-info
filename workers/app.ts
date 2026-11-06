@@ -2,8 +2,19 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
 import { applyHeaderSet, corpFor } from "@dustinedwards/site-runtime/headers";
-import { cacheKey, forReader, forRenderer, purgeAfterWrite, settleCacheHeaders, withPurgePages } from "@dustinedwards/site-runtime/edge-cache";
-import { SPECULATION_RULES_HEADER, SPECULATION_RULES_PATH, speculationRulesResponse } from "@dustinedwards/site-runtime/prefetch";
+import {
+  cacheKey,
+  forReader,
+  forRenderer,
+  purgeAfterWrite,
+  settleCacheHeaders,
+  withPurgePages,
+} from "@dustinedwards/site-runtime/edge-cache";
+import {
+  SPECULATION_RULES_HEADER,
+  SPECULATION_RULES_PATH,
+  speculationRulesResponse,
+} from "@dustinedwards/site-runtime/prefetch";
 import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/site-runtime/preload";
 import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
@@ -28,7 +39,11 @@ const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
 async function secure(response: Response, origin: string): Promise<Response> {
   const headers = new Headers(response.headers);
   applyHeaderSet(headers, await securityHeaders(origin));
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 /**
@@ -42,11 +57,17 @@ export class Renderer extends withPurgePages(WorkerEntrypoint<Env>) {
     const url = new URL(request.url);
     const context = new RouterContextProvider();
     context.set(cloudflareContext, { env: this.env, ctx: this.ctx });
-    const page = await timedRender(async () => secure(await requestHandler(request, context), url.origin));
-    if (page.headers.get("Content-Type")?.startsWith("text/html")) page.headers.set(SPECULATION_RULES_HEADER.name, SPECULATION_RULES_HEADER.value);
+    const page = await timedRender(async () =>
+      secure(await requestHandler(request, context), url.origin),
+    );
+    if (page.headers.get("Content-Type")?.startsWith("text/html"))
+      page.headers.set(SPECULATION_RULES_HEADER.name, SPECULATION_RULES_HEADER.value);
     // Early Hints: the zone answers a page carrying a preload Link header with a 103 first, so the browser starts the
     // render-blocking stylesheet and the hero's fonts while the Worker still renders (site-runtime ./preload).
-    const hints = withPreloadHeader(page, preloads([...rootStylesheets(await serverBuild()), ...FONT_PRELOADS]).header);
+    const hints = withPreloadHeader(
+      page,
+      preloads([...rootStylesheets(await serverBuild()), ...FONT_PRELOADS]).header,
+    );
     // Last: anything but a shared 200 (/health, the 404 page, an error) leaves private, no-store.
     return settleCacheHeaders(hints, request);
   }
@@ -64,20 +85,28 @@ const site = {
     const redirect = canonicalRedirect(request, { host: new URL(SITE_URL).hostname });
     if (redirect) return secure(redirect, SITE_URL);
     // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
-    if (url.pathname === SPECULATION_RULES_PATH) return secure(speculationRulesResponse(undefined, request), url.origin);
+    if (url.pathname === SPECULATION_RULES_PATH)
+      return secure(speculationRulesResponse(undefined, request), url.origin);
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
     // or without the binding, a report is dropped (still 204).
     if (url.pathname === CSP_REPORT_PATH) {
       const allow = async (r: Request) =>
         Boolean(env.CSP_REPORT_RATE_LIMIT) &&
-        (await env.CSP_REPORT_RATE_LIMIT.limit({ key: r.headers.get("cf-connecting-ip") || "anon" })).success;
+        (
+          await env.CSP_REPORT_RATE_LIMIT.limit({
+            key: r.headers.get("cf-connecting-ip") || "anon",
+          })
+        ).success;
       return receiveCspReport(request, { allow, headers: await securityHeaders(url.origin) });
     }
 
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers
     // runtime's; the DOM lib does not declare it.
     if (url.pathname.startsWith("/media/")) {
-      const media = await secure(await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default), url.origin);
+      const media = await secure(
+        await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default),
+        url.origin,
+      );
       media.headers.set("Cross-Origin-Resource-Policy", corpFor(media.headers.get("Content-Type")));
       return media;
     }
@@ -89,7 +118,8 @@ const site = {
     const carrel = carrelApi(env, url.origin, stylesheets);
     // A preview link Carrel made (/preview/<token>, no key): the section's current source drawn as the page. The token
     // is the address; the set's Referrer-Policy (no-referrer, the standard) keeps it from being sent on.
-    if (carrel.matchesPreviewLink(request)) return secure(await carrel.servePreviewLink(request), url.origin);
+    if (carrel.matchesPreviewLink(request))
+      return secure(await carrel.servePreviewLink(request), url.origin);
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       purgeAfterWrite(request, response, ctx, `carrel ${request.method} ${url.pathname}`);
@@ -99,7 +129,9 @@ const site = {
     // The key is the path and the query without tracking parameters. The Worker version stays in the key (no
     // `cross_version_cache`), so every deploy starts cold. A request with a cookie is told no-store for the browser; a
     // reader who already holds the page gets a 304.
-    const page = await ctx.exports.Renderer.fetch(forRenderer(request), { cf: { cacheKey: cacheKey(url) } });
+    const page = await ctx.exports.Renderer.fetch(forRenderer(request), {
+      cf: { cacheKey: cacheKey(url) },
+    });
     // A 404 is never stored, so each one reaches here: counted per path and referring host (site-runtime ./not-found).
     countNotFound(env.DB, request, page, ctx);
     return forReader(page, request);
@@ -124,8 +156,12 @@ const site = {
 type IncomingRequest = Parameters<typeof site.fetch>[0];
 export default {
   ...site,
-  fetch: withRequestLog((request: Request, env: Env, ctx: ExecutionContext) => site.fetch(request as IncomingRequest, env, ctx), {
-    sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
-    tokenPath: PREVIEW_TOKEN,
-  }),
+  fetch: withRequestLog(
+    (request: Request, env: Env, ctx: ExecutionContext) =>
+      site.fetch(request as IncomingRequest, env, ctx),
+    {
+      sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
+      tokenPath: PREVIEW_TOKEN,
+    },
+  ),
 } satisfies ExportedHandler<Env>;

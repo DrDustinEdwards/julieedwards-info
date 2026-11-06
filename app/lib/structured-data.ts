@@ -11,7 +11,11 @@ export function structuredData(profile: Content["profile"]) {
     url: SITE_URL,
     // A library photo is named by its path; the graph names it in full.
     image: profile.images.about ? new URL(profile.images.about, SITE_URL).href : undefined,
-    worksFor: { "@type": "EducationalOrganization", name: profile.district.name, url: profile.district.url },
+    worksFor: {
+      "@type": "EducationalOrganization",
+      name: profile.district.name,
+      url: profile.district.url,
+    },
     homeLocation: { "@type": "Place", name: "Bluff Dale, Texas" },
     sameAs: [profile.facebook],
     spouse: {
@@ -20,7 +24,11 @@ export function structuredData(profile: Content["profile"]) {
       honorificPrefix: "Dr.",
       jobTitle: "Professor and Department Head of Biological Sciences",
       url: "https://dustinedwards.info",
-      worksFor: { "@type": "CollegeOrUniversity", name: "Tarleton State University", url: "https://www.tarleton.edu" },
+      worksFor: {
+        "@type": "CollegeOrUniversity",
+        name: "Tarleton State University",
+        url: "https://www.tarleton.edu",
+      },
       sameAs: [
         "https://faculty.tarleton.edu/dcedwards/",
         "https://orcid.org/0000-0001-6409-8041",
