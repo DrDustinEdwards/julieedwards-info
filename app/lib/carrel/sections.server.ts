@@ -116,15 +116,13 @@ export function carrelSections(
     const fields = next(row);
     const now = new Date().toISOString();
     await db.batch([
-      db
-        .insert(sectionRevisions)
-        .values({
-          sectionId: id,
-          published: row.published,
-          draft: row.draft,
-          changeId,
-          createdAt: now,
-        }),
+      db.insert(sectionRevisions).values({
+        sectionId: id,
+        published: row.published,
+        draft: row.draft,
+        changeId,
+        createdAt: now,
+      }),
       db
         .update(sections)
         .set({ ...fields, updatedAt: now })
