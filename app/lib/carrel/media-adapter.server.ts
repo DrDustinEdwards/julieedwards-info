@@ -5,7 +5,7 @@
 // delete also removes the row only while no section names it, in the statement itself (IN_USE). Earlier bytes are
 // kept under history/ in MEDIA (the default), which /media never serves (serve.server.ts serves only uploads/). The
 // page sizes a picture by its row, read on each request, so a turn keeps the id and nothing is re-rendered.
-import { d1MediaStore, datedKey, mediaLibrary, type MediaAdapter, type MediaBucket, type MediaResize } from "@dustinedwards/site-api";
+import { d1MediaStore, datedKey, mediaLibrary, type MediaAdapter, type MediaResize } from "@dustinedwards/site-api";
 import { mediaUrl, UPLOAD_PREFIX } from "~/lib/media/images";
 import { usesByKey } from "~/lib/media/store.server";
 import { suggestFor } from "~/lib/media/suggest.server";
@@ -23,8 +23,7 @@ const IN_USE =
 export function carrelMediaAdapter(env: Env): MediaAdapter {
   return mediaLibrary({
     store: d1MediaStore(env.DB, { inUse: IN_USE }),
-    // The binding's `put` takes a wider `onlyIf` than the library's narrow interface names; the shapes it uses agree.
-    bucket: env.MEDIA as unknown as MediaBucket,
+    bucket: env.MEDIA,
     images: env.IMAGES,
     limits: LIMITS,
     url: mediaUrl,
