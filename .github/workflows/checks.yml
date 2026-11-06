@@ -27,4 +27,4 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: DrDustinEdwards/devkit/.github/workflows/checks.yml@a4c3bbf859fe126913e28c6199ff66fa98e0261d # v0.21.4
+    uses: DrDustinEdwards/devkit/.github/workflows/checks.yml@e2914d9fdd2b2ef4eb7d393db739c3bb2a808583 # v0.23.0
