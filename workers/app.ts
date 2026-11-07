@@ -201,8 +201,7 @@ const withMarkdownCopies = markdownCopies(
 export default {
   ...site,
   fetch: withRequestLog(
-    (request: Request, env: Env, ctx: ExecutionContext) =>
-      withMarkdownCopies(request, env, ctx),
+    (request: Request, env: Env, ctx: ExecutionContext) => withMarkdownCopies(request, env, ctx),
     {
       sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
       tokenPath: PREVIEW_TOKEN,
