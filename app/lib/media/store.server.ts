@@ -33,7 +33,8 @@ export async function usesByKey(env: Env): Promise<Map<string, MediaUse[]>> {
     for (const [source, detail] of sources) {
       if (!source) continue;
       const keys = new Set([...source.matchAll(ADDRESS)].map((m) => m[1]));
-      for (const key of keys) uses.set(key, [...(uses.get(key) ?? []), { type: "section", id: row.id, title, detail }]);
+      for (const key of keys)
+        uses.set(key, [...(uses.get(key) ?? []), { type: "section", id: row.id, title, detail }]);
     }
   }
   return uses;

@@ -20,7 +20,10 @@ export function loader({ context }: Route.LoaderArgs) {
   return healthResponse({
     ping: () => env.DB.prepare("select 1").first(),
     backup: async () => {
-      const [dump, files] = await Promise.all([backupHealth(env.BACKUPS), filesHealth(env.BACKUPS, MEDIA_BACKUP)]);
+      const [dump, files] = await Promise.all([
+        backupHealth(env.BACKUPS),
+        filesHealth(env.BACKUPS, MEDIA_BACKUP),
+      ]);
       return { ...dump, files, warning: dump.warning ?? files.warning };
     },
     sha: (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
@@ -28,7 +31,10 @@ export function loader({ context }: Route.LoaderArgs) {
       { ...r2Check("media", env.MEDIA), level: "warn" },
       imagesCheck("images", env.IMAGES),
       aiCheck("ai", env.AI),
-      cronCheck(env.DB, { jobs: allCronJobs(env), deployedAt: new Date(env.CF_VERSION_METADATA.timestamp) }),
+      cronCheck(env.DB, {
+        jobs: allCronJobs(env),
+        deployedAt: new Date(env.CF_VERSION_METADATA.timestamp),
+      }),
     ],
   });
 }

@@ -6,6 +6,14 @@ import { loadContent } from "~/lib/content.server";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { profile } = (await loadContent(getEnv(context))).content;
-  const manifest = webManifest({ name: profile.name, description: profile.description, themeColor: "#15532E", backgroundColor: "#15532E", lang: "en" });
-  return new Response(JSON.stringify(manifest), { headers: { "Content-Type": "application/manifest+json; charset=utf-8" } });
+  const manifest = webManifest({
+    name: profile.name,
+    description: profile.description,
+    themeColor: "#15532E",
+    backgroundColor: "#15532E",
+    lang: "en",
+  });
+  return new Response(JSON.stringify(manifest), {
+    headers: { "Content-Type": "application/manifest+json; charset=utf-8" },
+  });
 }

@@ -10,7 +10,7 @@ Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one 
 
 ## Commands
 
-- `npm run dev`, `npm run typecheck`, `npm test`, `npm run build`. Copy `wrangler.jsonc.example` to `wrangler.jsonc` first; it is gitignored (public repo, it holds the D1 id).
+- `npm run dev`, `npm run typecheck`, `npm run lint` (devkit's shared Oxlint config), `npm run format:check` (Oxfmt; `npm run format` writes), `npm test`, `npm run build`. Copy `wrangler.jsonc.example` to `wrangler.jsonc` first; it is gitignored (public repo, it holds the D1 id).
 - `npm run db:migrate` (local) and `db:migrate:prod` (remote): hand-written SQL in `drizzle/`, kept in step with `app/db/schema.ts`.
 - A merge to main deploys (CI's `deploy` job, while the repo variable `CF_DEPLOY` is `true`).
 

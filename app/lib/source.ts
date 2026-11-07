@@ -31,7 +31,12 @@ export type Content = {
   about: { heading: string; paragraphs: string[] };
   experience: { heading: string; items: Item[] };
   contact: { heading: string; boardHeading: string; boardLinks: Link[] };
-  site: { nav: Link[]; resourceLinks: Link[]; analyticsNote: string; notFound: { title: string; body: string; cta: string } };
+  site: {
+    nav: Link[];
+    resourceLinks: Link[];
+    analyticsNote: string;
+    notFound: { title: string; body: string; cta: string };
+  };
 };
 
 export type SectionId = keyof Content;
@@ -40,8 +45,20 @@ export type SectionId = keyof Content;
  * site-api's search fields beside `description`, each optional: the page's own <title>, share card, canonical and
  * noindex. They live in the profile section, the one that already holds the page's description.
  */
-export type Search = { searchTitle?: string; image?: string; imageAlt?: string; canonical?: string; noindex?: boolean };
-const SEARCH: Record<keyof Search, "string" | "flag"> = { searchTitle: "string", image: "string", imageAlt: "string", canonical: "string", noindex: "flag" };
+export type Search = {
+  searchTitle?: string;
+  image?: string;
+  imageAlt?: string;
+  canonical?: string;
+  noindex?: boolean;
+};
+const SEARCH: Record<keyof Search, "string" | "flag"> = {
+  searchTitle: "string",
+  image: "string",
+  imageAlt: "string",
+  canonical: "string",
+  noindex: "flag",
+};
 
 type Shape = "string" | "links" | readonly string[];
 type Section = {
@@ -71,14 +88,39 @@ export const SECTIONS: Record<SectionId, Section> = {
     optional: SEARCH,
     body: "none",
   },
-  priorities: { title: "Priorities", anchor: "/#why", fields: { heading: "string" }, body: "items" },
-  about: { title: "About Me", anchor: "/#about", fields: { heading: "string" }, body: "paragraphs" },
-  experience: { title: "What I bring to the board", anchor: "/#experience", fields: { heading: "string" }, body: "items" },
-  contact: { title: "Contact and School Board links", anchor: "/#contact", fields: { heading: "string", boardHeading: "string", boardLinks: "links" }, body: "none" },
+  priorities: {
+    title: "Priorities",
+    anchor: "/#why",
+    fields: { heading: "string" },
+    body: "items",
+  },
+  about: {
+    title: "About Me",
+    anchor: "/#about",
+    fields: { heading: "string" },
+    body: "paragraphs",
+  },
+  experience: {
+    title: "What I bring to the board",
+    anchor: "/#experience",
+    fields: { heading: "string" },
+    body: "items",
+  },
+  contact: {
+    title: "Contact and School Board links",
+    anchor: "/#contact",
+    fields: { heading: "string", boardHeading: "string", boardLinks: "links" },
+    body: "none",
+  },
   site: {
     title: "Navigation, footer and 404 page",
     anchor: "/",
-    fields: { nav: "links", resourceLinks: "links", analyticsNote: "string", notFound: ["title", "body", "cta"] },
+    fields: {
+      nav: "links",
+      resourceLinks: "links",
+      analyticsNote: "string",
+      notFound: ["title", "body", "cta"],
+    },
     body: "none",
   },
 };
@@ -98,7 +140,14 @@ function check(key: string, shape: Shape, value: unknown): void {
   } else if (shape === "links") {
     const ok =
       Array.isArray(value) &&
-      value.every((l) => l && typeof l === "object" && isString(l.label) && isString(l.href) && Object.keys(l).length === 2);
+      value.every(
+        (l) =>
+          l &&
+          typeof l === "object" &&
+          isString(l.label) &&
+          isString(l.href) &&
+          Object.keys(l).length === 2,
+      );
     if (!ok) throw new SourceError(`"${key}" must be a list of { "label": ..., "href": ... }.`);
   } else {
     const ok =
@@ -107,7 +156,10 @@ function check(key: string, shape: Shape, value: unknown): void {
       !Array.isArray(value) &&
       shape.every((k) => isString((value as Record<string, unknown>)[k])) &&
       Object.keys(value).length === shape.length;
-    if (!ok) throw new SourceError(`"${key}" must have exactly ${shape.map((k) => `"${k}"`).join(", ")}, each text.`);
+    if (!ok)
+      throw new SourceError(
+        `"${key}" must have exactly ${shape.map((k) => `"${k}"`).join(", ")}, each text.`,
+      );
   }
 }
 
@@ -123,10 +175,14 @@ function itemsOf(body: string): Item[] {
     const newline = block.indexOf("\n");
     const title = (newline === -1 ? block : block.slice(0, newline)).trim();
     const text = paragraphsOf(newline === -1 ? "" : block.slice(newline + 1));
-    if (!title || text.length !== 1) throw new SourceError(`Each "## Title" needs one paragraph of text after it (see "${title || "untitled"}").`);
+    if (!title || text.length !== 1)
+      throw new SourceError(
+        `Each "## Title" needs one paragraph of text after it (see "${title || "untitled"}").`,
+      );
     items.push({ title, body: text[0] });
   }
-  if (body.split(/^## /m)[0].trim()) throw new SourceError('Text before the first "## Title" has nowhere to go.');
+  if (body.split(/^## /m)[0].trim())
+    throw new SourceError('Text before the first "## Title" has nowhere to go.');
   return items;
 }
 
@@ -134,7 +190,8 @@ function itemsOf(body: string): Item[] {
 export function parseSection<K extends SectionId>(id: K, source: string): Content[K] {
   const section = SECTIONS[id];
   const normalized = source.replace(/\r\n/g, "\n");
-  if (!normalized.startsWith("---\n")) throw new SourceError("The source must start with a --- front matter block.");
+  if (!normalized.startsWith("---\n"))
+    throw new SourceError("The source must start with a --- front matter block.");
   const close = normalized.indexOf("\n---", 3);
   if (close === -1) throw new SourceError("The front matter block has no closing ---.");
   const out: Record<string, unknown> = {};
@@ -143,7 +200,8 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
     const colon = line.indexOf(":");
     const key = colon === -1 ? line.trim() : line.slice(0, colon).trim();
     const optional = section.optional?.[key];
-    if (!Object.hasOwn(section.fields, key) && !optional) throw new SourceError(`"${key}" is not a field of this section.`);
+    if (!Object.hasOwn(section.fields, key) && !optional)
+      throw new SourceError(`"${key}" is not a field of this section.`);
     try {
       out[key] = JSON.parse(line.slice(colon + 1));
     } catch {
@@ -162,7 +220,8 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
   const body = normalized.slice(close + 4).replace(/^\n/, "");
   if (section.body === "paragraphs") out.paragraphs = paragraphsOf(body);
   else if (section.body === "items") out.items = itemsOf(body);
-  else if (body.trim()) throw new SourceError("This section has no body; everything goes in the front matter.");
+  else if (body.trim())
+    throw new SourceError("This section has no body; everything goes in the front matter.");
   return out as Content[K];
 }
 
@@ -170,11 +229,13 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
 export function renderSection<K extends SectionId>(id: K, value: Content[K]): string {
   const section = SECTIONS[id];
   const record = value as Record<string, unknown>;
-  const lines = [...Object.keys(section.fields), ...Object.keys(section.optional ?? {}).filter((k) => record[k])].map(
-    (k) => `${k}: ${JSON.stringify(record[k])}`,
-  );
+  const lines = [
+    ...Object.keys(section.fields),
+    ...Object.keys(section.optional ?? {}).filter((k) => record[k]),
+  ].map((k) => `${k}: ${JSON.stringify(record[k])}`);
   let body = "";
   if (section.body === "paragraphs") body = (record.paragraphs as string[]).join("\n\n");
-  if (section.body === "items") body = (record.items as Item[]).map((i) => `## ${i.title}\n\n${i.body}`).join("\n\n");
+  if (section.body === "items")
+    body = (record.items as Item[]).map((i) => `## ${i.title}\n\n${i.body}`).join("\n\n");
   return `---\n${lines.join("\n")}\n---\n${body ? `${body}\n` : ""}`;
 }

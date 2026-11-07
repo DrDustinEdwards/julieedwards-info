@@ -37,7 +37,8 @@ import { getDb } from "~/db/index.server";
 import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
 import { isSectionId, parseSection, SECTIONS, SourceError, type SectionId } from "~/lib/source";
 
-type Snapshot = Pick<SectionRow, "published" | "draft"> & Partial<Pick<SectionRow, "publishAt" | "scheduleChangeId">>;
+type Snapshot = Pick<SectionRow, "published" | "draft"> &
+  Partial<Pick<SectionRow, "publishAt" | "scheduleChangeId">>;
 type Fields = Partial<Omit<SectionRow, "id" | "updatedAt">>;
 
 const KIND = "section";
@@ -46,7 +47,9 @@ const KIND = "section";
 const UNSCHEDULED = { publishAt: null, scheduleChangeId: null, scheduledAt: null } satisfies Fields;
 
 const versionOf = (s: Snapshot): Promise<string> =>
-  contentVersion(s.publishAt ? [s.published, s.draft, s.publishAt, s.scheduleChangeId] : [s.published, s.draft]);
+  contentVersion(
+    s.publishAt ? [s.published, s.draft, s.publishAt, s.scheduleChangeId] : [s.published, s.draft],
+  );
 
 const statusOf = (row: SectionRow): ContentSummary["status"] =>
   row.draft === null ? "published" : row.publishAt ? "scheduled" : "draft";
@@ -95,18 +98,35 @@ export function carrelSections(
     return rows[0] ?? null;
   }
 
-  async function write(event: string, id: string, changeId: string, expectedVersion: string | null, next: (row: SectionRow) => Fields): Promise<WriteResult> {
+  async function write(
+    event: string,
+    id: string,
+    changeId: string,
+    expectedVersion: string | null,
+    next: (row: SectionRow) => Fields,
+  ): Promise<WriteResult> {
     const row = await find(id);
     if (!row) {
-      if (expectedVersion === null) throw new RefusedError("This page has a fixed set of sections; Carrel cannot add one.");
+      if (expectedVersion === null)
+        throw new RefusedError("This page has a fixed set of sections; Carrel cannot add one.");
       throw new VersionConflictError(null);
     }
-    if ((await versionOf(row)) !== expectedVersion) throw new VersionConflictError(await versionOf(row));
+    if ((await versionOf(row)) !== expectedVersion)
+      throw new VersionConflictError(await versionOf(row));
     const fields = next(row);
     const now = new Date().toISOString();
     await db.batch([
-      db.insert(sectionRevisions).values({ sectionId: id, published: row.published, draft: row.draft, changeId, createdAt: now }),
-      db.update(sections).set({ ...fields, updatedAt: now }).where(eq(sections.id, id)),
+      db.insert(sectionRevisions).values({
+        sectionId: id,
+        published: row.published,
+        draft: row.draft,
+        changeId,
+        createdAt: now,
+      }),
+      db
+        .update(sections)
+        .set({ ...fields, updatedAt: now })
+        .where(eq(sections.id, id)),
     ]);
     const after = { ...row, ...fields };
     const version = await versionOf(after);
@@ -115,12 +135,21 @@ export function carrelSections(
   }
 
   // The section's draft, or the source sent, goes live at publishAt. Scheduling the live text again is nothing to do.
-  const schedule = (id: string, input: { source?: string; publishAt: string; expectedVersion: string; changeId: string }) =>
+  const schedule = (
+    id: string,
+    input: { source?: string; publishAt: string; expectedVersion: string; changeId: string },
+  ) =>
     write("schedule", id, input.changeId, input.expectedVersion, (row) => {
       const source = input.source ?? row.draft;
-      if (source === null || source === row.published) throw new RefusedError("Nothing differs from the live section; save the change first.");
+      if (source === null || source === row.published)
+        throw new RefusedError("Nothing differs from the live section; save the change first.");
       parsed(id as SectionId, source);
-      return { draft: source, publishAt: utc(input.publishAt), scheduleChangeId: input.changeId, scheduledAt: new Date().toISOString() };
+      return {
+        draft: source,
+        publishAt: utc(input.publishAt),
+        scheduleChangeId: input.changeId,
+        scheduledAt: new Date().toISOString(),
+      };
     });
 
   const content: ContentAdapter = {
@@ -139,7 +168,10 @@ export function carrelSections(
           (!query.kind || query.kind === KIND) &&
           (!query.publishedAfter || r.publishedAt >= utc(query.publishedAfter)) &&
           (!query.publishedBefore || r.publishedAt <= utc(query.publishedBefore)) &&
-          (!needle || [SECTIONS[r.id as SectionId].title, r.draft ?? r.published].some((t) => t.toLowerCase().includes(needle))),
+          (!needle ||
+            [SECTIONS[r.id as SectionId].title, r.draft ?? r.published].some((t) =>
+              t.toLowerCase().includes(needle),
+            )),
       );
       const sort = query.sort ?? "updated";
       const dir = query.dir ?? (sort === "title" ? "asc" : "desc");
@@ -154,20 +186,32 @@ export function carrelSections(
     async get(id) {
       const row = await find(id);
       if (!row) return null;
-      return { ...(await summaryOf(row)), format: "markdown" as const, source: row.draft ?? row.published, version: await versionOf(row) };
+      return {
+        ...(await summaryOf(row)),
+        format: "markdown" as const,
+        source: row.draft ?? row.published,
+        version: await versionOf(row),
+      };
     },
 
     saveDraft: (id, input) =>
       write("save", id, input.changeId, input.expectedVersion, (row) => {
         parsed(id as SectionId, input.source);
-        return input.source === row.published ? { draft: null, ...UNSCHEDULED } : { draft: input.source };
+        return input.source === row.published
+          ? { draft: null, ...UNSCHEDULED }
+          : { draft: input.source };
       }),
 
     publish: (id, input) =>
       write("publish", id, input.changeId, input.expectedVersion, (row) => {
         const source = input.source ?? row.draft ?? row.published;
         parsed(id as SectionId, source);
-        return { published: source, draft: null, ...UNSCHEDULED, publishedAt: utc(input.publishedAt ?? new Date()) };
+        return {
+          published: source,
+          draft: null,
+          ...UNSCHEDULED,
+          publishedAt: utc(input.publishedAt ?? new Date()),
+        };
       }),
 
     // The package sends a schedule here for a section with a draft, and to schedules.update for one without.
@@ -175,7 +219,9 @@ export function carrelSections(
 
     async unpublish(id) {
       if (!(await find(id))) throw new NotFoundError();
-      throw new RefusedError("A section of this page cannot be taken down; edit it and publish instead.");
+      throw new RefusedError(
+        "A section of this page cannot be taken down; edit it and publish instead.",
+      );
     },
 
     async revisions(id) {
@@ -199,8 +245,12 @@ export function carrelSections(
     async revisionSource(id, version) {
       const row = await find(id);
       if (!row) return null;
-      const candidates: Snapshot[] = [row, ...(await db.select().from(sectionRevisions).where(eq(sectionRevisions.sectionId, id)))];
-      for (const c of candidates) if ((await versionOf(c)) === version) return c.draft ?? c.published;
+      const candidates: Snapshot[] = [
+        row,
+        ...(await db.select().from(sectionRevisions).where(eq(sectionRevisions.sectionId, id))),
+      ];
+      for (const c of candidates)
+        if ((await versionOf(c)) === version) return c.draft ?? c.published;
       return null;
     },
   };
@@ -209,7 +259,13 @@ export function carrelSections(
     async get(id) {
       const row = await find(id);
       if (!row?.publishAt || row.draft === null) return null;
-      return { id, source: row.draft, publishAt: row.publishAt, changeId: row.scheduleChangeId!, scheduledAt: row.scheduledAt! };
+      return {
+        id,
+        source: row.draft,
+        publishAt: row.publishAt,
+        changeId: row.scheduleChangeId!,
+        scheduledAt: row.scheduledAt!,
+      };
     },
 
     update: schedule,
@@ -229,16 +285,33 @@ export function carrelSections(
         .where(and(isNotNull(sections.publishAt), lte(sections.publishAt, utc(now))))
         .orderBy(asc(sections.publishAt), asc(sections.id))
         .limit(limit);
-      return rows.map((r) => ({ id: r.id, kind: "publish" as const, publishAt: r.publishAt!, changeId: r.scheduleChangeId! }));
+      return rows.map((r) => ({
+        id: r.id,
+        kind: "publish" as const,
+        publishAt: r.publishAt!,
+        changeId: r.scheduleChangeId!,
+      }));
     },
 
     // Only the schedule that was listed, once its time has come: a cancel, a reschedule or a publish in between wins.
     async apply(id, due) {
       const row = await find(id);
-      if (due.kind !== "publish" || !row || row.draft === null || row.publishAt !== due.publishAt || row.scheduleChangeId !== due.changeId) return null;
+      if (
+        due.kind !== "publish" ||
+        !row ||
+        row.draft === null ||
+        row.publishAt !== due.publishAt ||
+        row.scheduleChangeId !== due.changeId
+      )
+        return null;
       if (Date.parse(due.publishAt) > due.now.getTime()) return null;
       const source = row.draft;
-      return write("schedule.publish", id, due.changeId, await versionOf(row), () => ({ published: source, draft: null, ...UNSCHEDULED, publishedAt: due.publishAt }));
+      return write("schedule.publish", id, due.changeId, await versionOf(row), () => ({
+        published: source,
+        draft: null,
+        ...UNSCHEDULED,
+        publishedAt: due.publishAt,
+      }));
     },
   };
 

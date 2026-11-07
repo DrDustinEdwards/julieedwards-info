@@ -1,5 +1,10 @@
 // Every security header the site sends, in one place; workers/app.ts applies them to every response.
-import { buildContentSecurityPolicy, buildStagedPolicy, reportingEndpoints, scriptHash } from "@dustinedwards/site-runtime/csp";
+import {
+  buildContentSecurityPolicy,
+  buildStagedPolicy,
+  reportingEndpoints,
+  scriptHash,
+} from "@dustinedwards/site-runtime/csp";
 import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
 
@@ -11,7 +16,9 @@ const CSP_ENDPOINT = "csp-endpoint";
 // (a preview link is served here), and the Cloudflare Web Analytics beacon the edge injects.
 async function sitePolicy() {
   return {
-    sources: { img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"] },
+    sources: {
+      img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"],
+    },
     scriptHashes: [await scriptHash(THEME_SCRIPT)],
     styleHashes: [await scriptHash(PREVIEW_STYLE)],
     styleAttributesInline: true,
@@ -29,7 +36,10 @@ async function sitePolicy() {
 async function policyHeaders(): Promise<Record<string, string>> {
   const policy = await sitePolicy();
   const staged = buildStagedPolicy(policy, { trustedTypes: true });
-  return { "Content-Security-Policy": buildContentSecurityPolicy(policy).value, [staged.name]: staged.value };
+  return {
+    "Content-Security-Policy": buildContentSecurityPolicy(policy).value,
+    [staged.name]: staged.value,
+  };
 }
 
 let headers: Promise<Record<string, string>> | undefined;
@@ -37,5 +47,8 @@ let headers: Promise<Record<string, string>> | undefined;
 /** The whole set, built once per isolate (the policy hashes a constant), with the report group at `origin`. */
 export async function securityHeaders(origin: string): Promise<Record<string, string>> {
   headers ??= policyHeaders().then((policies) => ({ ...SECURITY_HEADERS, ...policies }));
-  return { ...(await headers), "Reporting-Endpoints": reportingEndpoints(CSP_ENDPOINT, new URL(CSP_REPORT_PATH, origin)) };
+  return {
+    ...(await headers),
+    "Reporting-Endpoints": reportingEndpoints(CSP_ENDPOINT, new URL(CSP_REPORT_PATH, origin)),
+  };
 }

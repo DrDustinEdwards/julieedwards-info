@@ -19,7 +19,11 @@ import { carrelMediaAdapter } from "./media-adapter.server";
 import { carrelSections, parsed } from "./sections.server";
 
 /** The page's own document attributes, so the stylesheet draws the preview as it draws the page. */
-const ATTRIBUTES = { "data-theme": "light", "data-family": "forest", "data-cap-site": "julieedwards" };
+const ATTRIBUTES = {
+  "data-theme": "light",
+  "data-family": "forest",
+  "data-cap-site": "julieedwards",
+};
 
 export function createCarrelAdapter(
   env: Env,
@@ -27,7 +31,14 @@ export function createCarrelAdapter(
   log: (entry: Record<string, unknown>) => void = console.log,
 ): SiteAdapter {
   const page = (title: string, body: string) =>
-    previewDocument({ title, body, stylesheets: options.stylesheets, origin: options.origin, attributes: ATTRIBUTES, style: PREVIEW_STYLE });
+    previewDocument({
+      title,
+      body,
+      stylesheets: options.stylesheets,
+      origin: options.origin,
+      attributes: ATTRIBUTES,
+      style: PREVIEW_STYLE,
+    });
 
   return {
     site: { id: "julieedwards", name: "Julie Edwards", origin: options.origin },
@@ -45,23 +56,36 @@ export function createCarrelAdapter(
     // source that fits none is shown as written.
     preview: {
       async render({ id, source }) {
-        const target = id && isSectionId(id) ? id : SECTION_IDS.find((s) => {
-          try {
-            parseSection(s, source);
-            return true;
-          } catch {
-            return false;
-          }
-        });
+        const target =
+          id && isSectionId(id)
+            ? id
+            : SECTION_IDS.find((s) => {
+                try {
+                  parseSection(s, source);
+                  return true;
+                } catch {
+                  return false;
+                }
+              });
         if (!target) {
           if (id) throw new RefusedError("The source does not fit any section of this page.");
-          return page("Preview", `<main><p>This text fits no section of the page, so it is shown as written.</p><pre>${escapeHtml(source)}</pre></main>`);
+          return page(
+            "Preview",
+            `<main><p>This text fits no section of the page, so it is shown as written.</p><pre>${escapeHtml(source)}</pre></main>`,
+          );
         }
         const { content } = await loadContent(env);
         const next: Content = { ...content, [target]: parsed(target, source) };
         // Library pictures by their full address on this site, since the preview is shown on Carrel's origin.
         const photos = await libraryPhotos(env, next, options.origin);
-        return page(SECTIONS[target].title, renderToStaticMarkup(<main><HomeSections content={next} photos={photos} /></main>));
+        return page(
+          SECTIONS[target].title,
+          renderToStaticMarkup(
+            <main>
+              <HomeSections content={next} photos={photos} />
+            </main>,
+          ),
+        );
       },
     },
   };

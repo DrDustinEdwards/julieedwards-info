@@ -12,7 +12,12 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
     <>
       <Hero profile={profile} cta={contact.heading} />
       <Priorities section={priorities} />
-      <About section={about} photo={profile.images.about} library={photos.about} name={profile.name} />
+      <About
+        section={about}
+        photo={profile.images.about}
+        library={photos.about}
+        name={profile.name}
+      />
       <Experience section={experience} />
       <Contact section={contact} profile={profile} />
     </>
@@ -37,18 +42,42 @@ export function Hero({ profile, cta }: { profile: Content["profile"]; cta: strin
 
 const icons = [
   // Education
-  <svg key="e" className="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+  <svg
+    key="e"
+    className="ic"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    aria-hidden="true"
+  >
     <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
     <path d="M6 12v5c0 1 2 3 6 3s6-2 6-3v-5" />
   </svg>,
   // Integrity
-  <svg key="i" className="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+  <svg
+    key="i"
+    className="ic"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    aria-hidden="true"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
     <path d="M14 2v6h6" />
     <path d="m9 15 2 2 4-4" />
   </svg>,
   // Student Success
-  <svg key="s" className="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+  <svg
+    key="s"
+    className="ic"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    aria-hidden="true"
+  >
     <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" />
   </svg>,
 ];
@@ -88,17 +117,39 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
         <source key={`${s.type}${s.media ?? ""}`} {...s} />
       ))}
       {/* The placeholder background (img.style) stays under the crop's position. */}
-      <img {...img} style={photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style} />
+      {/* oxlint-disable-next-line jsx-a11y/alt-text -- pictureProps sets img.alt from photo.alt. */}
+      <img
+        {...img}
+        style={
+          photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style
+        }
+      />
     </picture>
   );
 }
 
-export function About({ section, photo, library, name }: { section: Content["about"]; photo: string; library?: LibraryPhoto; name: string }) {
+export function About({
+  section,
+  photo,
+  library,
+  name,
+}: {
+  section: Content["about"];
+  photo: string;
+  library?: LibraryPhoto;
+  name: string;
+}) {
   return (
     <section className="about" id="about">
       <div className="about-grid">
         <div className={`about-img reveal${photo ? "" : " placeholder"}`}>
-          {library ? <LibraryPicture photo={library} /> : photo ? <img src={photo} alt={name} loading="lazy" decoding="async" /> : <span className="ph">Photo</span>}
+          {library ? (
+            <LibraryPicture photo={library} />
+          ) : photo ? (
+            <img src={photo} alt={name} loading="lazy" decoding="async" />
+          ) : (
+            <span className="ph">Photo</span>
+          )}
         </div>
         <div className="about-panel reveal">
           <h2>
@@ -143,21 +194,27 @@ const fbIcon = (
   </svg>
 );
 
-export function Contact({ section, profile }: { section: Content["contact"]; profile: Content["profile"] }) {
+export function Contact({
+  section,
+  profile,
+}: {
+  section: Content["contact"];
+  profile: Content["profile"];
+}) {
   return (
     <section className="contact" id="contact">
       <div className="wrap">
         <div className="contact-grid">
           <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
-          <a className="contact-link" style={{ gridColumn: 1, gridRow: 2 }} href={`mailto:${profile.email}`}>
+          <a
+            className="contact-link"
+            style={{ gridColumn: 1, gridRow: 2 }}
+            href={`mailto:${profile.email}`}
+          >
             {profile.email}
             <Arrow />
           </a>
-          <a
-            className="contact-link"
-            style={{ gridColumn: 1, gridRow: 3 }}
-            href={profile.facebook}
-          >
+          <a className="contact-link" style={{ gridColumn: 1, gridRow: 3 }} href={profile.facebook}>
             {fbIcon}
             Facebook
             <Arrow />

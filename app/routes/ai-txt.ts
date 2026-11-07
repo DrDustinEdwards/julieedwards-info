@@ -8,5 +8,10 @@ import { SITE_URL } from "~/lib/site";
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const { content } = await loadContent(getEnv(context));
-  return aiTxtResponse({ origin: SITE_URL, request, name: content.profile.name, contact: content.profile.email });
+  return aiTxtResponse({
+    origin: SITE_URL,
+    request,
+    name: content.profile.name,
+    contact: content.profile.email,
+  });
 }
