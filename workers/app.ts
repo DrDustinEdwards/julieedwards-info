@@ -182,6 +182,7 @@ const withMarkdownCopies = markdownCopies(
     site.fetch(request as IncomingRequest, env, ctx),
   {
     origin: SITE_URL,
+    siteMarkdown: false,
     skip: (path) =>
       path.startsWith("/media/") || path.startsWith("/api/") || path.startsWith("/preview/"),
   },
