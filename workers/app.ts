@@ -20,6 +20,7 @@ import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
 import { runJobs } from "@dustinedwards/site-runtime/cron";
+import { maintenanceOn, maintenanceResponse } from "@dustinedwards/site-runtime/maintenance";
 import { logEvent, withRequestLog } from "@dustinedwards/site-runtime/log";
 import { countNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
@@ -84,6 +85,9 @@ const site = {
     // site), no trailing slash. The move carries the security set like every other response.
     const redirect = canonicalRedirect(request, { host: new URL(SITE_URL).hostname });
     if (redirect) return secure(redirect, SITE_URL);
+    // The maintenance page (site-runtime ./maintenance): every path but /health answers 503 while the MAINTENANCE var is on.
+    if (maintenanceOn(env) && url.pathname !== "/health")
+      return secure(maintenanceResponse({ siteName: "Julie Edwards" }), SITE_URL);
     // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
     if (url.pathname === SPECULATION_RULES_PATH)
       return secure(speculationRulesResponse(undefined, request), url.origin);
