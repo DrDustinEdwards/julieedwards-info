@@ -14,7 +14,7 @@ import { backupFiles, backupHealth, filesHealth, runCheckedBackup } from "@dusti
 
 // A media pass stops itself at three minutes and goes on the next night, inside its job's four-minute timeout
 // (cron.server.ts).
-export const MEDIA_BACKUP = { name: "media", timeBudgetMs: 180_000 };
+const MEDIA_BACKUP = { name: "media", timeBudgetMs: 180_000 };
 
 export async function runBackup(env: Env): Promise<void> {
   await runCheckedBackup(env.DB, env.BACKUPS, {
