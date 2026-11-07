@@ -6,32 +6,16 @@
 // kept under history/ in MEDIA (the default), which /media never serves (serve.server.ts serves only uploads/). The
 // page sizes a picture by its row, read on each request, so a turn keeps the id and nothing is re-rendered.
 import {
+  pictureLimits,
+  PICTURE_RESIZE,
   d1MediaStore,
   datedKey,
   mediaLibrary,
   type MediaAdapter,
-  type MediaResize,
 } from "@dustinedwards/site-api";
 import { mediaUrl, UPLOAD_PREFIX } from "~/lib/media/images";
 import { usesByKey } from "~/lib/media/store.server";
 import { suggestFor } from "~/lib/media/suggest.server";
-
-/** Pictures only: no SVG, which would be script on this site's origin. HEIC and HEIF are stored as JPEG. */
-const LIMITS = {
-  maxBytes: 20 * 1024 * 1024,
-  types: [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "image/avif",
-    "image/gif",
-    "image/heic",
-    "image/heif",
-  ],
-};
-
-/** A phone photo (4032 pixels) keeps its size; a larger camera file is shrunk, its original kept in its history. */
-const RESIZE: MediaResize = { maxEdge: 4096, quality: 85 };
 
 /** usesByKey's rule in SQL: a section's published text or draft names the file (each `?` is its key). */
 const IN_USE =
@@ -42,14 +26,11 @@ export function carrelMediaAdapter(env: Env): MediaAdapter {
     store: d1MediaStore(env.DB, { inUse: IN_USE }),
     bucket: env.MEDIA,
     images: env.IMAGES,
-    limits: LIMITS,
+    limits: pictureLimits(),
     url: mediaUrl,
     key: datedKey(UPLOAD_PREFIX),
-    resize: RESIZE,
+    resize: PICTURE_RESIZE,
     usage: () => usesByKey(env),
     suggest: (picture) => suggestFor(env, picture),
-    // The package checks every address and each redirect before this fetch runs (importRefusal, fetchImport).
-    importFetch: ((input: RequestInfo | URL, init?: RequestInit) =>
-      fetch(input, init)) as typeof fetch,
   });
 }
