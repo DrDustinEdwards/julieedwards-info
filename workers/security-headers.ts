@@ -1,54 +1,36 @@
-// Every security header the site sends, in one place; workers/app.ts applies them to every response.
-import {
-  buildContentSecurityPolicy,
-  buildStagedPolicy,
-  reportingEndpoints,
-  scriptHash,
-} from "@dustinedwards/site-runtime/csp";
+// Every security header the site sends, from site-runtime's pageSecurity; workers/app.ts applies them to every response.
+import { CSP_REPORT_PATH, scriptHash } from "@dustinedwards/site-runtime/csp";
+import { pageSecurity } from "@dustinedwards/site-runtime/page-headers";
 import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
 
-export const CSP_REPORT_PATH = "/csp-report";
-const CSP_ENDPOINT = "csp-endpoint";
+export { CSP_REPORT_PATH };
 
-// What the page loads beyond itself: the profile photo's hosts, the theme script by hash (the page ships
-// no other inline script; /site.js is 'self'), the contact grid's style attributes, Carrel's preview style by hash
-// (a preview link is served here), and the Cloudflare Web Analytics beacon the edge injects.
-async function sitePolicy() {
-  return {
+// The page ships no other inline script, so the theme script is trusted by hash (a constant, hashed once per isolate),
+// and so is Carrel's preview style (a preview link is served here).
+const [themeHash, previewStyleHash] = await Promise.all([
+  scriptHash(THEME_SCRIPT),
+  scriptHash(PREVIEW_STYLE),
+]);
+
+/**
+ * What the page loads beyond itself: the profile photo's hosts, the theme script by hash (/site.js is 'self'), the
+ * contact grid's style attributes, Carrel's preview style by hash and the Cloudflare Web Analytics beacon the edge
+ * injects. Nothing unlisted (media, frames, workers); the manifest is named. Trusted Types is staged as Report-Only
+ * beside the enforced policy, so the reports name any sink a script hands a string to before it is enforced.
+ */
+export const { withSecurityHeaders } = pageSecurity({
+  set: SECURITY_HEADERS,
+  policy: () => ({
     sources: {
       img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"],
     },
-    scriptHashes: [await scriptHash(THEME_SCRIPT)],
-    styleHashes: [await scriptHash(PREVIEW_STYLE)],
+    scriptHashes: [themeHash],
+    styleHashes: [previewStyleHash],
     styleAttributesInline: true,
     cloudflareWebAnalytics: true,
-    // Nothing unlisted (media, frames, workers); the manifest is named.
     denyUnlisted: true,
     extraDirectives: ["manifest-src 'self'"],
-    reportUri: CSP_REPORT_PATH,
-    reportTo: CSP_ENDPOINT,
-  };
-}
-
-// The enforced policy, and beside it the same policy with Trusted Types as Report-Only (the registry stages it), so the
-// reports name any sink a script hands a string to before it is enforced.
-async function policyHeaders(): Promise<Record<string, string>> {
-  const policy = await sitePolicy();
-  const staged = buildStagedPolicy(policy, { trustedTypes: true });
-  return {
-    "Content-Security-Policy": buildContentSecurityPolicy(policy).value,
-    [staged.name]: staged.value,
-  };
-}
-
-let headers: Promise<Record<string, string>> | undefined;
-
-/** The whole set, built once per isolate (the policy hashes a constant), with the report group at `origin`. */
-export async function securityHeaders(origin: string): Promise<Record<string, string>> {
-  headers ??= policyHeaders().then((policies) => ({ ...SECURITY_HEADERS, ...policies }));
-  return {
-    ...(await headers),
-    "Reporting-Endpoints": reportingEndpoints(CSP_ENDPOINT, new URL(CSP_REPORT_PATH, origin)),
-  };
-}
+  }),
+  staged: { trustedTypes: true },
+});

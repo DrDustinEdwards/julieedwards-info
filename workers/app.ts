@@ -1,7 +1,7 @@
 // aislop-ignore-next-line ai-slop/hallucinated-import -- a Workers built-in, not an npm package
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { createRequestHandler, RouterContextProvider, type ServerBuild } from "react-router";
-import { applyHeaderSet, corpFor } from "@dustinedwards/site-runtime/headers";
+import { corpFor } from "@dustinedwards/site-runtime/headers";
 import {
   cacheKey,
   forReader,
@@ -31,7 +31,7 @@ import { carrelApi } from "../app/lib/carrel/handler.server";
 import { backupStatus } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
-import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
+import { CSP_REPORT_PATH, withSecurityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
 
 // site-runtime's limiter class, bound as RATE_LIMITER (wrangler.jsonc); the operator API counts through it.
@@ -43,16 +43,6 @@ const PREVIEW_TOKEN = /\/(preview)\/[^/?#\s'"]+/g;
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
 
-async function secure(response: Response, origin: string): Promise<Response> {
-  const headers = new Headers(response.headers);
-  applyHeaderSet(headers, await securityHeaders(origin));
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-}
-
 /**
  * The cacheable entrypoint (wrangler.jsonc.example, `exports`): the page and the small text routes, rendered and then
  * stored by the Workers cache under the key the gateway names. Every header a stored page leaves with is set here, or
@@ -61,11 +51,10 @@ async function secure(response: Response, origin: string): Promise<Response> {
  */
 export class Renderer extends withPurgePages(WorkerEntrypoint<Env>) {
   override async fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url);
     const context = new RouterContextProvider();
     context.set(cloudflareContext, { env: this.env, ctx: this.ctx });
     const page = await timedRender(async () =>
-      secure(await requestHandler(request, context), url.origin),
+      withSecurityHeaders(await requestHandler(request, context), request),
     );
     if (page.headers.get("Content-Type")?.startsWith("text/html"))
       page.headers.set(SPECULATION_RULES_HEADER.name, SPECULATION_RULES_HEADER.value);
@@ -90,13 +79,13 @@ const site = {
     // One hop to the canonical address: https, the bare host (www answers with a move, never a second copy of the
     // site), no trailing slash. The move carries the security set like every other response.
     const redirect = canonicalRedirect(request, { host: new URL(SITE_URL).hostname });
-    if (redirect) return secure(redirect, SITE_URL);
+    if (redirect) return withSecurityHeaders(redirect, request);
     // The maintenance page (site-runtime ./maintenance): every path but /health answers 503 while the MAINTENANCE var is on.
     if (maintenanceOn(env) && url.pathname !== "/health")
-      return secure(maintenanceResponse({ siteName: "Julie Edwards" }), SITE_URL);
+      return withSecurityHeaders(maintenanceResponse({ siteName: "Julie Edwards" }), request);
     // The prefetch rules the page's header names (site-runtime ./prefetch): the next page starts loading on hover.
     if (url.pathname === SPECULATION_RULES_PATH)
-      return secure(speculationRulesResponse(undefined, request), url.origin);
+      return withSecurityHeaders(speculationRulesResponse(undefined, request), request);
     // CSP violation reports, logged to Workers Logs. Per address, through the CSP_REPORT_RATE_LIMIT binding; over it,
     // or without the binding, a report is dropped (still 204).
     if (url.pathname === CSP_REPORT_PATH) {
@@ -107,12 +96,12 @@ const site = {
             key: r.headers.get("cf-connecting-ip") || "anon",
           })
         ).success;
-      return receiveCspReport(request, { allow, headers: await securityHeaders(url.origin) });
+      return withSecurityHeaders(await receiveCspReport(request, { allow }), request);
     }
 
     // The operator API Capsid Admin calls (backup_status, run_job): a bearer, not Access, never stored.
     if (url.pathname === "/api/operator") {
-      return secure(
+      return withSecurityHeaders(
         await operatorResponse(request, {
           token: env.OPERATOR_TOKEN,
           limiter: env.RATE_LIMITER,
@@ -125,16 +114,16 @@ const site = {
             run_job: runJobTool(env.DB, () => allCronJobs(env)),
           },
         }),
-        url.origin,
+        request,
       );
     }
 
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers
     // runtime's; the DOM lib does not declare it.
     if (url.pathname.startsWith("/media/")) {
-      const media = await secure(
+      const media = withSecurityHeaders(
         await serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default),
-        url.origin,
+        request,
       );
       media.headers.set("Cross-Origin-Resource-Policy", corpFor(media.headers.get("Content-Type")));
       return media;
@@ -148,11 +137,11 @@ const site = {
     // A preview link Carrel made (/preview/<token>, no key): the section's current source drawn as the page. The token
     // is the address; the set's Referrer-Policy (no-referrer, the standard) keeps it from being sent on.
     if (carrel.matchesPreviewLink(request))
-      return secure(await carrel.servePreviewLink(request), url.origin);
+      return withSecurityHeaders(await carrel.servePreviewLink(request), request);
     if (carrel.matches(request)) {
       const response = await carrel.handle(request, ctx);
       purgeAfterWrite(request, response, ctx, `carrel ${request.method} ${url.pathname}`);
-      return secure(response, url.origin);
+      return withSecurityHeaders(response, request);
     }
 
     // The key is the path and the query without tracking parameters. The Worker version stays in the key (no
