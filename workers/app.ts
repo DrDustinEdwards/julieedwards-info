@@ -19,17 +19,22 @@ import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/sit
 import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
-import { runJobs } from "@dustinedwards/site-runtime/cron";
+import { allCronJobs, cronJobs } from "../app/lib/cron.server";
+import { runJobs, runJobTool } from "@dustinedwards/site-runtime/cron";
+import { operatorResponse } from "@dustinedwards/site-runtime/operator";
 import { maintenanceOn, maintenanceResponse } from "@dustinedwards/site-runtime/maintenance";
 import { logEvent, withRequestLog } from "@dustinedwards/site-runtime/log";
 import { countNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
-import { cronJobs } from "../app/lib/cron.server";
+import { backupStatus } from "../app/lib/backup.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { SITE_URL } from "../app/lib/site";
 import { CSP_REPORT_PATH, securityHeaders } from "./security-headers";
 import { FONT_PRELOADS } from "../app/lib/preloads";
+
+// site-runtime's limiter class, bound as RATE_LIMITER (wrangler.jsonc); the operator API counts through it.
+export { RateLimiter } from "@dustinedwards/site-runtime/rate-limit/durable-object";
 
 // A preview link's token (Carrel's /preview/<token>), cut from a logged path.
 const PREVIEW_TOKEN = /\/(preview)\/[^/?#\s'"]+/g;
@@ -102,6 +107,25 @@ const site = {
           })
         ).success;
       return receiveCspReport(request, { allow, headers: await securityHeaders(url.origin) });
+    }
+
+    // The operator API Capsid Admin calls (backup_status, run_job): a bearer, not Access, never stored.
+    if (url.pathname === "/api/operator") {
+      return secure(
+        await operatorResponse(request, {
+          token: env.OPERATOR_TOKEN,
+          limiter: env.RATE_LIMITER,
+          tools: {
+            backup_status: {
+              description:
+                "Reads the backup state now, uncached: the newest complete D1 dump's age and the media files pass, with when each last completed, and a warning when either is past 26 hours. The same read as /health's backup field.",
+              run: () => backupStatus(env),
+            },
+            run_job: runJobTool(env.DB, () => allCronJobs(env)),
+          },
+        }),
+        url.origin,
+      );
     }
 
     // The media library's files (app/lib/media), each size cached at the edge. `caches.default` is the Workers

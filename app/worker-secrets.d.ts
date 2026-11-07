@@ -11,4 +11,6 @@ interface Env {
    * A secret only because it carries the account id; the AI binding authenticates itself.
    */
   AI_GATEWAY_BASE_URL?: string;
+  /** The bearer for /api/operator (32 characters or more), the door Capsid Admin's backups reach the site through. Unset or short closes the route. */
+  OPERATOR_TOKEN?: string;
 }
