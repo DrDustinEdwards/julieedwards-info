@@ -19,6 +19,7 @@ import { preloads, rootStylesheets, withPreloadHeader } from "@dustinedwards/sit
 import { timedRender } from "@dustinedwards/site-runtime/server-timing";
 import { canonicalRedirect } from "@dustinedwards/site-runtime/url";
 import { receiveCspReport } from "@dustinedwards/site-runtime/csp-report";
+import { markdownCopies } from "@drdustinedwards/site-helpers/markdown-copy";
 import { allCronJobs, cronJobs } from "../app/lib/cron.server";
 import { runJobs, runJobTool } from "@dustinedwards/site-runtime/cron";
 import { operatorResponse } from "@dustinedwards/site-runtime/operator";
@@ -182,11 +183,25 @@ const site = {
 // Every request writes one `request` line (site-runtime ./log: path, status, ms and the deployed commit), a preview
 // link's token cut from its path.
 type IncomingRequest = Parameters<typeof site.fetch>[0];
+
+// Prelum's markdownCopies: every public page has a Markdown copy at its path plus .md and answers Accept: text/markdown,
+// which llms.txt promises, and the site has an llms-full.txt built from its sitemap. The media library, Carrel's site API
+// and the preview links are not pages and get no copy.
+const withMarkdownCopies = markdownCopies(
+  // The wrapper types the request as a plain Request; it hands on the one the runtime gave it, or a GET it made from it.
+  (request: Request, env: Env, ctx: ExecutionContext) =>
+    site.fetch(request as IncomingRequest, env, ctx),
+  {
+    origin: SITE_URL,
+    skip: (path) =>
+      path.startsWith("/media/") || path.startsWith("/api/") || path.startsWith("/preview/"),
+  },
+);
+
 export default {
   ...site,
   fetch: withRequestLog(
-    (request: Request, env: Env, ctx: ExecutionContext) =>
-      site.fetch(request as IncomingRequest, env, ctx),
+    (request: Request, env: Env, ctx: ExecutionContext) => withMarkdownCopies(request, env, ctx),
     {
       sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
       tokenPath: PREVIEW_TOKEN,
