@@ -27,11 +27,18 @@ export function cronJobs(env: Env, scheduledTime: Date): Record<string, CronJob[
       },
     ],
     [NIGHTLY_CRON]: [
-      { name: "backup", everyMinutes: DAY, timeoutMs: 5 * MINUTE, run: () => runBackup(env) },
+      {
+        name: "backup",
+        everyMinutes: DAY,
+        timeoutMs: 5 * MINUTE,
+        backup: true,
+        run: () => runBackup(env),
+      },
       {
         name: "media-backup",
         everyMinutes: DAY,
         timeoutMs: 4 * MINUTE,
+        backup: true,
         run: () => runMediaBackup(env),
       },
       {
