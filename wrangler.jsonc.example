@@ -1,7 +1,7 @@
 // Copy to wrangler.jsonc (gitignored: this repository is public) and put the D1 database's id in place
 // of <D1_DATABASE_ID>. CI's deploy job writes it the same way from the repository variable D1_DATABASE_ID.
-// Secrets are set with `wrangler secret put`, never here: CARREL_SITE_KEY (Carrel's key for this site) and, optionally,
-// AI_GATEWAY_BASE_URL (the AI Gateway the media suggestions run through; it carries the account id) and OPERATOR_TOKEN (the bearer Capsid Admin calls /api/operator with).
+// Secrets are set with `wrangler secret put`, never here: CARREL_SITE_KEY (Carrel's key for this site), ANTHROPIC_API_KEY (the media suggestions, straight at Anthropic)
+// and, optionally, OPERATOR_TOKEN (the bearer Capsid Admin calls /api/operator with).
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "julieedwards",
@@ -42,10 +42,6 @@
 	// Cloudflare Images: each library picture's sizes for the page (site-runtime ./image, /media/<key>?w=), and the
 	// turns, mirrors and shrinks an editor asks for in Carrel. Carries no id.
 	"images": { "binding": "IMAGES" },
-	// Workers AI, for suggested tags and alt text when an editor asks for them in Carrel (app/lib/media/suggest.server.ts),
-	// never on a visitor's request and never applied unasked. Through AI Gateway when the secret AI_GATEWAY_BASE_URL
-	// names one. Carries no id.
-	"ai": { "binding": "AI" },
 	// Carrel's site API (app/lib/carrel). namespace_id is this site's own: sites sharing one share counters.
 	"ratelimits": [
 		{ "name": "CARREL_RATE_LIMIT", "namespace_id": "7501", "simple": { "limit": 120, "period": 60 } },
