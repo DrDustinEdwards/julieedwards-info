@@ -225,14 +225,18 @@ export function carrelSections(
     },
 
     async revisions(id) {
-      if (!(await find(id))) return null;
+      const row = await find(id);
+      if (!row) return null;
       const rows = await db
         .select()
         .from(sectionRevisions)
         .where(eq(sectionRevisions.sectionId, id))
         .orderBy(desc(sectionRevisions.id))
         .limit(50);
-      return Promise.all(
+      // The section as it stands is the newest revision: the kept rows are the states before each change, so
+      // without it the live version (and who published it) would not show in Carrel's history until the next edit.
+      const currentVersion = await versionOf(row);
+      const kept = await Promise.all(
         rows.map(async (r) => ({
           version: await versionOf(r),
           at: r.createdAt,
@@ -240,6 +244,15 @@ export function carrelSections(
           message: `Kept before change ${r.changeId}`,
         })),
       );
+      return [
+        {
+          version: currentVersion,
+          at: row.updatedAt,
+          author: "julieedwards",
+          message: "The section as it stands now",
+        },
+        ...kept.filter((k) => k.version !== currentVersion),
+      ];
     },
 
     async revisionSource(id, version) {
