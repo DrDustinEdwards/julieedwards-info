@@ -76,7 +76,10 @@ test("a scheduled section goes live from the cron at its time, and the publish h
     [["publish", "schedule", `${origin}/#about`]],
   );
   // The revision kept before it is recorded under the change that scheduled it, and a second pass finds nothing.
-  assert.match((await client.revisions("about")).items[0]!.message ?? "", /c2/);
+  // The newest revision is the section as it stands now (Carrel's history shows the live version first).
+  const { items } = await client.revisions("about");
+  assert.equal(items[0]!.version, after.version);
+  assert.match(items[1]!.message ?? "", /c2/);
   assert.equal(
     (await api.runSchedules({ now: new Date("2030-01-01T15:01:00Z") })).applied.length,
     0,
