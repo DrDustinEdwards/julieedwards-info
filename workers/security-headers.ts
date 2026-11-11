@@ -1,10 +1,8 @@
 // Every security header the site sends, from site-runtime's pageSecurity; workers/app.ts applies them to every response.
-import { CSP_REPORT_PATH, scriptHash } from "@dustinedwards/site-runtime/csp";
+import { scriptHash } from "@dustinedwards/site-runtime/csp";
 import { pageSecurity } from "@dustinedwards/site-runtime/page-headers";
 import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
-
-export { CSP_REPORT_PATH };
 
 // The page ships no other inline script, so the theme script is trusted by hash (a constant, hashed once per isolate),
 // and so is Carrel's preview style (a preview link is served here).
@@ -21,7 +19,9 @@ const [themeHash, previewStyleHash] = await Promise.all([
  */
 export const { withSecurityHeaders } = pageSecurity({
   set: SECURITY_HEADERS,
-  policy: () => ({
+  // The page's scripts also carry the render's nonce, renewed for each reader of a stored page (site-runtime ./worker).
+  policy: ({ nonce }) => ({
+    nonce,
     sources: {
       img: ["data:", "https://content.julieedwards.info", "https://blog.julieedwards.info"],
     },
@@ -33,4 +33,6 @@ export const { withSecurityHeaders } = pageSecurity({
     extraDirectives: ["manifest-src 'self'"],
   }),
   staged: { trustedTypes: true },
+  // Cross-Origin-Resource-Policy follows the content type, so the media library's pictures may be embedded.
+  corp: true,
 });
