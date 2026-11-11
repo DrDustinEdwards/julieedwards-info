@@ -28,20 +28,19 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
 
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
-    <div id="top">
-      <HeroSection
-        className="hero"
-        title={profile.name}
-        lead={profile.office}
-        actions={
-          <ButtonLink className="hero-cta" size="lg" href="#contact">
-            {cta}
-            <Arrow />
-          </ButtonLink>
-        }
-        backdrop={<AppleMark className="hero-mark" />}
-      />
-    </div>
+    <HeroSection
+      id="top"
+      className="hero"
+      title={profile.name}
+      lead={profile.office}
+      actions={
+        <ButtonLink className="hero-cta" size="lg" href="#contact">
+          {cta}
+          <Arrow />
+        </ButtonLink>
+      }
+      backdrop={<AppleMark className="hero-mark" />}
+    />
   );
 }
 
