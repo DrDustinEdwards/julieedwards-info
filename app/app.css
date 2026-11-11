@@ -50,6 +50,8 @@
 body {
   --text-size: 1.0625rem;
   --leading: 1.65;
+  /* Capsomer's page column reads at the site's own leading, as the column it replaced (.wrap) did. */
+  --page-leading: var(--leading);
   overflow-x: hidden;
 }
 :where(h1, h2, h3) {
@@ -288,6 +290,8 @@ section {
   background: var(--line);
 }
 .contact-link {
+  /* Its icons (Facebook) at the 16px they always were; the arrow keeps its own size. */
+  --icon-size: 1rem;
   font-family: var(--font-ui);
   font-size: 0.9rem;
   line-height: 1.55;
