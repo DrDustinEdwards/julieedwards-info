@@ -1,5 +1,6 @@
 // The header and footer every page shares. Server-rendered markup only: the header is Capsomer's site
 // header written by hand (site-header.md, "Markup"), and app/site.ts wires its sheet and theme button.
+import { copyright } from "capsomer/behavior/family-footer";
 import { useState } from "react";
 import type { Content } from "~/lib/source";
 import { THEME_KEY } from "~/lib/theme";
@@ -153,12 +154,12 @@ export function Header({
 
 export function Footer({ name, site }: { name: string; site: Content["site"] }) {
   // Read once, in a lazy initializer, so the render itself stays pure (react/purity).
-  const [year] = useState(() => new Date().getFullYear());
+  const [line] = useState(() => copyright(name));
   return (
     <footer className="je-footer">
       <div className="wrap footer-inner">
         <p className="footer-note">
-          &copy; {year} {name}
+          {line}
           {site.analyticsNote && (
             <>
               <br />

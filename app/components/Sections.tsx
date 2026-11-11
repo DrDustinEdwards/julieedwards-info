@@ -1,4 +1,6 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { Hero as HeroSection } from "capsomer/react/hero";
+import { ButtonLink } from "capsomer/react/link";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
@@ -26,17 +28,20 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
 
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
-    <header className="hero" id="top">
-      <div className="hero-inner">
-        <h1>{profile.name}</h1>
-        <div className="office">{profile.office}</div>
-        <a className="cap-btn hero-cta" data-size="lg" href="#contact">
-          {cta}
-          <Arrow />
-        </a>
-      </div>
-      <AppleMark className="hero-mark" />
-    </header>
+    <div id="top">
+      <HeroSection
+        className="hero"
+        title={profile.name}
+        lead={profile.office}
+        actions={
+          <ButtonLink className="hero-cta" size="lg" href="#contact">
+            {cta}
+            <Arrow />
+          </ButtonLink>
+        }
+        backdrop={<AppleMark className="hero-mark" />}
+      />
+    </div>
   );
 }
 

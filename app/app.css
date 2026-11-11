@@ -16,6 +16,7 @@
 @import "capsomer/popover.css";
 @import "capsomer/theme-switch.css";
 @import "capsomer/button.css";
+@import "capsomer/hero.css";
 @import "capsomer/empty.css";
 @import "capsomer/error-page.css";
 
@@ -80,36 +81,38 @@ body {
   transform: rotate(-8deg);
 }
 
-/* HERO */
+/* HERO: Capsomer's hero (hero.md), in the band's colors and the site's own sizes. */
 .hero {
-  position: relative;
-  overflow: hidden;
+  --hero-title: clamp(2.75rem, 9vw, 6rem);
   min-height: calc(100dvh - var(--header-h));
   display: flex;
   align-items: center;
+  margin-block: 0;
+  overflow: hidden;
   background: var(--band);
   color: var(--band-ink);
 }
-.hero-inner {
+.hero .cap-hero-text {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: var(--maxw);
+  max-inline-size: var(--maxw);
   margin-inline: auto;
   padding-inline: var(--side);
 }
-.hero h1 {
+.hero .cap-hero-title {
   font-weight: 600;
-  font-size: clamp(2.75rem, 9vw, 6rem);
   line-height: 0.98;
-  letter-spacing: -0.02em;
   margin-bottom: var(--space-4);
   text-transform: uppercase;
 }
-.hero .office {
+.hero .cap-hero-lead {
+  max-inline-size: none;
+  color: inherit;
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: clamp(1.05rem, 2.6vw, 1.55rem);
+  line-height: inherit;
   letter-spacing: 0.02em;
   opacity: 0.92;
   margin-bottom: var(--space-7);
@@ -363,10 +366,10 @@ section {
     opacity: 1;
     transform: none;
   }
-  :is(.hero h1, .hero .office, .hero-cta) {
+  :is(.hero .cap-hero-title, .hero .cap-hero-lead, .hero-cta) {
     animation: rise 0.85s var(--ease-out) backwards;
   }
-  .hero .office {
+  .hero .cap-hero-lead {
     animation-delay: 0.14s;
   }
   .hero-cta {
