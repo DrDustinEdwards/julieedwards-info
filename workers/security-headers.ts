@@ -1,6 +1,7 @@
 // Every security header the site sends, from site-runtime's pageSecurity; workers/app.ts applies them to every response.
 import { CSP_REPORT_PATH, scriptHash } from "@dustinedwards/site-runtime/csp";
 import { pageSecurity } from "@dustinedwards/site-runtime/page-headers";
+import { TRUSTED_TYPES_NAMES } from "@dustinedwards/site-runtime/trusted-types";
 import { PREVIEW_STYLE, THEME_SCRIPT } from "../app/lib/theme";
 import { SECURITY_HEADERS } from "./header-set";
 
@@ -32,5 +33,5 @@ export const { withSecurityHeaders } = pageSecurity({
     denyUnlisted: true,
     extraDirectives: ["manifest-src 'self'"],
   }),
-  staged: { trustedTypes: true },
+  staged: { trustedTypes: TRUSTED_TYPES_NAMES },
 });

@@ -7,6 +7,7 @@ import {
   useRouteError,
   useRouteLoaderData,
 } from "react-router";
+import { markup } from "capsomer/behavior/trusted-html";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { defineHead } from "@drdustinedwards/site-helpers/head";
 import { iconLinks } from "@drdustinedwards/site-helpers/icons";
@@ -83,11 +84,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="text-scale" content="scale" />
         {/* The theme is chosen in the browser (THEME_SCRIPT), so the server writes both. */}
         <ThemeColor ground={THEME_COLOR} />
         <Meta />
         <Links />
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={markup(THEME_SCRIPT)} />
       </head>
       <body>
         {content ? (
