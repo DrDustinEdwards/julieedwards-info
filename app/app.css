@@ -15,6 +15,9 @@
 @import "capsomer/dialog.css";
 @import "capsomer/popover.css";
 @import "capsomer/theme-switch.css";
+@import "capsomer/icons.css";
+@import "capsomer/reveal.css";
+@import "capsomer/utilities.css";
 @import "capsomer/button.css";
 @import "capsomer/empty.css";
 @import "capsomer/error-page.css";
@@ -22,6 +25,9 @@
 :root {
   --maxw: 67.5rem;
   --side: var(--space-7);
+  /* Capsomer's page column (.cap-page) at this site's width and sides. */
+  --page-max: var(--maxw);
+  --page-gutter: var(--side);
   /* The green band (hero, About): Bluff Dale green in light, the family's deep green in dark. */
   --band: var(--accent-11);
   --band-ink: var(--surface);
@@ -53,17 +59,15 @@ body {
   background: var(--accent-11);
   color: var(--surface);
 }
-.wrap {
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--side);
-}
-
 /* HEADER: Capsomer's, lined up with the page column on a desktop; a phone keeps Capsomer's 16px sides. */
 @media (width >= 768px) {
   .cap-site-header {
     --header-side: max(var(--side), calc((100% - var(--maxw)) / 2 + var(--side)));
   }
+}
+/* Capsomer's trailing arrow, drawn as the site always has: heavier than an icon. */
+.cap-arrow {
+  --icon-stroke: 2.5;
 }
 .je-wordmark {
   max-inline-size: none;
@@ -93,10 +97,6 @@ body {
 .hero-inner {
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--side);
 }
 .hero h1 {
   font-weight: 600;
@@ -159,11 +159,6 @@ section {
 .why,
 .contact {
   background: var(--raised);
-}
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
 }
 .pillar {
   background: var(--surface);
@@ -317,22 +312,13 @@ section {
   border-top: 1px solid var(--line);
   font-family: var(--font-ui);
 }
-.footer-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-}
 .footer-note {
   font-size: 0.75rem;
   color: var(--muted);
   letter-spacing: 0.03em;
 }
+/* The footer's links row is Capsomer's cluster (.cap-cluster); only its size is the site's. */
 .footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-6);
   font-size: 0.8rem;
 }
 /* The old site's quiet links: gray, turning green under the pointer as the arrow slides in. */
@@ -349,20 +335,9 @@ section {
   gap: var(--space-1);
 }
 
-/* MOTION: the hero rises on load and each section as it scrolls into view (app/site.ts). Capsomer's
+/* MOTION: the hero rises on load; each section rises as it scrolls into view in Capsomer's reveal. Capsomer's
    base.css stills every transition under reduced motion; these only start where motion is allowed. */
 @media (prefers-reduced-motion: no-preference) {
-  .reveal {
-    opacity: 0;
-    transform: translateY(22px);
-    transition:
-      opacity 0.7s var(--ease-out),
-      transform 0.7s var(--ease-out);
-  }
-  .reveal.in {
-    opacity: 1;
-    transform: none;
-  }
   :is(.hero h1, .hero .office, .hero-cta) {
     animation: rise 0.85s var(--ease-out) backwards;
   }
@@ -381,7 +356,6 @@ section {
 }
 
 @media (width < 820px) {
-  .pillars,
   .about-grid {
     grid-template-columns: 1fr;
   }

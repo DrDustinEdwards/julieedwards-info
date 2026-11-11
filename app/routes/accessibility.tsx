@@ -58,7 +58,7 @@ export default function Accessibility() {
   if (!data) return null;
   const statement = statementFor(data.content.profile);
   return (
-    <section className="wrap" style={{ paddingBlock: "var(--space-8)" }}>
+    <section className="cap-page" style={{ paddingBlock: "var(--space-8)" }}>
       <h1>{statement.title}</h1>
       <div
         className="accessibility-statement"

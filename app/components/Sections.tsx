@@ -1,4 +1,6 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { Icon } from "capsomer/react/icons";
+import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
@@ -27,7 +29,7 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
     <header className="hero" id="top">
-      <div className="hero-inner">
+      <div className="cap-page hero-inner">
         <h1>{profile.name}</h1>
         <div className="office">{profile.office}</div>
         <a className="cap-btn hero-cta" data-size="lg" href="#contact">
@@ -87,13 +89,13 @@ const icons = [
 export function Priorities({ section }: { section: Content["priorities"] }) {
   return (
     <section className="why" id="why">
-      <div className="wrap">
-        <div className="sec-head reveal">
+      <div className="cap-page">
+        <div className="sec-head cap-reveal">
           <h2>{section.heading}</h2>
         </div>
-        <div className="pillars">
+        <div className="cap-grid" data-gap="6">
           {section.items.map((p, i) => (
-            <div className="pillar reveal" key={p.title}>
+            <div className="pillar cap-reveal" key={p.title}>
               {icons[i % icons.length]}
               <h3>{p.title}</h3>
               <p>{p.body}</p>
@@ -110,22 +112,13 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
  * below the hero, so it loads lazily and is never the page's priority image.
  */
 function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
-  const { sources, img } = pictureProps(photo, { alt: photo.alt });
-  return (
-    <picture>
-      {sources.map((s) => (
-        <source key={`${s.type}${s.media ?? ""}`} {...s} />
-      ))}
-      {/* The placeholder background (img.style) stays under the crop's position. */}
-      {/* oxlint-disable-next-line jsx-a11y/alt-text -- pictureProps sets img.alt from photo.alt. */}
-      <img
-        {...img}
-        style={
-          photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style
-        }
-      />
-    </picture>
-  );
+  const picture = pictureProps(photo, { alt: photo.alt });
+  const position = photo.focus ? objectPosition(photo.focus) : undefined;
+  // The placeholder background (img.style) stays under the crop's position.
+  const img = position
+    ? { ...picture.img, style: { ...picture.img.style, objectPosition: position } }
+    : picture.img;
+  return <Picture picture={{ ...picture, img }} />;
 }
 
 export function About({
@@ -142,7 +135,7 @@ export function About({
   return (
     <section className="about" id="about">
       <div className="about-grid">
-        <div className={`about-img reveal${photo ? "" : " placeholder"}`}>
+        <div className={`about-img cap-reveal${photo ? "" : " placeholder"}`}>
           {library ? (
             <LibraryPicture photo={library} />
           ) : photo ? (
@@ -151,7 +144,7 @@ export function About({
             <span className="ph">Photo</span>
           )}
         </div>
-        <div className="about-panel reveal">
+        <div className="about-panel cap-reveal">
           <h2>
             {section.heading}
             <span className="rule" />
@@ -168,13 +161,13 @@ export function About({
 export function Experience({ section }: { section: Content["experience"] }) {
   return (
     <section id="experience">
-      <div className="wrap">
-        <div className="sec-head reveal">
+      <div className="cap-page">
+        <div className="sec-head cap-reveal">
           <h2>{section.heading}</h2>
         </div>
         <div className="exp-list">
           {section.items.map((e) => (
-            <div className="exp-item reveal" key={e.title}>
+            <div className="exp-item cap-reveal" key={e.title}>
               <h3>
                 {e.title}
                 <span className="rule" />
@@ -188,12 +181,6 @@ export function Experience({ section }: { section: Content["experience"] }) {
   );
 }
 
-const fbIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-    <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.5V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z" />
-  </svg>
-);
-
 export function Contact({
   section,
   profile,
@@ -203,7 +190,7 @@ export function Contact({
 }) {
   return (
     <section className="contact" id="contact">
-      <div className="wrap">
+      <div className="cap-page">
         <div className="contact-grid">
           <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
           <a
@@ -215,7 +202,7 @@ export function Contact({
             <Arrow />
           </a>
           <a className="contact-link" style={{ gridColumn: 1, gridRow: 3 }} href={profile.facebook}>
-            {fbIcon}
+            <Icon name="facebook" />
             Facebook
             <Arrow />
           </a>

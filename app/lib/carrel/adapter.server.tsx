@@ -13,7 +13,6 @@ import { escapeHtml } from "@dustinedwards/site-runtime/html";
 import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
 import { HomeSections } from "~/components/Sections";
 import { libraryPhotos, loadContent } from "~/lib/content.server";
-import { PREVIEW_STYLE } from "~/lib/theme";
 import { isSectionId, parseSection, SECTION_IDS, SECTIONS, type Content } from "~/lib/source";
 import { carrelMediaAdapter } from "./media-adapter.server";
 import { carrelSections, parsed } from "./sections.server";
@@ -37,7 +36,6 @@ export function createCarrelAdapter(
       stylesheets: options.stylesheets,
       origin: options.origin,
       attributes: ATTRIBUTES,
-      style: PREVIEW_STYLE,
     });
 
   return {
