@@ -1,14 +1,6 @@
 // Carrel's site API, mounted by workers/app.ts at /api/carrel/v1, with its preview links at /preview/<token>. One key
 // (CARREL_SITE_KEY, a Worker secret) reaches only that prefix and nothing else on the site.
-import { submitIndexNow } from "@drdustinedwards/site-helpers/indexnow";
-import {
-  createSiteApi,
-  indexNowHook,
-  webmentionHook,
-  type PublishHook,
-} from "@dustinedwards/site-api";
-import { d1SiteApiStore } from "@dustinedwards/site-api/store";
-import { schedulePurgeHook } from "@dustinedwards/site-runtime/edge-cache";
+import { standardSiteApi, type PublishHook } from "@dustinedwards/site-api";
 import { INDEXNOW_KEY, SITE_URL } from "~/lib/site";
 import { createCarrelAdapter } from "./adapter.server";
 
@@ -27,21 +19,16 @@ function pageWebmentions(hook: PublishHook): PublishHook {
 }
 
 export function carrelApi(env: Env, origin: string, stylesheets: string[]) {
-  // The replay store (safe retries by change id), preview links, failed hooks' retries and the webmentions sent
-  // (drizzle/0006_site_api_store.sql).
-  const store = d1SiteApiStore(env.DB);
-  return createSiteApi({
+  // The replay store, preview links, hook retries and webmentions live in D1 (drizzle/0006_site_api_store.sql). A
+  // published change tells IndexNow at once (a request from a preview origin sends nothing); a schedule the cron
+  // publishes purges the stored page.
+  return standardSiteApi({
     adapter: createCarrelAdapter(env, { origin, stylesheets }),
     key: env.CARREL_SITE_KEY,
     limiter: env.CARREL_RATE_LIMIT,
-    store,
-    // A published change tells IndexNow at once; a request from a preview origin sends nothing. A schedule the cron
-    // publishes purges the stored page, as the gateway does after a Carrel write.
-    hooks: [
-      indexNowHook({ submit: submitIndexNow, origin: SITE_URL, key: INDEXNOW_KEY }),
-      schedulePurgeHook(),
-      pageWebmentions(webmentionHook({ store })),
-    ],
+    db: env.DB,
+    indexNow: { origin: SITE_URL, key: INDEXNOW_KEY },
+    hooks: ({ indexNow, purge, webmention }) => [indexNow, purge, pageWebmentions(webmention)],
   });
 }
 

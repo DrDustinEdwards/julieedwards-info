@@ -3,6 +3,7 @@ import {
   accessibilityStatement,
   ACCESSIBILITY_PATH,
 } from "@drdustinedwards/site-helpers/accessibility";
+import { markup } from "capsomer/behavior/trusted-html";
 import { defineHead } from "@drdustinedwards/site-helpers/head";
 import { publicPageHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import type { Route } from "./+types/accessibility";
@@ -60,10 +61,7 @@ export default function Accessibility() {
   return (
     <section className="cap-page" style={{ paddingBlock: "var(--space-8)" }}>
       <h1>{statement.title}</h1>
-      <div
-        className="accessibility-statement"
-        dangerouslySetInnerHTML={{ __html: statement.html }}
-      />
+      <div className="accessibility-statement" dangerouslySetInnerHTML={markup(statement.html)} />
     </section>
   );
 }
