@@ -54,6 +54,7 @@ export function Header({
       themePrefKey={THEME_KEY}
       sheetTitle={name}
       sheetLinksLabel={null}
+      sheetIcons="auto"
       skipTo="#main"
     />
   );
