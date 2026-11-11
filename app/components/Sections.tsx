@@ -1,6 +1,6 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
 import { pictureProps } from "@dustinedwards/site-runtime/image";
-import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
+import { type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
 import { Arrow } from "./Chrome";
@@ -110,7 +110,7 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
  * below the hero, so it loads lazily and is never the page's priority image.
  */
 function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
-  const { sources, img } = pictureProps(photo, { alt: photo.alt });
+  const { sources, img } = pictureProps(photo, { alt: photo.alt, focus: photo.focus });
   return (
     <picture>
       {sources.map((s) => (
@@ -118,12 +118,7 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
       ))}
       {/* The placeholder background (img.style) stays under the crop's position. */}
       {/* oxlint-disable-next-line jsx-a11y/alt-text -- pictureProps sets img.alt from photo.alt. */}
-      <img
-        {...img}
-        style={
-          photo.focus ? { ...img.style, objectPosition: objectPosition(photo.focus) } : img.style
-        }
-      />
+      <img {...img} />
     </picture>
   );
 }

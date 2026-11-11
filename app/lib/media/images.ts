@@ -83,9 +83,3 @@ export function libraryPhoto(
     focus: file.focus,
   };
 }
-
-/** CSS object-position for a focal point, so a picture cropped by its box keeps its subject. */
-export function objectPosition(focus: string | null): string | undefined {
-  const point = focus && /^([\d.]+)x([\d.]+)$/.exec(focus);
-  return point ? `${Number(point[1]) * 100}% ${Number(point[2]) * 100}%` : undefined;
-}
