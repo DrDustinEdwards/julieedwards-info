@@ -1,5 +1,6 @@
 // The header and footer every page shares. Server-rendered markup only: the header is Capsomer's
 // SiteHeader without hydration, and app/site.ts wires its sheet and theme button.
+import { Icon } from "capsomer/react/icons";
 import { SiteHeader } from "capsomer/react/site-header";
 import { useState } from "react";
 import type { Content } from "~/lib/source";
@@ -7,20 +8,7 @@ import { THEME_KEY } from "~/lib/theme";
 import { AppleMark } from "./AppleMark";
 
 /** Capsomer's trailing arrow: the julieedwards site setting hides it until the pointer or focus arrives. */
-export const Arrow = () => (
-  <svg
-    className="cap-arrow"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2.5}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M9 6l6 6-6 6" />
-  </svg>
-);
+export const Arrow = () => <Icon name="chevron-right" className="cap-arrow" />;
 
 export function Header({
   name,
@@ -64,7 +52,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
   const [year] = useState(() => new Date().getFullYear());
   return (
     <footer className="je-footer">
-      <div className="wrap footer-inner">
+      <div className="cap-page cap-spread footer-inner" data-align="center" data-gap="6">
         <p className="footer-note">
           &copy; {year} {name}
           {site.analyticsNote && (
@@ -74,7 +62,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
             </>
           )}
         </p>
-        <div className="footer-links">
+        <div className="cap-cluster footer-links" data-justify="end" data-gap="6">
           {site.resourceLinks.map((l) => (
             <a key={l.href} href={l.href}>
               {l.label}
