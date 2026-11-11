@@ -37,7 +37,7 @@ delete read the sections' published text and waiting drafts, so a file a section
 - `workers/app.ts`: Carrel's API, the CSP report sink, `/media/*` (the library's files and their sizes,
   through the Images binding, `app/lib/media/serve.server.ts`), then React Router; every response gets the
   site-runtime security headers, and `www` answers with a 301 to the apex. The build writes the same set into
-  the static files' `public/_headers` (`scripts/headers-file.ts`), since those never reach the Worker. 404s are
+  the static files' `public/_headers` (`site-runtime-headers`, the `headers` script), since those never reach the Worker. 404s are
   counted per path and referring host (site-runtime `./not-found`). Every minute a cron publishes the sections whose
   time has come (site-api's `runSchedules`, with the IndexNow, page purge and webmention hooks a Carrel publish runs);
   the nightly cron runs the d1-dump backup, the media files backup and the 404 prune. Both go through site-runtime
