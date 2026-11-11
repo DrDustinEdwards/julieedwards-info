@@ -4,7 +4,7 @@ import type { ServerBuild } from "react-router";
 import { siteApiStep } from "@dustinedwards/site-api";
 import { standardFiles } from "@drdustinedwards/site-helpers/files";
 import { markdownCopies } from "@drdustinedwards/site-helpers/markdown-copy";
-import { runJobTool } from "@dustinedwards/site-runtime/cron";
+import { operatorJobTools } from "@dustinedwards/site-runtime/cron";
 import { defineSite, siteRenderer, siteWorker } from "@dustinedwards/site-runtime/worker";
 import { allCronJobs, cronJobs } from "../app/lib/cron.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
@@ -49,14 +49,13 @@ const site = defineSite<Env>({
         };
       },
     })(request),
-  operator: (env) => ({
-    backup_status: {
-      description:
-        "Reads the backup state now, uncached: the newest complete D1 dump's age and the media files pass, with when each last completed, and a warning when either is past 26 hours. The same read as /health's backup field.",
-      run: () => backupStatus(env),
-    },
-    run_job: runJobTool(env.DB, () => allCronJobs(env)),
-  }),
+  operator: (env) =>
+    operatorJobTools({
+      db: env.DB,
+      jobs: () => allCronJobs(env),
+      backupStatus: () => backupStatus(env),
+      files: ["media"],
+    }),
   steps: [
     // The media library's files, each size cached at the edge (`caches.default` is the Workers runtime's).
     (request, env) =>

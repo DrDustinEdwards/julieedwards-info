@@ -4,7 +4,7 @@ import {
   ACCESSIBILITY_PATH,
 } from "@drdustinedwards/site-helpers/accessibility";
 import { markup } from "capsomer/behavior/trusted-html";
-import { defineHead } from "@drdustinedwards/site-helpers/head";
+import { defineHead, rootLoaderData } from "@drdustinedwards/site-helpers/head";
 import { publicPageHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import type { Route } from "./+types/accessibility";
 import type { loader as rootLoader } from "~/root";
@@ -29,9 +29,7 @@ function statementFor(profile: { name: string; email: string }) {
 }
 
 export const meta: Route.MetaFunction = ({ matches }) => {
-  const root = matches.find((m) => m?.id === "root")?.loaderData as
-    | Awaited<ReturnType<typeof rootLoader>>
-    | undefined;
+  const root = rootLoaderData<Awaited<ReturnType<typeof rootLoader>>>(matches);
   if (!root) return [{ title: "Accessibility statement" }];
   const { profile } = root.content;
   const statement = statementFor(profile);

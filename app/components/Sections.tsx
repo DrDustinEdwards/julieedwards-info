@@ -2,7 +2,7 @@
 import { Icon } from "capsomer/react/icons";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
-import { objectPosition, type LibraryPhoto, type Photos } from "~/lib/media/images";
+import { type LibraryPhoto, type Photos } from "~/lib/media/images";
 import type { Content } from "~/lib/source";
 import { AppleMark } from "./AppleMark";
 import { Arrow } from "./Chrome";
@@ -112,13 +112,8 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
  * below the hero, so it loads lazily and is never the page's priority image.
  */
 function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
-  const picture = pictureProps(photo, { alt: photo.alt });
-  const position = photo.focus ? objectPosition(photo.focus) : undefined;
-  // The placeholder background (img.style) stays under the crop's position.
-  const img = position
-    ? { ...picture.img, style: { ...picture.img.style, objectPosition: position } }
-    : picture.img;
-  return <Picture picture={{ ...picture, img }} />;
+  const picture = pictureProps(photo, { alt: photo.alt, focus: photo.focus });
+  return <Picture picture={picture} />;
 }
 
 export function About({
