@@ -24,7 +24,7 @@ import { allCronJobs, cronJobs } from "../app/lib/cron.server";
 import { runJobs, runJobTool } from "@dustinedwards/site-runtime/cron";
 import { operatorResponse } from "@dustinedwards/site-runtime/operator";
 import { maintenanceOn, maintenanceResponse } from "@dustinedwards/site-runtime/maintenance";
-import { logEvent, withRequestLog } from "@dustinedwards/site-runtime/log";
+import { logEvent, routeNamer, withRequestLog } from "@dustinedwards/site-runtime/log";
 import { countNotFound } from "@dustinedwards/site-runtime/not-found";
 import { cloudflareContext } from "../app/lib/context.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
@@ -42,6 +42,21 @@ const PREVIEW_TOKEN = /\/(preview)\/[^/?#\s'"]+/g;
 
 const serverBuild = () => import("virtual:react-router/server-build") as Promise<ServerBuild>;
 const requestHandler = createRequestHandler(serverBuild, import.meta.env.MODE);
+
+// The route pattern each `request` log line names (`/blog/:slug`), from the React Router build's route table, made once
+// per isolate (site-runtime ./log's routeNamer). Requests the Worker answers itself (/api, /health, /mcp, /media) carry
+// the path alone. The build loads beside the request, so the first few lines in an isolate may go without a route.
+let nameRoute: ((request: Request) => string | undefined) | undefined;
+function routeName(request: Request): string | undefined {
+  if (!nameRoute)
+    void serverBuild().then(
+      (build) => (nameRoute ??= routeNamer(build.routes)),
+      () => undefined,
+    );
+  return /^\/(api|health|mcp|media)(\/|$)/.test(new URL(request.url).pathname)
+    ? undefined
+    : nameRoute?.(request);
+}
 
 /**
  * The cacheable entrypoint (wrangler.jsonc.example, `exports`): the page and the small text routes, rendered and then
@@ -195,6 +210,7 @@ export default {
     {
       sha: (env) => (env as { DEPLOY_SHA?: string }).DEPLOY_SHA,
       tokenPath: PREVIEW_TOKEN,
+      route: routeName,
     },
   ),
 } satisfies ExportedHandler<Env>;
