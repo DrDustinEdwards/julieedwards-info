@@ -350,18 +350,21 @@ section {
 }
 
 /* MOTION: the hero rises on load and each section as it scrolls into view (app/site.ts). Capsomer's
-   base.css stills every transition under reduced motion; these only start where motion is allowed. */
+   base.css stills every transition under reduced motion; these only start where motion is allowed. A section
+   is hidden only where a script can reveal it, so with JavaScript off every section shows. */
 @media (prefers-reduced-motion: no-preference) {
-  .reveal {
-    opacity: 0;
-    transform: translateY(22px);
-    transition:
-      opacity 0.7s var(--ease-out),
-      transform 0.7s var(--ease-out);
-  }
-  .reveal.in {
-    opacity: 1;
-    transform: none;
+  @media (scripting: enabled) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity 0.7s var(--ease-out),
+        transform 0.7s var(--ease-out);
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
   }
   :is(.hero h1, .hero .office, .hero-cta) {
     animation: rise 0.85s var(--ease-out) backwards;
