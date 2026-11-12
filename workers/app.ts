@@ -58,8 +58,8 @@ const site = defineSite<Env>({
     }),
   steps: [
     // The media library's files, each size cached at the edge (`caches.default` is the Workers runtime's).
-    (request, env) =>
-      new URL(request.url).pathname.startsWith("/media/")
+    (request, env, _ctx, { url }) =>
+      url.pathname.startsWith("/media/")
         ? serveMedia(request, env, (caches as CacheStorage & { default: Cache }).default)
         : undefined,
     // Carrel's site API under /api/carrel/v1 and its preview links (site-api's step); a write it accepts (a section,
