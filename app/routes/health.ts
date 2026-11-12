@@ -12,7 +12,7 @@ import { deployedAt, deployedSha } from "@dustinedwards/site-runtime/deploy";
 import { healthResponse, imagesCheck, r2Check } from "@dustinedwards/site-runtime/health";
 import type { Route } from "./+types/health";
 import { backupStatus } from "~/lib/backup.server";
-import { getEnv } from "~/lib/context.server";
+import { getEnv } from "@dustinedwards/site-runtime/context";
 import { allCronJobs } from "~/lib/cron.server";
 
 export function loader({ context }: Route.LoaderArgs) {

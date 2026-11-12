@@ -1,6 +1,6 @@
 import { sitemapDocument } from "@drdustinedwards/site-helpers/sitemap";
 import type { Route } from "./+types/sitemap";
-import { getEnv } from "~/lib/context.server";
+import { getEnv } from "@dustinedwards/site-runtime/context";
 import { loadContent } from "~/lib/content.server";
 import { SITE_URL } from "~/lib/site";
 

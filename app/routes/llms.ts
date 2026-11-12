@@ -1,6 +1,6 @@
 import { llmsResponse } from "@drdustinedwards/site-helpers/llms";
 import type { Route } from "./+types/llms";
-import { getEnv } from "~/lib/context.server";
+import { getEnv } from "@dustinedwards/site-runtime/context";
 import { loadContent } from "~/lib/content.server";
 import { SITE_URL } from "~/lib/site";
 
