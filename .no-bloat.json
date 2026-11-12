@@ -2,8 +2,9 @@
   "baseline": {
     "measured_at": "9070831",
     "knip": {
-      "files": 1,
-      "exports": 5,
+      "files": 6,
+      "dependencies": 2,
+      "exports": 8,
       "types": 3
     },
     "jscpd": {
