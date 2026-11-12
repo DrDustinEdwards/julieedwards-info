@@ -12,6 +12,8 @@
 // The body is plain paragraphs separated by blank lines ("paragraphs"), or "## Title" items each
 // followed by their text ("items"), or nothing. The page renders every value as text, never as HTML.
 
+import { normalizeNewlines } from "@drdustinedwards/site-helpers/text";
+
 export type Link = { label: string; href: string };
 export type Item = { title: string; body: string };
 
@@ -189,7 +191,7 @@ function itemsOf(body: string): Item[] {
 /** Reads one section's source. Throws SourceError, in words for the writer, when it does not fit. */
 export function parseSection<K extends SectionId>(id: K, source: string): Content[K] {
   const section = SECTIONS[id];
-  const normalized = source.replace(/\r\n/g, "\n");
+  const normalized = normalizeNewlines(source);
   if (!normalized.startsWith("---\n"))
     throw new SourceError("The source must start with a --- front matter block.");
   const close = normalized.indexOf("\n---", 3);
