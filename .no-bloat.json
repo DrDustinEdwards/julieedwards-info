@@ -1,9 +1,10 @@
 {
   "baseline": {
-    "measured_at": "9bacf90",
+    "measured_at": "ff30bcf",
     "knip": {
-      "Unused files": 1,
-      "Unused exports": 1,
+      "Unused files": 6,
+      "Unused dependencies": 1,
+      "Unused exports": 4,
       "Unused exported types": 1
     },
     "jscpd": {
