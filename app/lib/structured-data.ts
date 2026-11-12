@@ -9,7 +9,8 @@ export function structuredData(profile: Content["profile"]) {
     name: profile.name,
     jobTitle: "School Board Trustee",
     url: SITE_URL,
-    // A library photo is named by its path; the graph names it in full.
+    // A library photo is named by its path; the graph names it in full. new URL, not Prelum absoluteUrl, which would
+    // leave a space or an accent unencoded.
     image: profile.images.about ? new URL(profile.images.about, SITE_URL).href : undefined,
     worksFor: {
       "@type": "EducationalOrganization",
