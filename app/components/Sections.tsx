@@ -95,11 +95,11 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
         </div>
         <div className="cap-grid" data-gap="6">
           {section.items.map((p, i) => (
-            <div className="pillar cap-reveal" key={p.title}>
-              {icons[i % icons.length]}
+            <article className="cap-card cap-reveal" key={p.title}>
+              <div>{icons[i % icons.length]}</div>
               <h3>{p.title}</h3>
               <p>{p.body}</p>
-            </div>
+            </article>
           ))}
         </div>
       </div>
