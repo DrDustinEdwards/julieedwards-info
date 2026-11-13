@@ -53,9 +53,9 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
   // Read once, in a lazy initializer, so the render itself stays pure (react/purity).
   const [line] = useState(() => copyright(name));
   return (
-    <footer className="je-footer">
+    <footer className="cap-site-footer">
       <div className="cap-page cap-spread footer-inner" data-align="center" data-gap="6">
-        <p className="footer-note">
+        <p className="cap-site-footer-note footer-note">
           {line}
           {site.analyticsNote && (
             <>
@@ -64,7 +64,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
             </>
           )}
         </p>
-        <div className="cap-cluster footer-links" data-justify="end" data-gap="6">
+        <nav className="cap-site-footer-links footer-links" data-links="quiet" aria-label="Footer">
           {site.resourceLinks.map((l) => (
             <a key={l.href} href={l.href}>
               {l.label}
@@ -72,7 +72,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
             </a>
           ))}
           <a href="/accessibility">Accessibility</a>
-        </div>
+        </nav>
       </div>
     </footer>
   );

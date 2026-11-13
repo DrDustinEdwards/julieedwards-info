@@ -1,7 +1,5 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
-import { Hero as HeroSection } from "capsomer/react/hero";
-import { Icon, markFacebook } from "capsomer/react/icons";
-import { ButtonLink } from "capsomer/react/link";
+import { Icon, iconFileCheck, iconGraduation, iconIdea, markFacebook } from "capsomer/react/icons";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { type LibraryPhoto, type Photos } from "~/lib/media/images";
@@ -30,63 +28,22 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
 
 export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
-    <HeroSection
-      id="top"
-      className="hero"
-      title={profile.name}
-      lead={profile.office}
-      actions={
-        <ButtonLink className="hero-cta" size="lg" href="#contact">
+    <header className="hero" id="top">
+      <div className="cap-page hero-inner">
+        <h1>{profile.name}</h1>
+        <div className="office">{profile.office}</div>
+        <a className="cap-btn hero-cta" data-size="lg" href="#contact">
           {cta}
           <Arrow />
-        </ButtonLink>
-      }
-      backdrop={<AppleMark className="hero-mark" />}
-    />
+        </a>
+      </div>
+      <AppleMark className="hero-mark" />
+    </header>
   );
 }
 
-const icons = [
-  // Education
-  <svg
-    key="e"
-    className="ic"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    aria-hidden="true"
-  >
-    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-    <path d="M6 12v5c0 1 2 3 6 3s6-2 6-3v-5" />
-  </svg>,
-  // Integrity
-  <svg
-    key="i"
-    className="ic"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    aria-hidden="true"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="m9 15 2 2 4-4" />
-  </svg>,
-  // Student Success
-  <svg
-    key="s"
-    className="ic"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    aria-hidden="true"
-  >
-    <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" />
-  </svg>,
-];
+// The priorities' pictures, in order: education, integrity, student success.
+const icons = [iconGraduation, iconFileCheck, iconIdea];
 
 // The campaign flyer button (profile.images.flyer) is hidden while she serves; restore it for a re-election
 // from the Next.js site's components/WhyRunning.tsx in git history.
@@ -100,7 +57,9 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
         <div className="cap-grid" data-gap="6">
           {section.items.map((p, i) => (
             <article className="cap-card cap-reveal" key={p.title}>
-              <div>{icons[i % icons.length]}</div>
+              <div>
+                <Icon d={icons[i % icons.length]} className="ic" />
+              </div>
               <h3>{p.title}</h3>
               <p>{p.body}</p>
             </article>
@@ -191,44 +150,37 @@ export function Contact({
     <section className="contact" id="contact">
       <div className="cap-page">
         <div className="contact-grid">
-          <h2 style={{ gridColumn: 1, gridRow: 1 }}>{section.heading}</h2>
-          <a
-            className="contact-link"
-            style={{ gridColumn: 1, gridRow: 2 }}
-            href={`mailto:${profile.email}`}
-          >
-            {profile.email}
-            <Arrow />
-          </a>
-          <a className="contact-link" style={{ gridColumn: 1, gridRow: 3 }} href={profile.facebook}>
-            <Icon {...markFacebook} />
-            Facebook
-            <Arrow />
-          </a>
-          <a
-            className="contact-link contact-address"
-            style={{ gridColumn: 1, gridRow: 4 }}
-            href={profile.address.mapsUrl}
-          >
-            <span>{profile.address.name}</span>
-            <span>{profile.address.line1}</span>
-            <span>{profile.address.line2}</span>
-          </a>
+          <div className="cap-stack" data-gap="5">
+            <h2>{section.heading}</h2>
+            <a className="contact-link" href={`mailto:${profile.email}`}>
+              {profile.email}
+              <Arrow />
+            </a>
+            <a className="contact-link" href={profile.facebook}>
+              <Icon {...markFacebook} />
+              Facebook
+              <Arrow />
+            </a>
+            <a className="contact-link contact-address" href={profile.address.mapsUrl}>
+              <span>{profile.address.name}</span>
+              <span>{profile.address.line1}</span>
+              <span>{profile.address.line2}</span>
+            </a>
+          </div>
 
           <div className="contact-divider" aria-hidden="true" />
 
-          <h2 style={{ gridColumn: "3 / span 2", gridRow: 1 }}>{section.boardHeading}</h2>
-          {section.boardLinks.map((l, i) => (
-            <a
-              key={l.href}
-              className="contact-link"
-              style={{ gridColumn: 3 + (i % 2), gridRow: 2 + Math.floor(i / 2) }}
-              href={l.href}
-            >
-              {l.label}
-              <Arrow />
-            </a>
-          ))}
+          <div className="cap-stack" data-gap="5">
+            <h2>{section.boardHeading}</h2>
+            <div className="contact-board">
+              {section.boardLinks.map((l) => (
+                <a key={l.href} className="contact-link" href={l.href}>
+                  {l.label}
+                  <Arrow />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
