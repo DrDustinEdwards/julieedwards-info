@@ -22,13 +22,9 @@
 @import "capsomer/button.css";
 @import "capsomer/empty.css";
 @import "capsomer/error-page.css";
+@import "capsomer/site-footer.css";
 
 :root {
-  --maxw: 67.5rem;
-  --side: var(--space-7);
-  /* Capsomer's page column (.cap-page) at this site's width and sides. */
-  --page-max: var(--maxw);
-  --page-gutter: var(--side);
   /* The green band (hero, About): Bluff Dale green in light, the family's deep green in dark. */
   --band: var(--accent-11);
   --band-ink: var(--surface);
@@ -43,6 +39,8 @@
   --band: var(--accent-5);
   --band-ink: var(--text);
 }
+/* Only the margins the one-page layout spaces itself. Not capsomer/reset.css: Tailwind's preflight would also
+   take the accessibility statement's heading sizes and list bullets. */
 @layer reset {
   :where(h1, h2, h3, p) {
     margin: 0;
@@ -51,8 +49,6 @@
 body {
   --text-size: 1.0625rem;
   --leading: 1.65;
-  /* Capsomer's page column reads at the site's own leading, as the column it replaced (.wrap) did. */
-  --page-leading: var(--leading);
   overflow-x: hidden;
 }
 :where(h1, h2, h3) {
@@ -62,10 +58,11 @@ body {
   background: var(--accent-11);
   color: var(--surface);
 }
-/* HEADER: Capsomer's, lined up with the page column on a desktop; a phone keeps Capsomer's 16px sides. */
+/* HEADER: Capsomer's, lined up with the page column (its width and sides are the SITES entry's) on a desktop;
+   a phone keeps Capsomer's 16px sides. */
 @media (width >= 768px) {
   .cap-site-header {
-    --header-side: max(var(--side), calc((100% - var(--maxw)) / 2 + var(--side)));
+    --header-side: max(var(--page-gutter), calc((100% - var(--page-max)) / 2 + var(--page-gutter)));
   }
 }
 /* Capsomer's trailing arrow, drawn as the site always has: heavier than an icon. */
@@ -256,12 +253,18 @@ section {
 }
 
 /* CONTACT */
+/* Two groups of links beside a divider: the campaign's own, and the board's in two columns. */
 .contact-grid {
   display: grid;
-  grid-template-columns: minmax(max-content, 1fr) 1px max-content max-content;
+  grid-template-columns: minmax(max-content, 1fr) 1px max-content;
+  column-gap: var(--space-8);
+  align-items: start;
+}
+.contact-board {
+  display: grid;
+  grid-template-columns: max-content max-content;
   column-gap: var(--space-8);
   row-gap: var(--space-5);
-  align-items: start;
 }
 .contact-grid h2 {
   font-weight: 600;
@@ -271,8 +274,7 @@ section {
   letter-spacing: 0.08em;
 }
 .contact-divider {
-  grid-column: 2;
-  grid-row: 1 / -1;
+  align-self: stretch;
   width: 100%;
   background: var(--line);
 }
@@ -291,33 +293,36 @@ section {
   white-space: nowrap;
 }
 
-/* FOOTER */
+/* ACCESSIBILITY */
+.accessibility-page {
+  padding-block: var(--space-8);
+}
 .accessibility-statement {
   max-width: 65ch;
 }
 .accessibility-statement :is(h2, ul) {
   margin-block-start: var(--space-6);
 }
-.je-footer {
-  padding-block: 2.5rem;
-  border-top: 1px solid var(--line);
+/* FOOTER: Capsomer's site footer with quiet links, in the header's face, its small print and links at the
+   old site's sizes. */
+.cap-site-footer {
   font-family: var(--font-ui);
 }
 .footer-note {
   font-size: 0.75rem;
-  color: var(--muted);
   letter-spacing: 0.03em;
 }
-/* The footer's links row is Capsomer's cluster (.cap-cluster); only its size is the site's. */
 .footer-links {
+  row-gap: var(--space-6);
+  justify-content: flex-end;
   font-size: 0.8rem;
 }
-/* The old site's quiet links: gray, turning green under the pointer as the arrow slides in. */
-:is(.contact-link, .footer-links a) {
+/* The old site's quiet contact links, as the footer's: gray, turning green under the pointer as the arrow slides in. */
+.contact-link {
   color: var(--muted);
   text-decoration: none;
 }
-:is(.contact-link, .footer-links a):hover {
+.contact-link:hover {
   color: var(--accent-text);
 }
 .footer-links a {
@@ -366,6 +371,10 @@ section {
   .contact-grid {
     display: flex;
     flex-direction: column;
+    row-gap: var(--space-5);
+  }
+  .contact-board {
+    grid-template-columns: max-content;
   }
   .contact-divider {
     display: none;
