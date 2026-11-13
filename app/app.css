@@ -17,6 +17,7 @@
 @import "capsomer/theme-switch.css";
 @import "capsomer/icons.css";
 @import "capsomer/card.css";
+@import "capsomer/contact-card.css";
 @import "capsomer/reveal.css";
 @import "capsomer/utilities.css";
 @import "capsomer/button.css";
@@ -252,45 +253,28 @@ section {
   line-height: 1.75;
 }
 
-/* CONTACT */
-/* Two groups of links beside a divider: the campaign's own, and the board's in two columns. */
-.contact-grid {
-  display: grid;
-  grid-template-columns: minmax(max-content, 1fr) 1px max-content;
-  column-gap: var(--space-8);
-  align-items: start;
-}
-.contact-board {
-  display: grid;
-  grid-template-columns: max-content max-content;
-  column-gap: var(--space-8);
-  row-gap: var(--space-5);
-}
-.contact-grid h2 {
-  font-weight: 600;
+/* CONTACT: Capsomer's plain contact cards in the old site's look: small uppercase green headings, quiet gray links in the
+   header's face (green under the pointer), the campaign's links in one column and the board's in two. */
+.contact .cap-contact-card-title {
+  font-family: var(--font-ui);
   font-size: 1rem;
+  font-weight: 600;
   color: var(--accent-text);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.contact-divider {
-  align-self: stretch;
-  width: 100%;
-  background: var(--line);
-}
-.contact-link {
-  /* Its icons (Facebook) at the 16px they always were; the arrow keeps its own size. */
-  --icon-size: 1rem;
+.contact :is(.cap-contact-way, .cap-contact-address) {
   font-family: var(--font-ui);
   font-size: 0.9rem;
   line-height: 1.55;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-decoration: none;
+  color: var(--muted);
+  &:hover {
+    color: var(--accent-text);
+    text-decoration: none;
+  }
 }
-.contact-address {
-  white-space: nowrap;
+.contact .cap-contact-card:first-child .cap-contact-ways {
+  grid-template-columns: 1fr;
 }
 
 /* ACCESSIBILITY */
@@ -316,14 +300,6 @@ section {
   row-gap: var(--space-6);
   justify-content: flex-end;
   font-size: 0.8rem;
-}
-/* The old site's quiet contact links, as the footer's: gray, turning green under the pointer as the arrow slides in. */
-.contact-link {
-  color: var(--muted);
-  text-decoration: none;
-}
-.contact-link:hover {
-  color: var(--accent-text);
 }
 .footer-links a {
   display: inline-flex;

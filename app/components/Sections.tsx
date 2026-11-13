@@ -1,4 +1,5 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { ContactCard, ContactGrid } from "capsomer/react/contact-card";
 import { Icon } from "capsomer/react/icons";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
@@ -146,42 +147,27 @@ export function Contact({
   section: Content["contact"];
   profile: Content["profile"];
 }) {
+  const { address } = profile;
   return (
     <section className="contact" id="contact">
       <div className="cap-page">
-        <div className="contact-grid">
-          <div className="cap-stack" data-gap="5">
-            <h2>{section.heading}</h2>
-            <a className="contact-link" href={`mailto:${profile.email}`}>
-              {profile.email}
-              <Arrow />
-            </a>
-            <a className="contact-link" href={profile.facebook}>
-              <Icon name="facebook" />
-              Facebook
-              <Arrow />
-            </a>
-            <a className="contact-link contact-address" href={profile.address.mapsUrl}>
-              <span>{profile.address.name}</span>
-              <span>{profile.address.line1}</span>
-              <span>{profile.address.line2}</span>
-            </a>
-          </div>
-
-          <div className="contact-divider" aria-hidden="true" />
-
-          <div className="cap-stack" data-gap="5">
-            <h2>{section.boardHeading}</h2>
-            <div className="contact-board">
-              {section.boardLinks.map((l) => (
-                <a key={l.href} className="contact-link" href={l.href}>
-                  {l.label}
-                  <Arrow />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
+        <ContactGrid plain>
+          <ContactCard
+            title={section.heading}
+            headingLevel="h2"
+            ways={[
+              { label: profile.email, href: `mailto:${profile.email}` },
+              { label: "Facebook", href: profile.facebook, icon: <Icon name="facebook" /> },
+            ]}
+            address={[address.name, address.line1, address.line2]}
+            mapHref={address.mapsUrl}
+          />
+          <ContactCard
+            title={section.boardHeading}
+            headingLevel="h2"
+            ways={section.boardLinks.map((l) => ({ label: l.label, href: l.href }))}
+          />
+        </ContactGrid>
       </div>
     </section>
   );
