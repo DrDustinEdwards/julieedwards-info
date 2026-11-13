@@ -1,14 +1,15 @@
 // The header and footer every page shares. Server-rendered markup only: the header is Capsomer's
 // SiteHeader without hydration, and app/site.ts wires its sheet and theme button.
-import { Icon } from "capsomer/react/icons";
+import { Icon, iconChevronRight } from "capsomer/react/icons";
 import { SiteHeader } from "capsomer/react/site-header";
+import { copyright } from "capsomer/behavior/family-footer";
 import { useState } from "react";
 import type { Content } from "~/lib/source";
 import { THEME_KEY } from "~/lib/theme";
 import { AppleMark } from "./AppleMark";
 
 /** Capsomer's trailing arrow: the julieedwards site setting hides it until the pointer or focus arrives. */
-export const Arrow = () => <Icon name="chevron-right" className="cap-arrow" />;
+export const Arrow = () => <Icon d={iconChevronRight} className="cap-arrow" />;
 
 export function Header({
   name,
@@ -50,12 +51,12 @@ export function Header({
 
 export function Footer({ name, site }: { name: string; site: Content["site"] }) {
   // Read once, in a lazy initializer, so the render itself stays pure (react/purity).
-  const [year] = useState(() => new Date().getFullYear());
+  const [line] = useState(() => copyright(name));
   return (
     <footer className="cap-site-footer">
       <div className="cap-page cap-spread footer-inner" data-align="center" data-gap="6">
         <p className="cap-site-footer-note footer-note">
-          &copy; {year} {name}
+          {line}
           {site.analyticsNote && (
             <>
               <br />

@@ -4,11 +4,12 @@
 import { eq } from "drizzle-orm";
 import type { MediaUse } from "@dustinedwards/site-api";
 import { getDb } from "~/db/index.server";
-import { media, sections, type MediaRow } from "~/db/schema";
+import { media } from "@dustinedwards/site-api/drizzle";
+import { sections } from "~/db/schema";
 import { LIBRARY_ADDRESS } from "~/lib/media/images";
 import { isSectionId, SECTIONS } from "~/lib/source";
 
-export async function mediaRow(env: Env, key: string): Promise<MediaRow | null> {
+export async function mediaRow(env: Env, key: string): Promise<typeof media.$inferSelect | null> {
   const rows = await getDb(env).select().from(media).where(eq(media.key, key)).limit(1);
   return rows[0] ?? null;
 }

@@ -14,8 +14,8 @@
 
 import { normalizeNewlines } from "@drdustinedwards/site-helpers/text";
 
-export type Link = { label: string; href: string };
-export type Item = { title: string; body: string };
+type Link = { label: string; href: string };
+type Item = { title: string; body: string };
 
 export type Content = {
   profile: {
@@ -47,7 +47,7 @@ export type SectionId = keyof Content;
  * site-api's search fields beside `description`, each optional: the page's own <title>, share card, canonical and
  * noindex. They live in the profile section, the one that already holds the page's description.
  */
-export type Search = {
+type Search = {
   searchTitle?: string;
   image?: string;
   imageAlt?: string;

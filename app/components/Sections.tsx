@@ -1,6 +1,8 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
+import { Icon, iconFileCheck, iconGraduation, iconIdea, markFacebook } from "capsomer/react/icons";
 import { ContactCard, ContactGrid } from "capsomer/react/contact-card";
-import { Icon } from "capsomer/react/icons";
+import { Hero as CapHero } from "capsomer/react/hero";
+import { ButtonLink } from "capsomer/react/link";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { type LibraryPhoto, type Photos } from "~/lib/media/images";
@@ -27,28 +29,30 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
   );
 }
 
-export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
+function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
-    <header className="hero" id="top">
-      <div className="cap-page hero-inner">
-        <h1>{profile.name}</h1>
-        <div className="office">{profile.office}</div>
-        <a className="cap-btn hero-cta" data-size="lg" href="#contact">
+    <CapHero
+      id="top"
+      className="hero"
+      title={profile.name}
+      lead={profile.office}
+      actions={
+        <ButtonLink className="hero-cta" size="lg" href="#contact">
           {cta}
           <Arrow />
-        </a>
-      </div>
-      <AppleMark className="hero-mark" />
-    </header>
+        </ButtonLink>
+      }
+      backdrop={<AppleMark className="hero-mark" />}
+    />
   );
 }
 
 // The priorities' pictures, in order: education, integrity, student success.
-const icons = ["graduation", "file-check", "idea"] as const;
+const icons = [iconGraduation, iconFileCheck, iconIdea];
 
 // The campaign flyer button (profile.images.flyer) is hidden while she serves; restore it for a re-election
 // from the Next.js site's components/WhyRunning.tsx in git history.
-export function Priorities({ section }: { section: Content["priorities"] }) {
+function Priorities({ section }: { section: Content["priorities"] }) {
   return (
     <section className="why" id="why">
       <div className="cap-page">
@@ -59,7 +63,7 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
           {section.items.map((p, i) => (
             <article className="cap-card cap-reveal" key={p.title}>
               <div>
-                <Icon name={icons[i % icons.length]} className="ic" />
+                <Icon d={icons[i % icons.length]} className="ic" />
               </div>
               <h3>{p.title}</h3>
               <p>{p.body}</p>
@@ -80,7 +84,7 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
   return <Picture picture={picture} />;
 }
 
-export function About({
+function About({
   section,
   photo,
   library,
@@ -117,7 +121,7 @@ export function About({
   );
 }
 
-export function Experience({ section }: { section: Content["experience"] }) {
+function Experience({ section }: { section: Content["experience"] }) {
   return (
     <section id="experience">
       <div className="cap-page">
@@ -140,7 +144,7 @@ export function Experience({ section }: { section: Content["experience"] }) {
   );
 }
 
-export function Contact({
+function Contact({
   section,
   profile,
 }: {
@@ -155,9 +159,15 @@ export function Contact({
           <ContactCard
             title={section.heading}
             headingLevel="h2"
+            wayColumns={1}
             ways={[
-              { label: profile.email, href: `mailto:${profile.email}` },
-              { label: "Facebook", href: profile.facebook, icon: <Icon name="facebook" /> },
+              { label: profile.email, href: `mailto:${profile.email}`, iconEnd: <Arrow /> },
+              {
+                label: "Facebook",
+                href: profile.facebook,
+                icon: <Icon {...markFacebook} />,
+                iconEnd: <Arrow />,
+              },
             ]}
             address={[address.name, address.line1, address.line2]}
             mapHref={address.mapsUrl}
@@ -165,7 +175,11 @@ export function Contact({
           <ContactCard
             title={section.boardHeading}
             headingLevel="h2"
-            ways={section.boardLinks.map((l) => ({ label: l.label, href: l.href }))}
+            ways={section.boardLinks.map((l) => ({
+              label: l.label,
+              href: l.href,
+              iconEnd: <Arrow />,
+            }))}
           />
         </ContactGrid>
       </div>

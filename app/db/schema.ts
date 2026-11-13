@@ -1,7 +1,6 @@
 // Kept in step with the hand-written migrations in drizzle/ (0000_sections.sql, 0002_media.sql,
 // 0004_media_placeholder.sql, 0005_section_schedules.sql). 0003_ops.sql holds site-runtime's own tables and
 // 0006_site_api_store.sql site-api's, which only each package reads and writes.
-import { media, mediaChanges, mediaRevisions } from "@dustinedwards/site-api/drizzle";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const sections = sqliteTable("sections", {
@@ -26,10 +25,3 @@ export const sectionRevisions = sqliteTable("section_revisions", {
 });
 
 export type SectionRow = typeof sections.$inferSelect;
-
-// The media library (0002_media.sql, 0004_media_placeholder.sql) is site-api's own tables: one row per uploaded file, its
-// byte history, and the change log the triggers on `media` write.
-export { media, mediaChanges, mediaRevisions };
-
-export type MediaRow = typeof media.$inferSelect;
-export type MediaRevisionRow = typeof mediaRevisions.$inferSelect;
