@@ -1,10 +1,9 @@
 {
   "baseline": {
-    "measured_at": "9070831",
+    "measured_at": "0a98dfe",
     "knip": {
-      "files": 6,
-      "dependencies": 2,
-      "exports": 8,
+      "files": 1,
+      "exports": 5,
       "types": 3
     },
     "jscpd": {
@@ -22,9 +21,9 @@
       "cases": 7
     },
     "comments": {
-      "lines": 325,
-      "code": 2462,
-      "percentage": 11.66
+      "lines": 326,
+      "code": 2426,
+      "percentage": 11.85
     }
   }
 }
