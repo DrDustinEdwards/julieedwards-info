@@ -14,7 +14,7 @@ const [themeHash, previewStyleHash] = await Promise.all([
 
 /**
  * What the page loads beyond itself: the profile photo's hosts, the theme script by hash (/site.js is 'self'), the
- * contact grid's style attributes, Carrel's preview style by hash and the Cloudflare Web Analytics beacon the edge
+ * style attributes Capsomer's Picture paints its placeholder with, Carrel's preview style by hash and the Cloudflare Web Analytics beacon the edge
  * injects. Nothing unlisted (media, frames, workers); the manifest is named. Trusted Types is enforced: every sink takes a
  * policy's value (site-runtime ./trusted-types, installed by startPage).
  */

@@ -4,8 +4,8 @@
     "knip": {
       "files": 6,
       "dependencies": 2,
-      "exports": 8,
-      "types": 3
+      "exports": 3,
+      "types": 0
     },
     "jscpd": {
       "clones": 0,
