@@ -1,6 +1,6 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
 import { Hero as HeroSection } from "capsomer/react/hero";
-import { Icon } from "capsomer/react/icons";
+import { Icon, markFacebook } from "capsomer/react/icons";
 import { ButtonLink } from "capsomer/react/link";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
@@ -201,7 +201,7 @@ export function Contact({
             <Arrow />
           </a>
           <a className="contact-link" style={{ gridColumn: 1, gridRow: 3 }} href={profile.facebook}>
-            <Icon name="facebook" />
+            <Icon {...markFacebook} />
             Facebook
             <Arrow />
           </a>
