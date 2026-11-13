@@ -27,7 +27,7 @@ export const sectionRevisions = sqliteTable("section_revisions", {
 export type SectionRow = typeof sections.$inferSelect;
 
 // The media library (0002_media.sql, 0004_media_placeholder.sql) is site-api's: its Drizzle mirrors, so drizzle-kit knows each table.
-export { media, mediaChanges, mediaRevisions } from "@dustinedwards/site-api/drizzle";
+export { media } from "@dustinedwards/site-api/drizzle";
 import { media } from "@dustinedwards/site-api/drizzle";
 
 export type MediaRow = typeof media.$inferSelect;

@@ -8,9 +8,9 @@
       "types": 3
     },
     "jscpd": {
-      "clones": 1,
-      "lines": 11,
-      "percentage": 0.23,
+      "clones": 0,
+      "lines": 0,
+      "percentage": 0,
       "unread": 0
     },
     "shared copies": {
