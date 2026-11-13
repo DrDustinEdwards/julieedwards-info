@@ -152,6 +152,7 @@ function Contact({
   profile: Content["profile"];
 }) {
   const { address } = profile;
+  const arrow = <Arrow />;
   return (
     <section className="contact" id="contact">
       <div className="cap-page">
@@ -161,12 +162,12 @@ function Contact({
             headingLevel="h2"
             wayColumns={1}
             ways={[
-              { label: profile.email, href: `mailto:${profile.email}`, iconEnd: <Arrow /> },
+              { label: profile.email, href: `mailto:${profile.email}`, iconEnd: arrow },
               {
                 label: "Facebook",
                 href: profile.facebook,
                 icon: <Icon {...markFacebook} />,
-                iconEnd: <Arrow />,
+                iconEnd: arrow,
               },
             ]}
             address={[address.name, address.line1, address.line2]}
@@ -175,11 +176,7 @@ function Contact({
           <ContactCard
             title={section.boardHeading}
             headingLevel="h2"
-            ways={section.boardLinks.map((l) => ({
-              label: l.label,
-              href: l.href,
-              iconEnd: <Arrow />,
-            }))}
+            ways={section.boardLinks.map((l) => ({ ...l, iconEnd: arrow }))}
           />
         </ContactGrid>
       </div>
