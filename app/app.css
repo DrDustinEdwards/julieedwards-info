@@ -17,7 +17,9 @@
 @import "capsomer/theme-switch.css";
 @import "capsomer/icons.css";
 @import "capsomer/card.css";
+@import "capsomer/contact-card.css";
 @import "capsomer/reveal.css";
+@import "capsomer/layout.css";
 @import "capsomer/utilities.css";
 @import "capsomer/button.css";
 @import "capsomer/hero.css";
@@ -263,45 +265,24 @@ section {
   line-height: 1.75;
 }
 
-/* CONTACT */
-/* Two groups of links beside a divider: the campaign's own, and the board's in two columns. */
-.contact-grid {
-  display: grid;
-  grid-template-columns: minmax(max-content, 1fr) 1px max-content;
-  column-gap: var(--space-8);
-  align-items: start;
-}
-.contact-board {
-  display: grid;
-  grid-template-columns: max-content max-content;
-  column-gap: var(--space-8);
-  row-gap: var(--space-5);
-}
-.contact-grid h2 {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--accent-text);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.contact-divider {
-  align-self: stretch;
-  width: 100%;
-  background: var(--line);
-}
-.contact-link {
-  /* Its icons (Facebook) at the 16px they always were; the arrow keeps its own size. */
-  --icon-size: 1rem;
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  line-height: 1.55;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-decoration: none;
-}
-.contact-address {
-  white-space: nowrap;
+/* CONTACT: Capsomer's plain contact cards in the old site's look, by their tokens: small uppercase green headings, quiet
+   gray links in the header's face at 0.9rem, green under the pointer. */
+.contact {
+  --cap-contact-card-title-face: var(--font-ui);
+  --cap-contact-card-title-size: 1rem;
+  --cap-contact-card-title-weight: 600;
+  --cap-contact-card-title-color: var(--accent-text);
+  --cap-contact-card-title-tracking: 0.08em;
+  --cap-contact-card-title-case: uppercase;
+  --cap-contact-way-color: var(--muted);
+  --cap-contact-way-face: var(--font-ui);
+  --cap-contact-way-size: 0.9rem;
+  --cap-contact-address-face: var(--font-ui);
+  --cap-contact-address-size: 0.9rem;
+  & :is(.cap-contact-way, a.cap-contact-address):hover {
+    color: var(--accent-text);
+    text-decoration: none;
+  }
 }
 
 /* ACCESSIBILITY */
@@ -327,14 +308,6 @@ section {
   row-gap: var(--space-6);
   justify-content: flex-end;
   font-size: 0.8rem;
-}
-/* The old site's quiet contact links, as the footer's: gray, turning green under the pointer as the arrow slides in. */
-.contact-link {
-  color: var(--muted);
-  text-decoration: none;
-}
-.contact-link:hover {
-  color: var(--accent-text);
 }
 .footer-links a {
   display: inline-flex;
@@ -376,23 +349,5 @@ section {
   }
   .footer-links {
     justify-content: center;
-  }
-}
-@media (width < 768px) {
-  .contact-grid {
-    display: flex;
-    flex-direction: column;
-    row-gap: var(--space-5);
-  }
-  .contact-board {
-    grid-template-columns: max-content;
-  }
-  .contact-divider {
-    display: none;
-  }
-  .contact-address {
-    flex-direction: column;
-    align-items: flex-start;
-    white-space: normal;
   }
 }
