@@ -1,5 +1,7 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
 import { Icon, iconFileCheck, iconGraduation, iconIdea, markFacebook } from "capsomer/react/icons";
+import { Hero as CapHero } from "capsomer/react/hero";
+import { ButtonLink } from "capsomer/react/link";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { type LibraryPhoto, type Photos } from "~/lib/media/images";
@@ -26,19 +28,21 @@ export function HomeSections({ content, photos }: { content: Content; photos: Ph
   );
 }
 
-export function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
+function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
   return (
-    <header className="hero" id="top">
-      <div className="cap-page hero-inner">
-        <h1>{profile.name}</h1>
-        <div className="office">{profile.office}</div>
-        <a className="cap-btn hero-cta" data-size="lg" href="#contact">
+    <CapHero
+      id="top"
+      className="hero"
+      title={profile.name}
+      lead={profile.office}
+      actions={
+        <ButtonLink className="hero-cta" size="lg" href="#contact">
           {cta}
           <Arrow />
-        </a>
-      </div>
-      <AppleMark className="hero-mark" />
-    </header>
+        </ButtonLink>
+      }
+      backdrop={<AppleMark className="hero-mark" />}
+    />
   );
 }
 
@@ -47,7 +51,7 @@ const icons = [iconGraduation, iconFileCheck, iconIdea];
 
 // The campaign flyer button (profile.images.flyer) is hidden while she serves; restore it for a re-election
 // from the Next.js site's components/WhyRunning.tsx in git history.
-export function Priorities({ section }: { section: Content["priorities"] }) {
+function Priorities({ section }: { section: Content["priorities"] }) {
   return (
     <section className="why" id="why">
       <div className="cap-page">
@@ -79,7 +83,7 @@ function LibraryPicture({ photo }: { photo: LibraryPhoto }) {
   return <Picture picture={picture} />;
 }
 
-export function About({
+function About({
   section,
   photo,
   library,
@@ -116,7 +120,7 @@ export function About({
   );
 }
 
-export function Experience({ section }: { section: Content["experience"] }) {
+function Experience({ section }: { section: Content["experience"] }) {
   return (
     <section id="experience">
       <div className="cap-page">
@@ -139,7 +143,7 @@ export function Experience({ section }: { section: Content["experience"] }) {
   );
 }
 
-export function Contact({
+function Contact({
   section,
   profile,
 }: {
