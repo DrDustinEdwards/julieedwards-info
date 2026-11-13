@@ -1,6 +1,6 @@
 {
   "baseline": {
-    "measured_at": "9070831",
+    "measured_at": "ec69ec6",
     "knip": {
       "files": 6,
       "dependencies": 2,
@@ -8,9 +8,9 @@
       "types": 3
     },
     "jscpd": {
-      "clones": 1,
-      "lines": 11,
-      "percentage": 0.23,
+      "clones": 0,
+      "lines": 0,
+      "percentage": 0,
       "unread": 0
     },
     "shared copies": {
