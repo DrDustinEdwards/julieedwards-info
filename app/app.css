@@ -20,6 +20,7 @@
 @import "capsomer/reveal.css";
 @import "capsomer/utilities.css";
 @import "capsomer/button.css";
+@import "capsomer/hero.css";
 @import "capsomer/empty.css";
 @import "capsomer/error-page.css";
 
@@ -87,35 +88,45 @@ body {
   transform: rotate(-8deg);
 }
 
-/* HERO */
+/* HERO: Capsomer's hero (hero.md), in the band's colors and the site's own sizes. Its words sit in the page
+   column (--page-max and --page-gutter, as .cap-page), over the apple mark. */
 .hero {
-  position: relative;
+  --hero-title: clamp(2.75rem, 9vw, 6rem);
   overflow: hidden;
   min-height: calc(100dvh - var(--header-h));
   display: flex;
   align-items: center;
+  margin-block: 0;
   background: var(--band);
   color: var(--band-ink);
 }
-.hero-inner {
-  position: relative;
-  z-index: 1;
+.hero .cap-hero-text {
+  inline-size: 100%;
+  max-inline-size: var(--page-max);
+  margin-inline: auto;
+  padding-inline: max(var(--page-gutter), env(safe-area-inset-left, 0px))
+    max(var(--page-gutter), env(safe-area-inset-right, 0px));
+  font-size: var(--fs-page);
+  line-height: var(--page-leading, 1.55);
 }
-.hero h1 {
+.hero .cap-hero-title {
   font-weight: 600;
-  font-size: clamp(2.75rem, 9vw, 6rem);
   line-height: 0.98;
-  letter-spacing: -0.02em;
   margin-bottom: var(--space-4);
   text-transform: uppercase;
+  text-wrap: wrap;
 }
-.hero .office {
+.hero .cap-hero-lead {
+  max-inline-size: none;
+  color: inherit;
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: clamp(1.05rem, 2.6vw, 1.55rem);
+  line-height: inherit;
   letter-spacing: 0.02em;
   opacity: 0.92;
   margin-bottom: var(--space-7);
+  text-wrap: wrap;
 }
 /* Capsomer's button in the band's colors: ink fill, green label. */
 .hero-cta {
@@ -329,10 +340,10 @@ section {
 /* MOTION: the hero rises on load; each section rises as it scrolls into view in Capsomer's reveal. Capsomer's
    base.css stills every transition under reduced motion; these only start where motion is allowed. */
 @media (prefers-reduced-motion: no-preference) {
-  :is(.hero h1, .hero .office, .hero-cta) {
+  :is(.hero .cap-hero-title, .hero .cap-hero-lead, .hero-cta) {
     animation: rise 0.85s var(--ease-out) backwards;
   }
-  .hero .office {
+  .hero .cap-hero-lead {
     animation-delay: 0.14s;
   }
   .hero-cta {
