@@ -4,11 +4,11 @@ import {
   ACCESSIBILITY_PATH,
 } from "@drdustinedwards/site-helpers/accessibility";
 import { markup } from "capsomer/behavior/trusted-html";
-import { defineHead, rootLoaderData } from "@drdustinedwards/site-helpers/head";
+import { rootLoaderData } from "@drdustinedwards/site-helpers/head";
 import { publicPageHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import type { Route } from "./+types/accessibility";
 import type { loader as rootLoader } from "~/root";
-import { SITE_URL } from "~/lib/site";
+import { pageHead } from "~/lib/site";
 
 // The statement is the network's shared text (Prelum); the name, the contact, the date and the two facts about the build
 // are this site's: its look is Capsomer's forest family, and its links in running text are underlined (Capsomer v0.53.0
@@ -33,17 +33,7 @@ export const meta: Route.MetaFunction = ({ matches }) => {
   if (!root) return [{ title: "Accessibility statement" }];
   const { profile } = root.content;
   const statement = statementFor(profile);
-  return defineHead({
-    origin: SITE_URL,
-    siteName: profile.name,
-    image: {
-      url: "/opengraph-image.png",
-      width: 1200,
-      height: 630,
-      alt: `${profile.name}, ${profile.office}`,
-    },
-    locale: "en_US",
-  })({
+  return pageHead(profile)({
     path: ACCESSIBILITY_PATH,
     title: `${statement.title} | ${profile.name}`,
     fullTitle: true,
