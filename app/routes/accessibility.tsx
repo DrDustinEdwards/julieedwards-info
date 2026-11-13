@@ -8,7 +8,7 @@ import { rootLoaderData } from "@drdustinedwards/site-helpers/head";
 import { publicPageHeaders } from "@dustinedwards/site-runtime/edge-cache";
 import type { Route } from "./+types/accessibility";
 import type { loader as rootLoader } from "~/root";
-import { pageHead, SITE_URL } from "~/lib/site";
+import { pageHead } from "~/lib/site";
 
 // The statement is the network's shared text (Prelum); the name, the contact, the date and the two facts about the build
 // are this site's: its look is Capsomer's forest family, and its links in running text are underlined (Capsomer v0.53.0
