@@ -1,5 +1,5 @@
 // The home page's sections, in order. Every word comes from D1 (app/lib/source.ts).
-import { Icon } from "capsomer/react/icons";
+import { Icon, iconFileCheck, iconGraduation, iconIdea, markFacebook } from "capsomer/react/icons";
 import { Picture } from "capsomer/react/picture";
 import { pictureProps } from "@dustinedwards/site-runtime/image";
 import { type LibraryPhoto, type Photos } from "~/lib/media/images";
@@ -43,7 +43,7 @@ export function Hero({ profile, cta }: { profile: Content["profile"]; cta: strin
 }
 
 // The priorities' pictures, in order: education, integrity, student success.
-const icons = ["graduation", "file-check", "idea"] as const;
+const icons = [iconGraduation, iconFileCheck, iconIdea];
 
 // The campaign flyer button (profile.images.flyer) is hidden while she serves; restore it for a re-election
 // from the Next.js site's components/WhyRunning.tsx in git history.
@@ -58,7 +58,7 @@ export function Priorities({ section }: { section: Content["priorities"] }) {
           {section.items.map((p, i) => (
             <article className="cap-card cap-reveal" key={p.title}>
               <div>
-                <Icon name={icons[i % icons.length]} className="ic" />
+                <Icon d={icons[i % icons.length]} className="ic" />
               </div>
               <h3>{p.title}</h3>
               <p>{p.body}</p>
@@ -157,7 +157,7 @@ export function Contact({
               <Arrow />
             </a>
             <a className="contact-link" href={profile.facebook}>
-              <Icon name="facebook" />
+              <Icon {...markFacebook} />
               Facebook
               <Arrow />
             </a>
