@@ -218,7 +218,7 @@ section {
 }
 .about-panel {
   color: var(--band-ink);
-  padding: calc(var(--space-8) + var(--space-7)) clamp(2.5rem, 5vw, 4.5rem);
+  padding: calc(var(--space-8) + var(--space-7)) clamp(var(--space-7-5), 5vw, 4.5rem);
 }
 .about-panel h2 {
   margin-bottom: var(--space-5);
@@ -262,7 +262,7 @@ section {
 }
 .exp-item p {
   color: var(--muted);
-  line-height: 1.75;
+  line-height: var(--leading-airy);
 }
 
 /* CONTACT: Capsomer's plain contact cards in the old site's look, by their tokens: small uppercase green headings, quiet
