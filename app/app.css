@@ -74,7 +74,7 @@ body {
 }
 .je-wordmark {
   max-inline-size: none;
-  font-size: 1.05rem;
+  font-size: var(--fs-page);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-snug);
 }
@@ -106,11 +106,11 @@ body {
   padding-inline: max(var(--page-gutter), env(safe-area-inset-left, 0px))
     max(var(--page-gutter), env(safe-area-inset-right, 0px));
   font-size: var(--fs-page);
-  line-height: var(--page-leading, 1.55);
+  line-height: var(--page-leading, var(--leading-normal));
 }
 .hero .cap-hero-title {
   font-weight: var(--weight-semibold);
-  line-height: 0.98;
+  line-height: var(--leading-none);
   margin-bottom: var(--space-4);
   text-transform: uppercase;
   text-wrap: wrap;
@@ -120,10 +120,10 @@ body {
   color: inherit;
   font-family: var(--font-ui);
   font-weight: var(--weight-medium);
-  font-size: clamp(1.05rem, 2.6vw, 1.55rem);
+  font-size: clamp(var(--fs-page), 2.6vw, var(--title-3));
   line-height: inherit;
   letter-spacing: var(--tracking-wide);
-  opacity: 0.92;
+  opacity: var(--opacity-soft);
   margin-bottom: var(--space-7);
   text-wrap: wrap;
 }
@@ -148,7 +148,7 @@ body {
   width: 24rem;
   height: auto;
   color: #fff;
-  opacity: 0.06;
+  opacity: var(--opacity-ghost);
   pointer-events: none;
 }
 
@@ -163,7 +163,7 @@ section {
 }
 .sec-head h2 {
   font-weight: var(--weight-medium);
-  font-size: clamp(1.8rem, 4.5vw, 2.7rem);
+  font-size: clamp(var(--title-2-5), 4.5vw, var(--display-4));
   letter-spacing: var(--tracking-tight);
   color: var(--accent-text);
 }
@@ -224,7 +224,7 @@ section {
   margin-bottom: var(--space-5);
 }
 .about-panel p {
-  opacity: 0.92;
+  opacity: var(--opacity-soft);
   margin-bottom: var(--space-5);
   font-size: var(--title-6);
   line-height: var(--leading-loose);
@@ -232,9 +232,9 @@ section {
 /* A section heading in capitals over a short rule (About, Experience). */
 :is(.about-panel h2, .exp-item h3) {
   font-weight: var(--weight-semibold);
-  font-size: 1.4rem;
+  font-size: var(--fs-h2);
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: var(--tracking-wide);
 }
 :is(.about-panel h2, .exp-item h3) .rule {
   display: block;
@@ -302,12 +302,12 @@ section {
 }
 .footer-note {
   font-size: var(--fs-small);
-  letter-spacing: 0.03em;
+  letter-spacing: var(--tracking-wide);
 }
 .footer-links {
   row-gap: var(--space-6);
   justify-content: flex-end;
-  font-size: 0.8rem;
+  font-size: var(--fs-detail);
 }
 .footer-links a {
   display: inline-flex;
@@ -319,7 +319,7 @@ section {
    base.css stills every transition under reduced motion; these only start where motion is allowed. */
 @media (prefers-reduced-motion: no-preference) {
   :is(.hero .cap-hero-title, .hero .cap-hero-lead, .hero-cta) {
-    animation: rise 0.85s var(--ease-out) backwards;
+    animation: rise var(--dur-wait) var(--ease-out) backwards;
   }
   .hero .cap-hero-lead {
     animation-delay: 0.14s;
