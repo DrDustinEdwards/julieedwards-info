@@ -50,7 +50,7 @@
     "oxlint-tsgolint": "7.0.2006",
     "typescript": "5.9.3",
     "vite": "8.3.5",
-    "wrangler": "4.130.0"
+    "wrangler": "4.162.0"
   },
   "allowScripts": {
     "esbuild": true,
