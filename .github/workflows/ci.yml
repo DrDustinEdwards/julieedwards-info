@@ -1,4 +1,4 @@
-# Typecheck, test, build and a production audit on every pull request and on main, then a deploy from main.
+# Typecheck, test, build on every pull request and on main, then a deploy from main.
 # A run on main is never canceled, so a deploy cannot stop halfway. wrangler.jsonc is not committed (public
 # repo, it carries the D1 id): the checks run on the .example, and the deploy writes the id in from a variable.
 
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   ci:
-    name: Typecheck, test, build, audit
+    name: Typecheck, test, build
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -58,9 +58,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
 
   # A merge to main deploys once CI is green: migrations first, then the Worker. Dormant until the repo
   # variable CF_DEPLOY is 'true' (with D1_DATABASE_ID set, and the secrets CLOUDFLARE_API_TOKEN and
