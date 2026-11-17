@@ -33,7 +33,7 @@
     "react-router": "8.5.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.64.0",
+    "@cloudflare/vite-plugin": "1.70.0",
     "@dustinedwards/devkit": "github:DrDustinEdwards/devkit#v0.51.0",
     "@react-router/dev": "8.5.1",
     "@types/node": "22.20.5",
@@ -50,7 +50,7 @@
     "oxlint-tsgolint": "7.0.2006",
     "typescript": "5.9.3",
     "vite": "8.3.5",
-    "wrangler": "4.130.0"
+    "wrangler": "4.164.0"
   },
   "allowScripts": {
     "esbuild": true,
