@@ -7,7 +7,7 @@
 	"name": "julieedwards",
 	"main": "./workers/app.ts",
 	"compatibility_date": "2026-10-19",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat", "enable_request_signal"],
 	"observability": {
 		"enabled": true,
 		// Every invocation's logs are kept: the site's traffic is far under Workers Logs' daily cap.
