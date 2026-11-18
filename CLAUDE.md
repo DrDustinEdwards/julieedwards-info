@@ -19,3 +19,4 @@ Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one 
 
 1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
 2. All copy lives in D1, one source per section (`app/lib/source.ts`), seeded by `drizzle/0001_seed.sql` and edited through Carrel. No copy in components or metadata code.
+3. UI copy: let the layout explain. No eyebrows, restating subtitles, "this page lets you" intros, descriptions under obvious buttons, hints a label already gives, repeated captions or empty-state essays; labels, accessible names, errors, one-way warnings and legal text stay (Dustin, 2026-11-18; Capsid capsid/conventions.md).
