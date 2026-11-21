@@ -1,6 +1,7 @@
 // A section Carrel schedules goes live from the cron at its time and no sooner, through site-api's handler and its
 // runSchedules (what workers/app.ts calls every minute), over the site's own migrations in SQLite. The hooks hear it as
-// they hear a Carrel publish, so IndexNow, the page purge and the webmentions follow.
+// they hear a Carrel publish, so IndexNow, the page purge and the webmentions follow. A section is always live, so a
+// saved draft reads as published with hasDraft, and the history names the actor of each change.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { fakeD1, migratedDb, site } from "./site.ts";
@@ -43,18 +44,26 @@ test("a scheduled section goes live from the cron at its time, and the publish h
       published_at: string;
     };
   const before = live().published;
+  const fresh = await client.get("about");
+  assert.deepEqual([fresh.status, fresh.hasDraft], ["published", false]);
 
   const source = '---\nheading: "About Me"\n---\nA sample paragraph.\n';
   const saved = await client.saveDraft("about", {
     source,
-    expectedVersion: (await client.get("about")).version,
+    expectedVersion: fresh.version,
     changeId: "c1",
+    actor: { name: "Julie" },
   });
+  const drafted = await client.get("about");
+  assert.deepEqual([drafted.status, drafted.hasDraft], ["published", true]);
+  for (const status of ["published", "draft"] as const)
+    assert.ok((await client.list({ status })).items.some((i) => i.id === "about" && i.hasDraft));
   const publishAt = "2030-01-01T15:00:00.000Z";
   const scheduled = await client.schedule("about", {
     publishAt,
     expectedVersion: saved.version,
     changeId: "c2",
+    actor: { name: "Dustin" },
   });
   assert.deepEqual(
     [scheduled.status, scheduled.scheduledUpdate?.publishAt],
@@ -87,6 +96,10 @@ test("a scheduled section goes live from the cron at its time, and the publish h
   // The newest revision is the section as it stands now (Carrel's history shows the live version first).
   const { items } = await client.revisions("about");
   assert.equal(items[0]!.version, after.version);
+  assert.deepEqual(
+    items.slice(0, 4).map((r) => r.author),
+    ["julieedwards", "Dustin", "Julie", "julieedwards"],
+  );
   assert.match(items[1]!.message ?? "", /c2/);
   assert.equal(
     (await api.runSchedules({ now: new Date("2030-01-01T15:01:00Z") })).applied.length,
