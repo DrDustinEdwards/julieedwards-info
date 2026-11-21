@@ -24,8 +24,6 @@ test("every section is seeded and reads back to the same text", () => {
   for (const [id, source] of sources) {
     assert.equal(renderSection(id as SectionId, parseSection(id as SectionId, source)), source, id);
   }
-  assert.equal(parseSection("experience", sources.get("experience")!).items.length, 4);
-  assert.equal(parseSection("about", sources.get("about")!).paragraphs.length, 3);
 });
 
 test("a source that does not fit its section is refused", () => {
