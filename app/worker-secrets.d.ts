@@ -10,3 +10,11 @@ interface Env {
   /** The bearer for /api/operator (32 characters or more), the door Capsid Admin's backups reach the site through. Unset or short closes the route. */
   OPERATOR_TOKEN?: string;
 }
+
+declare module "virtual:islands" {
+  export const SITE_SCRIPT: Readonly<{
+    src: string;
+    integrity?: string;
+    crossOrigin?: "anonymous";
+  }>;
+}

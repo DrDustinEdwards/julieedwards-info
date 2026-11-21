@@ -7,6 +7,7 @@ import {
   useRouteError,
   useRouteLoaderData,
 } from "react-router";
+import { SITE_SCRIPT } from "virtual:islands";
 import { markup } from "capsomer/behavior/trusted-html";
 import { ErrorPage, errorTitle } from "capsomer/react/error-page";
 import { iconLinks } from "@drdustinedwards/site-helpers/icons";
@@ -86,7 +87,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Header name={content.profile.name} links={content.site.nav} base={base} />
             <main id="main">{children}</main>
             <Footer name={content.profile.name} site={content.site} />
-            <script src="/site.js" defer />
+            <script {...SITE_SCRIPT} defer />
           </>
         ) : (
           <main id="main">{children}</main>
