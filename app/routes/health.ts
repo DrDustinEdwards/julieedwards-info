@@ -9,7 +9,12 @@
 // bindings (CARREL_RATE_LIMIT, CSP_REPORT_RATE_LIMIT), which have no read that does not spend a request's count.
 import { cronCheck } from "@dustinedwards/site-runtime/cron";
 import { deployedAt, deployedSha } from "@dustinedwards/site-runtime/deploy";
-import { durableObjectCheck, healthResponse, imagesCheck, r2Check } from "@dustinedwards/site-runtime/health";
+import {
+  durableObjectCheck,
+  healthResponse,
+  imagesCheck,
+  r2Check,
+} from "@dustinedwards/site-runtime/health";
 import type { Route } from "./+types/health";
 import { backupStatus } from "~/lib/backup.server";
 import { getEnv } from "@dustinedwards/site-runtime/context";
