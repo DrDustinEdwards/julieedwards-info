@@ -68,7 +68,7 @@ body {
     --header-side: max(var(--page-gutter), calc((100% - var(--page-max)) / 2 + var(--page-gutter)));
   }
 }
-/* Capsomer's trailing arrow, drawn as the site always has: heavier than an icon. */
+/* Capsomer's trailing arrow, drawn heavier than an icon. */
 .cap-arrow {
   --icon-stroke: 2.5;
 }
@@ -152,7 +152,6 @@ body {
   pointer-events: none;
 }
 
-/* SECTIONS */
 section {
   padding-block: calc(var(--space-8) + var(--space-7));
 }
@@ -168,7 +167,6 @@ section {
   color: var(--accent-text);
 }
 
-/* PRIORITIES */
 .why,
 .contact {
   background: var(--raised);
@@ -191,7 +189,6 @@ section {
   }
 }
 
-/* ABOUT */
 .about {
   padding: 0;
   background: var(--band);
@@ -244,7 +241,6 @@ section {
   margin-top: var(--space-3);
 }
 
-/* EXPERIENCE */
 .exp-list {
   max-width: 48rem;
   margin-inline: auto;
@@ -285,7 +281,6 @@ section {
   }
 }
 
-/* ACCESSIBILITY */
 .accessibility-page {
   padding-block: var(--space-8);
 }

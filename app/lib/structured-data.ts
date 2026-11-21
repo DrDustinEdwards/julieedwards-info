@@ -1,4 +1,4 @@
-// The page's schema.org JSON-LD, as the Next.js layout wrote it, built with Prelum's schema helpers. The details of
+// The page's schema.org JSON-LD, built with Prelum's schema helpers. The details of
 // her husband are structured data about him, not her copy, so they live here rather than in D1.
 import { thing, website } from "@drdustinedwards/site-helpers/schema";
 import { SITE_URL } from "./site";
