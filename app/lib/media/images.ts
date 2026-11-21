@@ -9,7 +9,6 @@ export const UPLOAD_PREFIX = "uploads/";
 /** A library address inside text: the key is the first group. One rule for the page and for "used by". */
 export const LIBRARY_ADDRESS = /\/media\/(uploads\/[^?#\s"'\\<>]+)/;
 
-/** Where a file is served. */
 export const mediaUrl = (key: string) => `/media/${key}`;
 
 /**
@@ -35,10 +34,9 @@ export const images = defineImages({
 
 export type ImageUse = "about";
 
-/** A library picture as the page draws it. */
 export type LibraryPhoto = ImageAttributes & { alt: string; focus: string | null };
 
-/** The library pictures the page draws, by where they go. Absent: that place shows what its address names, as before. */
+/** The library pictures the page draws, by where they go. Absent: that place shows what its address names. */
 export type Photos = { about?: LibraryPhoto };
 
 /**

@@ -11,7 +11,7 @@ import { parseSection, SECTION_IDS, type Content } from "./source";
 /**
  * The media library's files the sections name (app/lib/media), with their sizes, focal point and alt text. An
  * address outside the library, or one the library no longer holds, is left to the page as written. The alt text is
- * the file's own where it has one, else the candidate's name, as the page has always written it.
+ * the file's own where it has one, else the candidate's name.
  */
 export async function libraryPhotos(env: Env, content: Content, origin = ""): Promise<Photos> {
   const key = libraryKeyOf(content.profile.images.about);
