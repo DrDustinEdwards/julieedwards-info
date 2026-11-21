@@ -5,17 +5,23 @@
 // Carrel edits, schedules and publishes them and cannot add, take down, rename, trash or delete one: the adapter has
 // no rename, trash or delete, so the package answers those routes 501 and meta.capabilities leaves them out.
 //
-// DRAFTS. A save lands in `draft` and changes nothing a reader sees; publish moves it to `published`.
-// A section with a draft waiting reads as "draft", so Carrel offers the publish. Every write first copies
-// the row as it was into section_revisions with Carrel's changeId, which is also the revision list.
+// DRAFTS. A section is always live. A save lands in `draft` and changes nothing a reader sees; publish moves it to
+// `published`. A section with a draft waiting reads as published with `hasDraft` (site-api's contentHasDraft), so
+// Carrel offers the publish and a list of drafts still finds it. Every write first copies the row as it was into
+// section_revisions with Carrel's changeId, which is also the revision list; `updated_by` and `author` carry the
+// actor of each change.
 //
 // SCHEDULES. A section's draft can carry a time (publish_at, with the change id that set it), and then reads as
-// "scheduled" with that publishAt. The per-minute cron (workers/app.ts) runs the package's runSchedules, which
+// published with a `scheduledUpdate`. The per-minute cron (workers/app.ts) runs the package's runSchedules, which
 // publishes it at that time through `schedules.apply`, recording publish_at as its publishedAt and the schedule's
 // change id on the revision, and fires the hooks a Carrel publish fires. A save keeps the time with the new text; a
-// publish, or a save back to the live text, drops it; a cancel drops it and leaves the text a draft. A section with no
-// draft is live with nothing waiting, so the package sends its schedule to `schedules.update`, which lands the same
-// way: the scheduled source becomes the section's draft.
+// publish, or a save back to the live text, drops it; a cancel drops it and leaves the text a draft. A section is
+// never a draft with no page, so the package sends every schedule to `schedules.update`, which lands the same way:
+// the scheduled source becomes the section's draft.
+//
+// UNPUBLISH AND DELETE. A section of this page is never taken down, renamed, trashed or deleted: unpublish is
+// refused and the other routes answer 501, as for the other fixed content on the network (the CV and the agent
+// document on dustinedwards.info). Edit it and publish instead. CLAUDE.md, rule 3.
 //
 // VERSIONS. A hash of the published and draft sources together, and the schedule's time and change id while one
 // waits, so any change to the section moves it and a change to another section never does. A section with nothing
@@ -39,9 +45,11 @@ import { isSectionId, parseSection, SECTIONS, SourceError, type SectionId } from
 
 type Snapshot = Pick<SectionRow, "published" | "draft"> &
   Partial<Pick<SectionRow, "publishAt" | "scheduleChangeId">>;
-type Fields = Partial<Omit<SectionRow, "id" | "updatedAt">>;
+type Fields = Partial<Omit<SectionRow, "id" | "updatedAt" | "updatedBy">>;
 
 const KIND = "section";
+/** The author of a change that named no one: the site itself. */
+const OWNER = "julieedwards";
 
 /** What a publish or a cancel leaves of a schedule. */
 const UNSCHEDULED = { publishAt: null, scheduleChangeId: null, scheduledAt: null } satisfies Fields;
@@ -51,8 +59,11 @@ const versionOf = (s: Snapshot): Promise<string> =>
     s.publishAt ? [s.published, s.draft, s.publishAt, s.scheduleChangeId] : [s.published, s.draft],
   );
 
-const statusOf = (row: SectionRow): ContentSummary["status"] =>
-  row.draft === null ? "published" : row.publishAt ? "scheduled" : "draft";
+/** A section is always live; a draft or a schedule waiting is `hasDraft` and `scheduledUpdate`. */
+const STATUS = "published" as const;
+
+const scheduledUpdate = (row: Snapshot) =>
+  row.publishAt ? { publishAt: row.publishAt, changeId: row.scheduleChangeId! } : null;
 
 async function summaryOf(row: SectionRow): Promise<ContentSummary> {
   const section = SECTIONS[row.id as SectionId];
@@ -60,10 +71,12 @@ async function summaryOf(row: SectionRow): Promise<ContentSummary> {
     id: row.id,
     kind: KIND,
     title: section.title,
-    status: statusOf(row),
+    status: STATUS,
     path: section.anchor,
-    publishAt: row.publishAt,
+    publishAt: null,
     publishedAt: row.publishedAt,
+    hasDraft: row.draft !== null,
+    scheduledUpdate: scheduledUpdate(row),
     updatedAt: row.updatedAt,
     version: await versionOf(row),
   };
@@ -104,6 +117,7 @@ export function carrelSections(
     changeId: string,
     expectedVersion: string | null,
     next: (row: SectionRow) => Fields,
+    actor?: { name: string },
   ): Promise<WriteResult> {
     const row = await find(id);
     if (!row) {
@@ -122,40 +136,55 @@ export function carrelSections(
         draft: row.draft,
         changeId,
         createdAt: now,
+        author: row.updatedBy,
       }),
       db
         .update(sections)
-        .set({ ...fields, updatedAt: now })
+        .set({ ...fields, updatedAt: now, updatedBy: actor?.name ?? null })
         .where(eq(sections.id, id)),
     ]);
     const after = { ...row, ...fields };
     const version = await versionOf(after);
     log({ event: `carrel.${event}`, id, version, changeId });
-    return { id, version, status: statusOf(after), changeId };
+    return { id, version, status: STATUS, changeId, scheduledUpdate: scheduledUpdate(after) };
   }
 
   // The section's draft, or the source sent, goes live at publishAt. Scheduling the live text again is nothing to do.
   const schedule = (
     id: string,
-    input: { source?: string; publishAt: string; expectedVersion: string; changeId: string },
+    input: {
+      source?: string;
+      publishAt: string;
+      expectedVersion: string;
+      changeId: string;
+      actor?: { name: string };
+    },
   ) =>
-    write("schedule", id, input.changeId, input.expectedVersion, (row) => {
-      const source = input.source ?? row.draft;
-      if (source === null || source === row.published)
-        throw new RefusedError("Nothing differs from the live section; save the change first.");
-      parsed(id as SectionId, source);
-      return {
-        draft: source,
-        publishAt: utc(input.publishAt),
-        scheduleChangeId: input.changeId,
-        scheduledAt: new Date().toISOString(),
-      };
-    });
+    write(
+      "schedule",
+      id,
+      input.changeId,
+      input.expectedVersion,
+      (row) => {
+        const source = input.source ?? row.draft;
+        if (source === null || source === row.published)
+          throw new RefusedError("Nothing differs from the live section; save the change first.");
+        parsed(id as SectionId, source);
+        return {
+          draft: source,
+          publishAt: utc(input.publishAt),
+          scheduleChangeId: input.changeId,
+          scheduledAt: new Date().toISOString(),
+        };
+      },
+      input.actor,
+    );
 
   const content: ContentAdapter = {
     // kind is always "section"; published compares publishedAt. A section has no tags and no authors.
     filters: ["kind", "published"],
     publishedAtSettable: true,
+    hasDraft: true,
     // Kept in the profile section (~/lib/source, Search), whose description is the page's.
     searchFields: SEARCH_FIELDS,
 
@@ -164,7 +193,9 @@ export function carrelSections(
       const rows = (await db.select().from(sections)).filter(
         (r) =>
           isSectionId(r.id) &&
-          (!query.status || statusOf(r) === query.status) &&
+          (!query.status ||
+            query.status === STATUS ||
+            (query.status === "draft" && r.draft !== null)) &&
           (!query.kind || query.kind === KIND) &&
           (!query.publishedAfter || r.publishedAt >= utc(query.publishedAfter)) &&
           (!query.publishedBefore || r.publishedAt <= utc(query.publishedBefore)) &&
@@ -195,26 +226,40 @@ export function carrelSections(
     },
 
     saveDraft: (id, input) =>
-      write("save", id, input.changeId, input.expectedVersion, (row) => {
-        parsed(id as SectionId, input.source);
-        return input.source === row.published
-          ? { draft: null, ...UNSCHEDULED }
-          : { draft: input.source };
-      }),
+      write(
+        "save",
+        id,
+        input.changeId,
+        input.expectedVersion,
+        (row) => {
+          parsed(id as SectionId, input.source);
+          return input.source === row.published
+            ? { draft: null, ...UNSCHEDULED }
+            : { draft: input.source };
+        },
+        input.actor,
+      ),
 
     publish: (id, input) =>
-      write("publish", id, input.changeId, input.expectedVersion, (row) => {
-        const source = input.source ?? row.draft ?? row.published;
-        parsed(id as SectionId, source);
-        return {
-          published: source,
-          draft: null,
-          ...UNSCHEDULED,
-          publishedAt: utc(input.publishedAt ?? new Date()),
-        };
-      }),
+      write(
+        "publish",
+        id,
+        input.changeId,
+        input.expectedVersion,
+        (row) => {
+          const source = input.source ?? row.draft ?? row.published;
+          parsed(id as SectionId, source);
+          return {
+            published: source,
+            draft: null,
+            ...UNSCHEDULED,
+            publishedAt: utc(input.publishedAt ?? new Date()),
+          };
+        },
+        input.actor,
+      ),
 
-    // The package sends a schedule here for a section with a draft, and to schedules.update for one without.
+    // A section is always live, so the package sends a schedule to schedules.update below.
     schedule,
 
     async unpublish(id) {
@@ -231,8 +276,7 @@ export function carrelSections(
         .select()
         .from(sectionRevisions)
         .where(eq(sectionRevisions.sectionId, id))
-        .orderBy(desc(sectionRevisions.id))
-        .limit(50);
+        .orderBy(desc(sectionRevisions.id));
       // The section as it stands is the newest revision: the kept rows are the states before each change, so
       // without it the live version (and who published it) would not show in Carrel's history until the next edit.
       const currentVersion = await versionOf(row);
@@ -240,7 +284,7 @@ export function carrelSections(
         rows.map(async (r) => ({
           version: await versionOf(r),
           at: r.createdAt,
-          author: "julieedwards",
+          author: r.author ?? OWNER,
           message: `Kept before change ${r.changeId}`,
         })),
       );
@@ -248,7 +292,7 @@ export function carrelSections(
         {
           version: currentVersion,
           at: row.updatedAt,
-          author: "julieedwards",
+          author: row.updatedBy ?? OWNER,
           message: "The section as it stands now",
         },
         ...kept.filter((k) => k.version !== currentVersion),
@@ -285,10 +329,17 @@ export function carrelSections(
 
     async cancel(id, input) {
       if (!(await find(id))) throw new NotFoundError();
-      return write("unschedule", id, input.changeId, input.expectedVersion, (row) => {
-        if (!row.publishAt) throw new RefusedError("Nothing is scheduled for this section.");
-        return UNSCHEDULED;
-      });
+      return write(
+        "unschedule",
+        id,
+        input.changeId,
+        input.expectedVersion,
+        (row) => {
+          if (!row.publishAt) throw new RefusedError("Nothing is scheduled for this section.");
+          return UNSCHEDULED;
+        },
+        input.actor,
+      );
     },
 
     async due({ now, limit }) {

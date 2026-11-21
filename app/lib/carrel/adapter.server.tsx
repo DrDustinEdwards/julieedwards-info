@@ -4,13 +4,14 @@
 // MEDIA. The library Carrel uploads to is its own group (media-adapter.server.ts); a section uses a file by
 // naming its /media/ address, which the page draws at responsive sizes.
 //
-// NOT HERE. No renderVersion: the page is drawn from the sections by the site's own components, not from HTML a
+// NOT HERE. No unpublish, trash, rename or delete (sections.server.ts, CLAUDE.md rule 3). No renderVersion: the page is drawn from the sections by the site's own components, not from HTML a
 // Prelum render stored, so there is no render for Carrel to find behind. No post fields: a section has no excerpt,
 // authors or series.
 import { renderToStaticMarkup } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
 import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
+import { Footer, Header } from "~/components/Chrome";
 import { HomeSections } from "~/components/Sections";
 import { libraryPhotos, loadContent } from "~/lib/content.server";
 import { PREVIEW_STYLE } from "~/lib/theme";
@@ -52,7 +53,7 @@ export function createCarrelAdapter(
     insight: { notFound: (options) => notFoundReport(env.DB, options) },
 
     // The home page as it would read with this source in place of its section's published one, from the
-    // site's own components and stylesheet. Without an id, the first section the source fits is used, and a
+    // site's own header, footer, components and stylesheet. Without an id, the first section the source fits is used, and a
     // source that fits none is shown as written.
     preview: {
       async render({ id, source }) {
@@ -81,9 +82,13 @@ export function createCarrelAdapter(
         return page(
           SECTIONS[target].title,
           renderToStaticMarkup(
-            <main>
-              <HomeSections content={next} photos={photos} />
-            </main>,
+            <>
+              <Header name={next.profile.name} links={next.site.nav} />
+              <main id="main">
+                <HomeSections content={next} photos={photos} />
+              </main>
+              <Footer name={next.profile.name} site={next.site} />
+            </>,
           ),
         );
       },

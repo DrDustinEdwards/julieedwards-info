@@ -28,3 +28,4 @@ Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one 
 
 1. This is a real candidate's site. Keep content factual and faithful to what she provides. Do not invent positions, claims, or quotes.
 2. All copy lives in D1, one source per section (`app/lib/source.ts`), seeded by `drizzle/0001_seed.sql` and edited through Carrel. No copy in components or metadata code.
+3. The page is a fixed set of sections, each always live. Carrel edits, schedules and publishes them; it never unpublishes, renames, trashes or deletes one (unpublish is refused, the rest answer 501), the rule the network's other fixed content follows (the CV and the agent document on dustinedwards.info). A saved draft reads as published with `hasDraft`. Taking a section off the page is a change to `app/lib/source.ts` and the seed, not a Carrel action.

@@ -26,7 +26,9 @@ test("a scheduled section goes live from the cron at its time, and the publish h
     key,
     limiter: { limit: async () => ({ success: true }) },
     store: d1SiteApiStore(env.DB),
-    hooks: [{ name: "spy", run: (e: (typeof heard)[number]) => void heard.push(e) }],
+    hooks: [
+      { name: "spy", on: ["publish"], run: (e: (typeof heard)[number]) => void heard.push(e) },
+    ],
     log: () => {},
   });
   const client = createSiteClient({
@@ -54,9 +56,15 @@ test("a scheduled section goes live from the cron at its time, and the publish h
     expectedVersion: saved.version,
     changeId: "c2",
   });
-  assert.equal(scheduled.status, "scheduled");
+  assert.deepEqual(
+    [scheduled.status, scheduled.scheduledUpdate?.publishAt],
+    ["published", publishAt],
+  );
   const doc = await client.get("about");
-  assert.deepEqual([doc.status, doc.publishAt, doc.source], ["scheduled", publishAt, source]);
+  assert.deepEqual(
+    [doc.status, doc.scheduledUpdate?.publishAt, doc.source],
+    ["published", publishAt, source],
+  );
 
   // Before its time nothing moves; at it, the draft is the page, dated by its schedule, and the hooks hear a publish.
   assert.equal(
@@ -70,7 +78,7 @@ test("a scheduled section goes live from the cron at its time, and the publish h
   );
   assert.deepEqual({ ...live() }, { published: source, published_at: publishAt });
   const after = await client.get("about");
-  assert.deepEqual([after.status, after.publishAt], ["published", null]);
+  assert.deepEqual([after.status, after.scheduledUpdate ?? null], ["published", null]);
   assert.deepEqual(
     heard.map((e) => [e.action, e.trigger, e.url]),
     [["publish", "schedule", `${origin}/#about`]],
