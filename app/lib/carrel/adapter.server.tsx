@@ -7,7 +7,7 @@
 // NOT HERE. No unpublish, trash, rename or delete (sections.server.ts, CLAUDE.md rule 3). No renderVersion: the page is drawn from the sections by the site's own components, not from HTML a
 // Prelum render stored, so there is no render for Carrel to find behind. No post fields: a section has no excerpt,
 // authors or series.
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
 import { notFoundReport } from "@dustinedwards/site-runtime/not-found";
@@ -79,18 +79,17 @@ export function createCarrelAdapter(
         const next: Content = { ...content, [target]: parsed(target, source) };
         // Library pictures by their full address on this site, since the preview is shown on Carrel's origin.
         const photos = await libraryPhotos(env, next, options.origin);
-        return page(
-          SECTIONS[target].title,
-          renderToStaticMarkup(
-            <>
-              <Header name={next.profile.name} links={next.site.nav} />
-              <main id="main">
-                <HomeSections content={next} photos={photos} />
-              </main>
-              <Footer name={next.profile.name} site={next.site} />
-            </>,
-          ),
+        const stream = await renderToReadableStream(
+          <>
+            <Header name={next.profile.name} links={next.site.nav} />
+            <main id="main">
+              <HomeSections content={next} photos={photos} />
+            </main>
+            <Footer name={next.profile.name} site={next.site} />
+          </>,
         );
+        await stream.allReady;
+        return page(SECTIONS[target].title, await new Response(stream).text());
       },
     },
   };
