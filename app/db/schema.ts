@@ -1,5 +1,5 @@
 // Kept in step with the hand-written migrations in drizzle/ (0000_sections.sql, 0002_media.sql,
-// 0004_media_placeholder.sql, 0005_section_schedules.sql). 0003_ops.sql holds site-runtime's own tables and
+// 0004_media_placeholder.sql, 0005_section_schedules.sql, 0009_section_authors.sql). 0003_ops.sql holds site-runtime's own tables and
 // 0006_site_api_store.sql site-api's, which only each package reads and writes.
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
@@ -13,6 +13,8 @@ export const sections = sqliteTable("sections", {
   publishAt: text("publish_at"),
   scheduleChangeId: text("schedule_change_id"),
   scheduledAt: text("scheduled_at"),
+  // Who made the state the section holds (Carrel's actor); NULL where the change named no one.
+  updatedBy: text("updated_by"),
 });
 
 export const sectionRevisions = sqliteTable("section_revisions", {
@@ -22,6 +24,8 @@ export const sectionRevisions = sqliteTable("section_revisions", {
   draft: text("draft"),
   changeId: text("change_id").notNull(),
   createdAt: text("created_at").notNull(),
+  // Who made the state this revision kept.
+  author: text("author"),
 });
 
 export type SectionRow = typeof sections.$inferSelect;

@@ -5,17 +5,21 @@ import { INDEXNOW_KEY, SITE_URL } from "~/lib/site";
 import { createCarrelAdapter } from "./adapter.server";
 
 /**
- * Webmentions for the one page every section belongs to. A section's address is the page with a fragment, so the
- * page is sent as itself, and only a publish changes what it links to: no section is ever taken down, renamed or
- * deleted, and a save to a live section reads as a draft, which the hook would take for a page gone.
+ * Every hook hears only a publish, the one write that changes what the page says: a save to a section stays a draft
+ * and a section is never taken down, renamed or deleted, so no other action touches the page. The webmention hook
+ * also sends the page itself, since a section's address is the page with a fragment.
  */
-function pageWebmentions(hook: PublishHook): PublishHook {
-  return {
-    name: hook.name,
-    on: ["publish"],
-    run: (event) =>
-      event.url === null ? undefined : hook.run({ ...event, url: new URL("/", event.url).href }),
-  };
+function onPublish(hook: PublishHook | undefined, page = false): PublishHook | undefined {
+  return (
+    hook && {
+      name: hook.name,
+      on: ["publish"],
+      run: (event) =>
+        page && event.url !== null
+          ? hook.run({ ...event, url: new URL("/", event.url).href })
+          : hook.run(event),
+    }
+  );
 }
 
 export function carrelApi(env: Env, origin: string, stylesheets: string[]) {
@@ -28,7 +32,11 @@ export function carrelApi(env: Env, origin: string, stylesheets: string[]) {
     limiter: env.CARREL_RATE_LIMIT,
     db: env.DB,
     indexNow: { origin: SITE_URL, key: INDEXNOW_KEY },
-    hooks: ({ indexNow, purge, webmention }) => [indexNow, purge, pageWebmentions(webmention)],
+    hooks: ({ indexNow, purge, webmention }) => [
+      onPublish(indexNow),
+      onPublish(purge),
+      onPublish(webmention, true),
+    ],
   });
 }
 
