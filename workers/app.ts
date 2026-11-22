@@ -8,7 +8,7 @@ import { operatorJobTools } from "@dustinedwards/site-runtime/cron";
 import { defineSite, siteRenderer, siteWorker } from "@dustinedwards/site-runtime/worker";
 import { allCronJobs, cronJobs } from "../app/lib/cron.server";
 import { carrelApi } from "../app/lib/carrel/handler.server";
-import { backupStatus } from "../app/lib/backup.server";
+import { backup } from "../app/lib/backup.server";
 import { loadContent } from "../app/lib/content.server";
 import { serveMedia } from "../app/lib/media/serve.server";
 import { INDEXNOW_KEY, SITE_URL } from "../app/lib/site";
@@ -53,7 +53,7 @@ const site = defineSite<Env>({
     operatorJobTools({
       db: env.DB,
       jobs: () => allCronJobs(env),
-      backupStatus: () => backupStatus(env),
+      backupStatus: () => backup.status(env),
       files: ["media"],
     }),
   steps: [

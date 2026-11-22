@@ -7,7 +7,7 @@
 // next night) and the 404 prune, ten minutes in all, inside a scheduled invocation's 15.
 import { backupJob, carrelSchedulesJob, type CronJob } from "@dustinedwards/site-runtime/cron";
 import { pruneNotFoundJob } from "@dustinedwards/site-runtime/not-found";
-import { runBackup, runMediaBackup } from "~/lib/backup.server";
+import { backup } from "~/lib/backup.server";
 import { runCarrelSchedules } from "~/lib/carrel/handler.server";
 
 const SCHEDULES_CRON = "* * * * *";
@@ -19,8 +19,8 @@ export function cronJobs(env: Env, scheduledTime: Date): Record<string, CronJob[
   return {
     [SCHEDULES_CRON]: [carrelSchedulesJob(() => runCarrelSchedules(env, scheduledTime))],
     [NIGHTLY_CRON]: [
-      backupJob(() => runBackup(env)),
-      backupJob(() => runMediaBackup(env), { name: "media-backup", timeoutMs: 4 * MINUTE }),
+      backupJob(() => backup.runBackup(env)),
+      backupJob(() => backup.runFilesBackup(env), { name: "media-backup", timeoutMs: 4 * MINUTE }),
       pruneNotFoundJob(env.DB),
     ],
   };
