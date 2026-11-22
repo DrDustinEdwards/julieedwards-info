@@ -1,3 +1,6 @@
 {
-  "$schema": "https://unpkg.com/knip@6/schema.json"
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // workers/*.ts is wrangler's `main` and its imports; the real wrangler.jsonc is gitignored, so Knip's wrangler plugin cannot read it.
+  // app/site.ts is devkit siteScript's entry (/site.js, vite.config.ts), loaded by convention, not imported.
+  "entry": ["workers/*.ts", "app/site.ts"],
 }
