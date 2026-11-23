@@ -129,8 +129,7 @@ export function carrelSections(
       throw new VersionConflictError(await versionOf(row));
     const fields = next(row);
     const now = new Date().toISOString();
-    // Both statements hold only while the row is the one read above, so a write that landed in between (the
-    // cron's publish and an editor's save) is refused, not overwritten.
+    // Both hold only while the row is unchanged since it was read; a write in between is a conflict.
     const unchanged = and(eq(sections.id, id), eq(sections.updatedAt, row.updatedAt));
     const [, updated] = await db.batch([
       db.insert(sectionRevisions)
