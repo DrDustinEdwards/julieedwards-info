@@ -27,7 +27,7 @@ export type Content = {
     facebook: string;
     address: { name: string; line1: string; line2: string; mapsUrl: string };
     district: { name: string; url: string };
-    images: { about: string; portrait: string; flyer: string };
+    images: { about: string };
   } & Search;
   priorities: { heading: string; items: Item[] };
   about: { heading: string; paragraphs: string[] };
@@ -85,7 +85,7 @@ export const SECTIONS: Record<SectionId, Section> = {
       facebook: "string",
       address: ["name", "line1", "line2", "mapsUrl"],
       district: ["name", "url"],
-      images: ["about", "portrait", "flyer"],
+      images: ["about"],
     },
     optional: SEARCH,
     body: "none",
@@ -136,16 +136,7 @@ export function isSectionId(id: string): id is SectionId {
 export class SourceError extends Error {}
 
 // URL fields must parse (else every render throws) and not be a script or data link.
-const URL_FIELDS = new Set([
-  "facebook",
-  "mapsUrl",
-  "url",
-  "about",
-  "portrait",
-  "flyer",
-  "image",
-  "canonical",
-]);
+const URL_FIELDS = new Set(["facebook", "mapsUrl", "url", "about", "image", "canonical"]);
 function urlProblem(key: string, value: unknown): void {
   try {
     if (/^(https?|mailto):$/.test(new URL(value as string, "https://example.com").protocol)) return;
@@ -176,10 +167,10 @@ function check(key: string, shape: Shape, value: unknown): void {
       typeof value === "object" &&
       !Array.isArray(value) &&
       shape.every((k) => isString((value as Record<string, unknown>)[k])) &&
-      Object.keys(value).length === shape.length;
+      Object.keys(value).length >= shape.length;
     if (!ok)
       throw new SourceError(
-        `"${key}" must have exactly ${shape.map((k) => `"${k}"`).join(", ")}, each text.`,
+        `"${key}" must have ${shape.map((k) => `"${k}"`).join(", ")}, each text.`,
       );
     for (const k of shape.filter((k) => URL_FIELDS.has(k)))
       urlProblem(k, (value as Record<string, unknown>)[k]);

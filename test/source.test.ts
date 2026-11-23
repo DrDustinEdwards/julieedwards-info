@@ -63,18 +63,19 @@ test("a link or picture address the page cannot turn into a URL is refused", () 
   const profile = (extra: string) =>
     (sources.get("profile") as string).replace(/\nimages: .*/, extra);
   assert.throws(
-    () =>
-      parseSection("profile", profile('\nimages: {"about":"https://","portrait":"","flyer":""}')),
+    () => parseSection("profile", profile('\nimages: {"about":"https://"}')),
     SourceError,
   );
   assert.throws(
-    () =>
-      parseSection(
-        "profile",
-        profile('\nimages: {"about":"javascript:alert(1)","portrait":"","flyer":""}'),
-      ),
+    () => parseSection("profile", profile('\nimages: {"about":"javascript:alert(1)"}')),
     SourceError,
   );
+  // A live row saved before the picture fields were dropped still reads.
+  const legacy = parseSection(
+    "profile",
+    profile('\nimages: {"about":"/a.jpg","portrait":"","flyer":""}'),
+  );
+  assert.deepEqual(legacy.images, { about: "/a.jpg", portrait: "", flyer: "" });
   const links =
     '---\nheading: "x"\nboardHeading: "y"\nboardLinks: [{"label":"a","href":"data:text/html,x"}]\n---\n';
   assert.throws(() => parseSection("contact", links), SourceError);
