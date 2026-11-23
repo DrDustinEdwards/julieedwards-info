@@ -10,7 +10,7 @@ email: "julieedwards+bdisd@gmail.com"
 facebook: "https://www.facebook.com/julieedwardsforbdisd"
 address: {"name":"Bluff Dale ISD","line1":"430 FM 2481","line2":"Bluff Dale, TX 76433","mapsUrl":"https://www.google.com/maps/place/430+FM+2481+Bluff+Dale+TX+76433"}
 district: {"name":"Bluff Dale ISD","url":"https://www.bdisd.net"}
-images: {"about":"https://content.julieedwards.info/julie-edwards-bluff-dale-profile.jpg"}
+images: {"about":"https://content.julieedwards.info/julie-edwards-bluff-dale-profile.jpg","portrait":"","flyer":""}
 ---
 ');
 INSERT INTO sections (id, published) VALUES ('priorities', '---
