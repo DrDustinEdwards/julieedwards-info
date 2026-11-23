@@ -7,7 +7,7 @@ import type { Content } from "./source";
 export function structuredData(profile: Content["profile"]) {
   const person = thing("Person", {
     name: profile.name,
-    jobTitle: "School Board Trustee",
+    jobTitle: profile.office,
     url: SITE_URL,
     // A library photo is named by its path; the graph names it in full. new URL, not Prelum absoluteUrl, which would
     // leave a space or an accent unencoded.

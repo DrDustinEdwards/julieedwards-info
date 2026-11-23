@@ -26,7 +26,7 @@
 // VERSIONS. A hash of the published and draft sources together, and the schedule's time and change id while one
 // waits, so any change to the section moves it and a change to another section never does. A section with nothing
 // scheduled keeps the version it had before schedules existed.
-import { and, asc, desc, eq, isNotNull, lte } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, lte, sql } from "drizzle-orm";
 import {
   contentVersion,
   NotFoundError,
@@ -129,20 +129,21 @@ export function carrelSections(
       throw new VersionConflictError(await versionOf(row));
     const fields = next(row);
     const now = new Date().toISOString();
-    await db.batch([
-      db.insert(sectionRevisions).values({
-        sectionId: id,
-        published: row.published,
-        draft: row.draft,
-        changeId,
-        createdAt: now,
-        author: row.updatedBy,
-      }),
+    // Both statements hold only while the row is the one read above, so a write that landed in between (the
+    // cron's publish and an editor's save) is refused, not overwritten.
+    const unchanged = and(eq(sections.id, id), eq(sections.updatedAt, row.updatedAt));
+    const [, updated] = await db.batch([
+      db.insert(sectionRevisions)
+        .select(sql`SELECT NULL, id, published, draft, ${changeId}, ${now}, updated_by
+        FROM sections WHERE id = ${id} AND updated_at = ${row.updatedAt}`),
       db
         .update(sections)
         .set({ ...fields, updatedAt: now, updatedBy: actor?.name ?? null })
-        .where(eq(sections.id, id)),
+        .where(unchanged)
+        .returning({ id: sections.id }),
     ]);
+    if (updated.length === 0)
+      throw new VersionConflictError(await versionOf((await find(id)) ?? row));
     const after = { ...row, ...fields };
     const version = await versionOf(after);
     log({ event: `carrel.${event}`, id, version, changeId });
