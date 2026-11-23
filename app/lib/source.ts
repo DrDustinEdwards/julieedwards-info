@@ -135,6 +135,24 @@ export function isSectionId(id: string): id is SectionId {
 
 export class SourceError extends Error {}
 
+// URL fields must parse (else every render throws) and not be a script or data link.
+const URL_FIELDS = new Set([
+  "facebook",
+  "mapsUrl",
+  "url",
+  "about",
+  "portrait",
+  "flyer",
+  "image",
+  "canonical",
+]);
+function urlProblem(key: string, value: unknown): void {
+  try {
+    if (/^(https?|mailto):$/.test(new URL(value as string, "https://example.com").protocol)) return;
+  } catch {}
+  throw new SourceError(`"${key}" must be a web address, a path or an email link.`);
+}
+
 function check(key: string, shape: Shape, value: unknown): void {
   const isString = (v: unknown) => typeof v === "string";
   if (shape === "string") {
@@ -151,6 +169,7 @@ function check(key: string, shape: Shape, value: unknown): void {
           Object.keys(l).length === 2,
       );
     if (!ok) throw new SourceError(`"${key}" must be a list of { "label": ..., "href": ... }.`);
+    for (const l of value as Link[]) urlProblem(`${key}" link "${l.label}`, l.href);
   } else {
     const ok =
       value !== null &&
@@ -162,6 +181,8 @@ function check(key: string, shape: Shape, value: unknown): void {
       throw new SourceError(
         `"${key}" must have exactly ${shape.map((k) => `"${k}"`).join(", ")}, each text.`,
       );
+    for (const k of shape.filter((k) => URL_FIELDS.has(k)))
+      urlProblem(k, (value as Record<string, unknown>)[k]);
   }
 }
 
@@ -214,10 +235,12 @@ export function parseSection<K extends SectionId>(id: K, source: string): Conten
     }
     // A blank optional field is the site's default, so it is not kept.
     if (optional && (out[key] === "" || out[key] === false)) delete out[key];
+    else if (URL_FIELDS.has(key)) urlProblem(key, out[key]);
   }
   for (const [key, shape] of Object.entries(section.fields)) {
     if (!(key in out)) throw new SourceError(`"${key}" is missing.`);
     check(key, shape, out[key]);
+    if (URL_FIELDS.has(key)) urlProblem(key, out[key]);
   }
   const body = normalized.slice(close + 4).replace(/^\n/, "");
   if (section.body === "paragraphs") out.paragraphs = paragraphsOf(body);

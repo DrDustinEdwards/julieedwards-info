@@ -6,8 +6,7 @@ import { defineConfig } from "vite";
 
 // nativeBuiltins first: Prelum's render imports @ungap/structured-clone, and Workers have structuredClone.
 // siteScript: app/site.ts and the Capsomer behavior it imports, bundled into /site.js, the page's only script.
-// remoteBindings: false, so `npm run dev` needs no Cloudflare sign-in; Workers AI (AI), the one binding that only
-// runs remotely, is then refused locally, which only the media suggestions use.
+// remoteBindings: false, so `npm run dev` needs no Cloudflare sign-in.
 export default defineConfig({
   plugins: [
     nativeBuiltins(),

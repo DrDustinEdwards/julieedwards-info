@@ -50,8 +50,6 @@ function Hero({ profile, cta }: { profile: Content["profile"]; cta: string }) {
 // The priorities' pictures, in order: education, integrity, student success.
 const icons = [iconGraduation, iconFileCheck, iconIdea];
 
-// The campaign flyer button (profile.images.flyer) is hidden while she serves; restore it for a re-election
-// from the Next.js site's components/WhyRunning.tsx in git history.
 function Priorities({ section }: { section: Content["priorities"] }) {
   return (
     <section className="why" id="why">
