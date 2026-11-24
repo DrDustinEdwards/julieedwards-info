@@ -17,7 +17,8 @@ export async function loader({ context }: Route.LoaderArgs) {
       ? []
       : [
           {
-            loc: SITE_URL,
+            // The home page's canonical is the origin with its slash; the sitemap names that same URL.
+            loc: new URL("/", SITE_URL).href,
             lastmod: updatedAt,
             changefreq: "monthly" as const,
             priority: 1,
