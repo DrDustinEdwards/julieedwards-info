@@ -1,6 +1,4 @@
-/* julieedwards.info on Capsomer: the forest family (Bluff Dale's #15532E is its light step 11) and
-   Capsomer's site header, theme button, sheet, buttons and links. The page classes below are the
-   site's own one-page layout, unlayered, so they win over Capsomer's where they meet. */
+/* julieedwards.info on Capsomer. */
 @layer reset, cap;
 @import "@fontsource/montserrat/latin-400.css";
 @import "@fontsource/montserrat/latin-500.css";

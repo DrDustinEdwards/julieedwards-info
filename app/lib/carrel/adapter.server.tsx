@@ -45,9 +45,7 @@ export function createCarrelAdapter(
     // The 404s workers/app.ts counts, for Carrel's report.
     insight: { notFound: (options) => notFoundReport(env.DB, options) },
 
-    // The home page as it would read with this source in place of its section's published one, from the
-    // site's own header, footer, components and stylesheet. Without an id, the first section the source fits is used, and a
-    // source that fits none is shown as written.
+    // The home page as it would read with this source in place of its section's published one, from the site's own header, footer, components and stylesheet.
     preview: {
       async render({ id, source }) {
         const target =
