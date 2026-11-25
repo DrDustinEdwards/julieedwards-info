@@ -1,12 +1,5 @@
-// The site's side of Carrel's contract (@dustinedwards/site-api): the sections and their schedules
-// (sections.server.ts), the media library and the preview.
-//
-// MEDIA. The library Carrel uploads to is its own group (media-adapter.server.ts); a section uses a file by
-// naming its /media/ address, which the page draws at responsive sizes.
-//
-// NOT HERE. No unpublish, trash, rename or delete (sections.server.ts, CLAUDE.md rule 3). No renderVersion: the page is drawn from the sections by the site's own components, not from HTML a
-// Prelum render stored, so there is no render for Carrel to find behind. No post fields: a section has no excerpt,
-// authors or series.
+// The site's side of Carrel's contract (@dustinedwards/site-api): the sections and their schedules (sections.server.ts), the media library (media-adapter.server.ts) and the preview.
+// No unpublish, trash, rename or delete (CLAUDE.md rule 3), no renderVersion (the page is drawn from sections, not stored HTML), no post fields.
 import { renderToReadableStream } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";
