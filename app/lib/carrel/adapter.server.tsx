@@ -1,5 +1,5 @@
 // The site's side of Carrel's contract (@dustinedwards/site-api): the sections and their schedules (sections.server.ts), the media library (media-adapter.server.ts) and the preview.
-// No unpublish, trash, rename or delete (CLAUDE.md rule 3), no renderVersion (the page is drawn from sections, not stored HTML), no post fields.
+// No unpublish, trash, rename or delete (CLAUDE.md, Sections), no renderVersion (the page is drawn from sections, not stored HTML), no post fields.
 import { renderToReadableStream } from "react-dom/server";
 import { previewDocument, RefusedError, type SiteAdapter } from "@dustinedwards/site-api";
 import { escapeHtml } from "@dustinedwards/site-runtime/html";

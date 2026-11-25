@@ -12,8 +12,7 @@ import { ACCESSIBILITY_REVIEWED, pageHead } from "~/lib/site";
 
 // The statement is the network's shared text (Prelum); the name, the contact, the date and the two facts about the build
 // are this site's: its look is Capsomer's forest family, and its links in running text are underlined (Capsomer v0.53.0
-// draws them in the link color at the text's weight). It is not her campaign copy, so it is not in D1 (CLAUDE.md hard
-// rule 2 is about what she says).
+// draws them in the link color at the text's weight). It is not her campaign copy, so it is not in D1.
 
 export const headers = () => publicPageHeaders();
 
