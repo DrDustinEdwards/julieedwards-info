@@ -1,31 +1,9 @@
-// The site's side of Carrel's contract (@dustinedwards/site-api) for the page's copy, over the `sections` table: the
-// content group and its schedules. adapter.server.tsx adds the preview and the media library.
-//
-// SCOPE. The page is a fixed set of sections (app/lib/source.ts SECTIONS); a content id is a section id.
-// Carrel edits, schedules and publishes them and cannot add, take down, rename, trash or delete one: the adapter has
-// no rename, trash or delete, so the package answers those routes 501 and meta.capabilities leaves them out.
-//
-// DRAFTS. A section is always live. A save lands in `draft` and changes nothing a reader sees; publish moves it to
-// `published`. A section with a draft waiting reads as published with `hasDraft` (site-api's contentHasDraft), so
-// Carrel offers the publish and a list of drafts still finds it. Every write first copies the row as it was into
-// section_revisions with Carrel's changeId, which is also the revision list; `updated_by` and `author` carry the
-// actor of each change.
-//
-// SCHEDULES. A section's draft can carry a time (publish_at, with the change id that set it), and then reads as
-// published with a `scheduledUpdate`. The per-minute cron (workers/app.ts) runs the package's runSchedules, which
-// publishes it at that time through `schedules.apply`, recording publish_at as its publishedAt and the schedule's
-// change id on the revision, and fires the hooks a Carrel publish fires. A save keeps the time with the new text; a
-// publish, or a save back to the live text, drops it; a cancel drops it and leaves the text a draft. A section is
-// never a draft with no page, so the package sends every schedule to `schedules.update`, which lands the same way:
-// the scheduled source becomes the section's draft.
-//
-// UNPUBLISH AND DELETE. A section of this page is never taken down, renamed, trashed or deleted: unpublish is
-// refused and the other routes answer 501, as for the other fixed content on the network (the CV and the agent
-// document on dustinedwards.info). Edit it and publish instead. CLAUDE.md, rule 3.
-//
-// VERSIONS. A hash of the published and draft sources together, and the schedule's time and change id while one
-// waits, so any change to the section moves it and a change to another section never does. A section with nothing
-// scheduled keeps the version it had before schedules existed.
+// The site's side of Carrel's contract (@dustinedwards/site-api) for the page's copy, over the `sections` table: the content group and its schedules.
+// The page is a fixed set of sections (app/lib/source.ts SECTIONS); a content id is a section id. Carrel edits, schedules and publishes them;
+// none is added, taken down, renamed, trashed or deleted (CLAUDE.md, rule 3), so unpublish is refused and those routes answer 501.
+// A save lands in `draft` and publish moves it to `published`; every write first copies the row into section_revisions with Carrel's changeId.
+// A draft's publish_at is run by the per-minute cron (workers/app.ts, runSchedules) through `schedules.apply`.
+// The version hashes the published and draft sources with the schedule, so a change to one section never moves another.
 import { and, asc, desc, eq, isNotNull, lte, sql } from "drizzle-orm";
 import {
   contentVersion,
