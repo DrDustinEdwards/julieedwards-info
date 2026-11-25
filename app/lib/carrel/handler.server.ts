@@ -23,9 +23,7 @@ function onPublish(hook: PublishHook | undefined, page = false): PublishHook | u
 }
 
 export function carrelApi(env: Env, origin: string, stylesheets: string[]) {
-  // The replay store, preview links, hook retries and webmentions live in D1 (drizzle/0006_site_api_store.sql). A
-  // published change tells IndexNow at once (a request from a preview origin sends nothing); a schedule the cron
-  // publishes purges the stored page.
+  // The replay store, preview links, hook retries and webmentions live in D1 (drizzle/0006_site_api_store.sql).
   return standardSiteApi({
     adapter: createCarrelAdapter(env, { origin, stylesheets }),
     key: env.CARREL_SITE_KEY,
