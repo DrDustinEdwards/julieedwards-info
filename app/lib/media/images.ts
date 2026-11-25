@@ -1,6 +1,6 @@
 // Library pictures on the page: where a file is served, how a section's address names one, and the sizes the page
 // offers (site-runtime ./image). One `defineImages`, so the page never asks /media for a size the route refuses.
-import { defineImages, type ImageAttributes } from "@dustinedwards/site-runtime/image";
+import { defineImages, type ImageAttributes, type Images } from "@dustinedwards/site-runtime/image";
 import { SITE_URL } from "~/lib/site";
 
 /** Every upload's key starts here; the earlier bytes a file's history keeps are under history/, never served. */
@@ -26,7 +26,7 @@ export function libraryKeyOf(address: string): string | null {
  * from 820px (app.css) and all of it below, cropped to its box around the file's focal point. Its `sizes` is the
  * file's own (libraryPhoto).
  */
-export const images = defineImages({
+export const images: Images<ImageUse> = defineImages({
   uses: {
     about: { layout: "full-width" },
   },

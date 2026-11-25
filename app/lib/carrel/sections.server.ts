@@ -16,7 +16,6 @@ import {
   type WriteResult,
 } from "@dustinedwards/site-api";
 import { SEARCH_FIELDS } from "@dustinedwards/site-api/frontmatter";
-import { utc } from "@dustinedwards/site-api/schedules";
 import { getDb } from "~/db/index.server";
 import { sectionRevisions, sections, type SectionRow } from "~/db/schema";
 import { isSectionId, parseSection, SECTIONS, SourceError, type SectionId } from "~/lib/source";
@@ -26,6 +25,8 @@ type Snapshot = Pick<SectionRow, "published" | "draft"> &
 type Fields = Partial<Omit<SectionRow, "id" | "updatedAt" | "updatedBy">>;
 
 const KIND = "section";
+/** UTC ISO text, so every stored time compares as text and a time written with an offset matches itself. */
+const utc = (time: string | Date): string => new Date(time).toISOString();
 /** The author of a change that named no one: the site itself. */
 const OWNER = "julieedwards";
 
