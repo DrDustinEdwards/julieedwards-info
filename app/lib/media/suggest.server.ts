@@ -7,5 +7,5 @@ import { mediaSuggester } from "@dustinedwards/site-api";
 /** What the model suggests for one stored picture. Throws when the site has no ANTHROPIC_API_KEY. */
 export const suggestFor = mediaSuggester({
   app: "julieedwards",
-  describe: "on a school board candidate's campaign website",
+  describe: "on a school board trustee's website",
 });

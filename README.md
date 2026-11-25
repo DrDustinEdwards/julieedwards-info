@@ -1,6 +1,6 @@
 # julieedwards.info
 
-Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board.
+Site for Julie Edwards, trustee on the Bluff Dale ISD School Board.
 React Router 8 on a Cloudflare Worker, with the page's copy in D1 (Drizzle) and a nightly D1 dump into R2.
 
 ## Run locally

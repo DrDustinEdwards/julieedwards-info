@@ -3,9 +3,9 @@ import type { Route } from "./+types/sitemap";
 import { getEnv } from "@dustinedwards/site-runtime/context";
 import { loadContent } from "~/lib/content.server";
 import { ACCESSIBILITY_PATH } from "@drdustinedwards/site-helpers/accessibility";
-import { ACCESSIBILITY_REVIEWED, SITE_URL } from "~/lib/site";
+import { ACCESSIBILITY_REVIEWED, PRIVACY_PATH, PRIVACY_REVIEWED, SITE_URL } from "~/lib/site";
 
-// The page, with the photo it shows, and the accessibility statement. The page's lastmod is the newest publish of any
+// The page, with the photo it shows, the accessibility statement and the privacy page. The page's lastmod is the newest publish of any
 // section, not the time of the request; the statement's is the day it was reviewed.
 export async function loader({ context }: Route.LoaderArgs) {
   const { content, updatedAt } = await loadContent(getEnv(context));
@@ -26,6 +26,7 @@ export async function loader({ context }: Route.LoaderArgs) {
           },
         ]),
     { loc: new URL(ACCESSIBILITY_PATH, SITE_URL).href, lastmod: ACCESSIBILITY_REVIEWED },
+    { loc: new URL(PRIVACY_PATH, SITE_URL).href, lastmod: PRIVACY_REVIEWED },
   ];
   const xml = sitemapDocument(pages, {
     layout: "expanded",

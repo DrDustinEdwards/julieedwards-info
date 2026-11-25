@@ -10,6 +10,10 @@ export const INDEXNOW_KEY = "b4b92607de2a2c1bbe46b4b6bf963d13";
 /** The day the accessibility statement was last reviewed: the date it states, and its sitemap lastmod. */
 export const ACCESSIBILITY_REVIEWED = "2026-11-01";
 
+/** The privacy page's path, and the day it was last reviewed: the date it states, and its sitemap lastmod. */
+export const PRIVACY_PATH = "/privacy";
+export const PRIVACY_REVIEWED = "2026-11-25";
+
 /** A page's head: the origin, site name and share-card image every page names; the page passes its own path and copy. */
 export const pageHead = (profile: Content["profile"]) =>
   defineHead({
