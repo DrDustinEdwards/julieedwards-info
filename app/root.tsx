@@ -105,7 +105,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const data = useRouteLoaderData<typeof loader>("root");
   const notFound = data?.content.site.notFound;
-  // A 404 says the site's own D1 copy (CLAUDE.md hard rule 2); the Layout already holds the page's main.
+  // A 404 says the site's own D1 copy; the Layout already holds the page's main.
   const words =
     isRouteErrorResponse(error) && error.status === 404 && notFound
       ? { title: notFound.title, text: notFound.body, homeLabel: notFound.cta }

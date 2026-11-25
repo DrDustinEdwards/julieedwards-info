@@ -1,6 +1,6 @@
 // The site's side of Carrel's contract (@dustinedwards/site-api) for the page's copy, over the `sections` table: the content group and its schedules.
 // The page is a fixed set of sections (app/lib/source.ts SECTIONS); a content id is a section id. Carrel edits, schedules and publishes them;
-// none is added, taken down, renamed, trashed or deleted (CLAUDE.md, rule 3), so unpublish is refused and those routes answer 501.
+// none is added, taken down, renamed, trashed or deleted (CLAUDE.md, Sections), so unpublish is refused and those routes answer 501.
 // A save lands in `draft` and publish moves it to `published`; every write first copies the row into section_revisions with Carrel's changeId.
 // A draft's publish_at is run by the per-minute cron (workers/app.ts, runSchedules) through `schedules.apply`.
 // The version hashes the published and draft sources with the schedule, so a change to one section never moves another.
