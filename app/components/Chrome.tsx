@@ -72,6 +72,7 @@ export function Footer({ name, site }: { name: string; site: Content["site"] }) 
             </a>
           ))}
           <a href="/accessibility">Accessibility</a>
+          <a href="/privacy">Privacy</a>
         </nav>
       </div>
     </footer>

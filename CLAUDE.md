@@ -1,6 +1,6 @@
 # CLAUDE.md - julieedwards.info
 
-Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one page on a Worker, its copy in D1, edited through Carrel.
+Site for Julie Edwards, trustee on the Bluff Dale ISD School Board: one page on a Worker, its copy in D1, edited through Carrel.
 
 ## Rules every repo shares
 
@@ -12,7 +12,7 @@ Campaign site for Julie Edwards, candidate for Bluff Dale ISD School Board: one 
 
 ## Rules for this repo
 
-- **Facts.** This is a real candidate's site. Keep content faithful to what she provides; never invent positions, claims or quotes.
+- **Facts.** This is a real person's site. Keep content faithful to what she provides; never invent positions, claims or quotes.
 - **Sections.** The page is a fixed set of sections. Carrel never unpublishes, renames, trashes or deletes one; removing a section is a change to `app/lib/source.ts` and the seed.
 
 ## Commands
