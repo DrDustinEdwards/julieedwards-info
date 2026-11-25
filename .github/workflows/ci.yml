@@ -78,6 +78,7 @@ jobs:
       worker-name: julieedwards
       d1-database: julieedwards
       health-url: https://julieedwards.info/health
+      install: npm ci
       verify-command: >-
         code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://julieedwards.info/ || true);
         echo "home page answered $code";
