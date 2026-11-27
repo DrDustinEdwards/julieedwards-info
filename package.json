@@ -33,7 +33,7 @@
     "react-router": "8.5.2"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.70.0",
+    "@cloudflare/vite-plugin": "1.70.1",
     "@dustinedwards/devkit": "github:DrDustinEdwards/devkit#v0.67.0",
     "@react-router/dev": "8.5.2",
     "@types/node": "22.20.5",
